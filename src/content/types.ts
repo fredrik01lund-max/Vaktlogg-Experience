@@ -15,6 +15,8 @@ export type Takt = {
   anim?: number
   /** Gå automatisk videre etter så mange sekunder (bare stille sekvenser). */
   auto?: number
+  /** Planlagte sekunder for en sensortakt (sensor prøver prototypen selv). Standard: SENSOR_SEK. */
+  sek?: number
 }
 
 export type Scene = {

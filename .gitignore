@@ -15,3 +15,9 @@ blender/*.blend1
 blender/telefon-slutt.png
 blender/frames_apning
 blender/test_apning
+
+blender/frames_pakket
+blender/test_pakket
+blender/frames_hopping
+blender/test_hopping
+blender/__pycache__

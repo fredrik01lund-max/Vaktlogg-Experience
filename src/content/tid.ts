@@ -15,10 +15,10 @@ export function taletid(tekst?: string): number {
   return ord(tekst) / ORD_PER_SEK
 }
 
-/** Planlagte sekunder per takt: stille takter får animasjonstiden, sensor får SENSOR_SEK,
+/** Planlagte sekunder per takt: stille takter får animasjonstiden, sensor får sek (ellers SENSOR_SEK),
  *  og resten av scenens tid fordeles på taktene med tale etter hvor mye som sies. */
 export function taktPlan(s: Scene): number[] {
-  const fast = s.takter.map((t) => (t.hvem === 'stille' ? (t.auto ?? t.anim ?? 0) : t.hvem === 'sensor' ? SENSOR_SEK : 0))
+  const fast = s.takter.map((t) => (t.hvem === 'stille' ? (t.auto ?? t.anim ?? 0) : t.hvem === 'sensor' ? (t.sek ?? SENSOR_SEK) : 0))
   const rest = Math.max(0, s.varighet - fast.reduce((a, b) => a + b, 0))
   const vekter = s.takter.map((t, i) => (fast[i] || t.hvem === 'stille' || t.hvem === 'sensor' ? 0 : Math.max(taletid(t.sier), t.sier ? 2 : 1)))
   const sum = vekter.reduce((a, b) => a + b, 0) || 1

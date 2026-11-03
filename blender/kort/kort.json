@@ -1,0 +1,57 @@
+[
+  {
+    "id": "spill",
+    "navn": "Frivillige spill",
+    "farge": "#F0CC5C"
+  },
+  {
+    "id": "live",
+    "navn": "Vakten live",
+    "farge": "#F08FB0"
+  },
+  {
+    "id": "helse",
+    "navn": "Helse og skritt",
+    "farge": "#F08FB0"
+  },
+  {
+    "id": "salg",
+    "navn": "Salg og tips",
+    "farge": "#F5B46E"
+  },
+  {
+    "id": "konkurranse",
+    "navn": "Duell mot eget snitt",
+    "farge": "#F0CC5C"
+  },
+  {
+    "id": "gjester",
+    "navn": "Gjester og bord",
+    "farge": "#7CC9A1"
+  },
+  {
+    "id": "rapport",
+    "navn": "Sluttrapporten",
+    "farge": "#F5B46E"
+  },
+  {
+    "id": "mal",
+    "navn": "Mål og premier",
+    "farge": "#F0CC5C"
+  },
+  {
+    "id": "meny",
+    "navn": "Personalmenyen",
+    "farge": "#7CC9A1"
+  },
+  {
+    "id": "sjef",
+    "navn": "Lederen ser laget",
+    "farge": "#F08FB0"
+  },
+  {
+    "id": "maned",
+    "navn": "Måneden din",
+    "farge": "#F5B46E"
+  }
+]

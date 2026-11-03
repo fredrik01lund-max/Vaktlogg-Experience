@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ComponentType } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import { lagtTilSide } from '../content/arkiv.ts'
 import { manus } from '../content/manus.ts'
 import type { Fase, Hvem } from '../content/types.ts'
 import { filmTilstand } from '../lib/film.ts'
 import { FARGE, oppsett } from '../lib/oppsett.ts'
-import { apneVindu, forrige, gaTil, hent, neste, nyDemo, sendStatus, start, svart, useTilstand, velg } from '../lib/sync.ts'
+import { apneVindu, forrige, gaTil, hent, neste, nyDemo, sendStatus, start, svart, useTilstand } from '../lib/sync.ts'
 import { Apning, Innsikter, Metode, Portrett, TittelScene } from '../scenes/Del1.tsx'
-import { Ide, Persona, Prinsipper, Sensor, Snu, ToInnsikter } from '../scenes/Del2.tsx'
-import { Nabc, Refleksjon, Slutt, Testing, Videre } from '../scenes/Del3.tsx'
+import { Ide, Pakket, Persona, Prinsipper, Sensor, Snu, ToInnsikter } from '../scenes/Del2.tsx'
+import { Hopping, Nabc, Refleksjon, Slutt, Testing, Videre } from '../scenes/Del3.tsx'
 import { Demo, DemoTelefon } from '../scenes/Demo.tsx'
 import { MYK, useLysNivaa, type SceneProps } from '../scenes/felles.tsx'
 import { vekslePlassholdertekst } from '../ui/Foto.tsx'
@@ -20,19 +21,25 @@ const SCENER: Record<string, ComponentType<SceneProps>> = {
   portrett: Portrett,
   innsikter: Innsikter,
   snu: Snu,
-  persona: Persona,
   ide: Ide,
   'to-innsikter': ToInnsikter,
-  prinsipper: Prinsipper,
-  sensor: Sensor,
-  testing: Testing,
-  nabc: Nabc,
+  pakket: Pakket,
+  hopping: Hopping,
   refleksjon: Refleksjon,
   videre: Videre,
   slutt: Slutt,
 }
 
-// Prototypen lastes fra designprinsippene (to scener før demoen) til scenen etter
+// Lagt til side (src/content/arkiv.ts): kan vises fra oversikten, men er ikke med i flyten
+const ARKIV: Record<string, ComponentType<SceneProps>> = {
+  persona: Persona,
+  prinsipper: Prinsipper,
+  sensor: Sensor,
+  testing: Testing,
+  nabc: Nabc,
+}
+
+// Prototypen lastes fra «Alt vi pakket inn» (scenen før demoen) til scenen etter
 const DEMO_I = manus.findIndex((s) => s.id === 'demo')
 
 const FASER: { id: Fase; navn: string }[] = [
@@ -67,6 +74,7 @@ export function Salen() {
   const [demoVisning, setDemoVisning] = useState<'skjult' | 'film' | 'demo'>('skjult')
   const [oversikt, setOversikt] = useState(false)
   const [hjelp, setHjelp] = useState(false)
+  const [arkiv, setArkiv] = useState<{ i: number; takt: number; valg: number | null } | null>(null)
   const [peker, setPeker] = useState(true)
   const lyd = useRef<HTMLAudioElement>(null)
 
@@ -75,6 +83,15 @@ export function Salen() {
     const ned = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey) return
       const k = e.key
+      if (arkiv) {
+        e.preventDefault()
+        const n = lagtTilSide[arkiv.i].takter.length
+        if (['ArrowRight', 'PageDown', ' ', 'Enter', 'ArrowDown'].includes(k)) setArkiv({ ...arkiv, takt: Math.min(n - 1, arkiv.takt + 1) })
+        else if (['ArrowLeft', 'PageUp', 'Backspace', 'ArrowUp'].includes(k)) setArkiv({ ...arkiv, takt: Math.max(0, arkiv.takt - 1) })
+        else if (/^[1-4]$/.test(k)) setArkiv({ ...arkiv, valg: Number(k), takt: n - 1 })
+        else if (k === 'Escape' || k === 'F5' || k === 'o' || k === 'O') setArkiv(null)
+        return
+      }
       if (['ArrowRight', 'PageDown', ' ', 'Enter', 'ArrowDown'].includes(k)) {
         e.preventDefault()
         if (oversikt || hjelp) return
@@ -97,11 +114,10 @@ export function Salen() {
       else if (k === 'l' || k === 'L') vekslePlassholdertekst()
       else if (k === 'Home') gaTil(0)
       else if (k === 'r' || k === 'R') nyDemo()
-      else if (/^[1-4]$/.test(k) && manus[t.scene].id === 'sensor') velg(Number(k))
     }
     window.addEventListener('keydown', ned)
     return () => window.removeEventListener('keydown', ned)
-  }, [oversikt, hjelp, t.scene])
+  }, [oversikt, hjelp, arkiv])
 
   // ── Stille sekvenser går videre av seg selv (bare hovedskjermen styrer dette) ──
   useEffect(() => {
@@ -212,11 +228,14 @@ export function Salen() {
           </AnimatePresence>
         )}
 
-        <DemoTelefon visning={t.startet && scene.id === 'demo' ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && t.scene >= DEMO_I - 2 && t.scene <= DEMO_I + 1} />
+        {/* Lagt til side: en arkivert scene vises over flyten til Esc trykkes (flyten står stille imens) */}
+        {arkiv && <ArkivVisning i={arkiv.i} takt={arkiv.takt} valg={arkiv.valg} />}
 
-        {t.startet && scene.fase && (
+        <DemoTelefon visning={t.startet && scene.id === 'demo' && !arkiv ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && t.scene >= DEMO_I - 1 && t.scene <= DEMO_I + 1} sensor={t.startet && scene.id === 'demo' && takt.hvem === 'sensor'} />
+
+        {t.startet && scene.fase && !arkiv && (
           <div className={`faser ${scene.id === 'demo' ? 'hoyre' : ''}`} aria-hidden="true">
-            {scene.id === 'testing' && (
+            {scene.id === 'hopping' && (
               <svg className="sloyfe" width="560" height="30" viewBox="0 0 560 30">
                 <path d="M520 26 C 500 2, 230 2, 210 24" fill="none" stroke="#F08FB0" strokeWidth="1.5" strokeDasharray="4 5" markerEnd="url(#sloyfePil)" />
                 <defs>
@@ -274,6 +293,26 @@ export function Salen() {
                 </li>
               ))}
             </ol>
+            <h2 className="oversikt-arkiv">Lagt til side</h2>
+            <ol className="oversikt-arkiv">
+              {lagtTilSide.map((s, i) => (
+                <li key={s.id}>
+                  <button
+                    disabled={!ARKIV[s.id]}
+                    title={ARKIV[s.id] ? 'Vis scenen (Esc lukker)' : 'Bare manuset – se src/content/arkiv.ts'}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (!t.startet) start()
+                      setArkiv({ i, takt: 0, valg: null })
+                      setOversikt(false)
+                    }}
+                  >
+                    <small>{s.del}{ARKIV[s.id] ? '' : ' · bare manus'}</small>
+                    <b>{s.tittel}</b>
+                  </button>
+                </li>
+              ))}
+            </ol>
           </div>
         )}
         {hjelp && (
@@ -288,14 +327,13 @@ export function Salen() {
               <dd>Åpne presentatørvisningen i eget vindu (dra det til din skjerm)</dd>
               <dt><kbd>F</kbd></dt>
               <dd>Fullskjerm (eller dobbeltklikk)</dd>
-              <dt><kbd>1</kbd>–<kbd>4</kbd></dt>
-              <dd>Sensors valg i designvalget</dd>
+
               <dt><kbd>B</kbd> <kbd>.</kbd></dt>
               <dd>Svart skjerm av/på</dd>
               <dt><kbd>O</kbd></dt>
-              <dd>Oversikt over scenene – hopp dit du vil</dd>
+              <dd>Oversikt over scenene – hopp dit du vil. Under «Lagt til side» ligger scenene vi tok ut (Esc lukker)</dd>
               <dt><kbd>R</kbd></dt>
-              <dd>Last prototypen på nytt med rene data</dd>
+              <dd>Last prototypen på nytt med rene data (starter også omvisningen på sensors mobil på nytt)</dd>
               <dt><kbd>L</kbd></dt>
               <dd>Skjul/vis teksten på fotoplassholdere</dd>
             </dl>
@@ -303,6 +341,19 @@ export function Salen() {
         )}
       </div>
       {oppsett.lyd.apning && <audio ref={lyd} src={oppsett.lyd.apning} preload="auto" loop />}
+    </div>
+  )
+}
+
+function ArkivVisning({ i, takt, valg }: { i: number; takt: number; valg: number | null }) {
+  const s = lagtTilSide[i]
+  const Scene = ARKIV[s.id]
+  return (
+    <div className="arkiv-visning">
+      {Scene && <Scene takt={takt} valg={valg} />}
+      <div className="arkiv-merke">
+        Lagt til side · {s.tittel} · takt {takt + 1}/{s.takter.length} · <kbd>Esc</kbd> tilbake
+      </div>
     </div>
   )
 }

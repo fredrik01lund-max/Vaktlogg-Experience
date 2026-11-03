@@ -1,25 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import meta from '../lib/telefon.json'
 import { filmTilstand, filmUrl } from '../lib/film.ts'
 import { manus } from '../content/manus.ts'
 import { forrige, hent, neste, sendStatus } from '../lib/sync.ts'
-import { FILM, MYK, useLys, type SceneProps } from './felles.tsx'
+import { MYK, useLys, type SceneProps } from './felles.tsx'
 
-/* ══ 12. Prototype reveal + live demo ════════════════════════════════════════════
+/* ══ 10. Prøv selv: prototype reveal + sensors omvisning ═════════════════════════
    Blender-filmen (public/film/telefon.mp4) ender med skjermen midt i bildet, SKJERM_ANDEL
    av bildehøyden. Den ekte prototypen ligger klar i en iframe nøyaktig der og tones inn
-   over siste bilde – så glir telefonen til side, og forklaringen kommer frem ved siden av. */
+   over siste bilde – og blir stående midt på skjermen. Ingen tekst ved siden av: sensor
+   trykker selv (på en mobil vi gir sensor, speilet hit), og Sir Domeo forklarer med stemmen. */
 
 const VW = 390 // prototypens bredde (CSS-px)
 const VH = 844
 const SKJERM_H = meta.skjermAndel * 1080 // px på lerretet
 const SKALA = SKJERM_H / VH
 const KANT = 18 // telefonrammen rundt skjermen (prototype-px)
-const DEMO_X = 640 // senter for telefonen under demoen
 const PROTO_KEY = 'vaktlogg:v4'
 
-/** Hva demoen viser akkurat nå – avledet fra prototypens adresse og fase. */
+/** Hva demoen viser akkurat nå – avledet fra prototypens adresse og fase (vises i presentatørvinduet). */
 type Forklaring = { id: string; over: string; tittel: string; innsikt: string; farge: string }
 const FORKLARINGER: Record<string, Forklaring> = {
   start: { id: 'start', over: 'Før vakten', tittel: 'Kveldens spill – frivillig', innsikt: 'Ikke alle vil konkurrere: velg duell, makker, laget – eller rolig.', farge: 'var(--papir)' },
@@ -64,33 +64,58 @@ export function klargjorPrototype() {
 
 type Visning = 'skjult' | 'film' | 'demo'
 
+// Eksamenstjeneren (npm run eksamen) videresender sensors mobil. Finnes den, viser prototypen her det som skjer
+// på mobilen (?speil=vis). Ellers (GitHub Pages, fil) går omvisningen her, og sensor eller C trykker på storskjermen.
+let speil: Promise<boolean> | null = null
+function harSpeil() {
+  speil ??= window.location.protocol.startsWith('http')
+    ? fetch('speil-status', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => j?.speil === true)
+        .catch(() => false)
+    : Promise.resolve(false)
+  return speil
+}
+
 /** Telefonen med den ekte prototypen. Lastes rett før demoen (last) og tegnes ikke mens den er skjult –
- *  Sir Domeo i 3D koster mye, og skal ikke stjele tid fra filmen og animasjonene ellers. */
-export function DemoTelefon({ visning, demoNr, last }: { visning: Visning; demoNr: number; last: boolean }) {
+ *  Sir Domeo i 3D koster mye, og skal ikke stjele tid fra filmen og animasjonene ellers.
+ *  sensor: sensor har mobilen nå – da snakker Sir Domeo (stemmen spilles her, ikke på mobilen). */
+export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visning; demoNr: number; last: boolean; sensor: boolean }) {
   const ref = useRef<HTMLIFrameElement>(null)
   const [forklaring, setForklaring] = useState<Forklaring>(FORKLARINGER.start)
-  const [sett, setSett] = useState<string[]>([])
+  const [speiles, setSpeiles] = useState(false)
+  const forrigeNr = useRef<number | null>(null)
 
   // Ny demo: rene data og last på nytt. Utenfor demoen er prototypen ikke lastet i det hele tatt.
+  // Trykker presentatøren R (ny demo) mens den er lastet, starter også sensors mobil omvisningen på nytt.
   useEffect(() => {
     const f = ref.current
     if (!f) return
     if (!last) {
       f.src = 'about:blank'
+      forrigeNr.current = null
       return
     }
+    const nullstill = forrigeNr.current !== null && forrigeNr.current !== demoNr
+    forrigeNr.current = demoNr
     klargjorPrototype()
-    setSett([])
-    f.src = `demo/vaktlogg.html?n=${demoNr}`
+    let aktiv = true
+    harSpeil().then((s) => {
+      if (!aktiv) return
+      setSpeiles(s)
+      f.src = `demo/vaktlogg.html?sensor${s ? '&speil=vis' : ''}${s && nullstill ? `&nullstill=${demoNr}` : ''}&n=${demoNr}`
+    })
+    return () => {
+      aktiv = false
+    }
   }, [demoNr, last])
 
-  // Følg med på hvor C er i prototypen, og send det til presentatørvinduet
+  // Følg med på hvor sensor er i prototypen, og send det til presentatørvinduet
   useEffect(() => {
     if (visning === 'skjult') return
     const id = window.setInterval(() => {
       const fk = lesForklaring(ref.current?.contentWindow ?? null)
       setForklaring((g) => (g.id === fk.id ? g : fk))
-      setSett((s) => (s.includes(fk.id) ? s : [...s, fk.id]))
     }, 400)
     return () => clearInterval(id)
   }, [visning])
@@ -98,6 +123,40 @@ export function DemoTelefon({ visning, demoNr, last }: { visning: Visning; demoN
   useEffect(() => {
     sendStatus({ film: filmTilstand(), demo: forklaring.tittel })
   }, [forklaring])
+
+  // ── Sir Domeos stemme: prototypen sier fra (postMessage) hver gang han begynner på en replikk ──
+  const lyd = useRef<HTMLAudioElement | null>(null)
+  const sisteReplikk = useRef<string | null>(null)
+  const sensorNa = useRef(sensor)
+  const si = (id: string | null) => {
+    lyd.current?.pause()
+    lyd.current = null
+    if (!id) return
+    const a = new Audio(`demo/domeo/${id}.mp3`)
+    lyd.current = a
+    a.play().catch(() => {
+      /* uten lyd står replikken i boblen */
+    })
+  }
+  useEffect(() => {
+    const ta = (e: MessageEvent) => {
+      if (e.source !== ref.current?.contentWindow || !e.data || typeof e.data !== 'object' || !('vaktloggDomeo' in e.data)) return
+      sisteReplikk.current = e.data.vaktloggDomeo as string | null
+      if (sensorNa.current) si(sisteReplikk.current)
+    }
+    window.addEventListener('message', ta)
+    return () => window.removeEventListener('message', ta)
+  }, [])
+  // Når sensor får mobilen, sier Sir Domeo replikken han står på. Går vi videre, får han snakke ferdig.
+  useEffect(() => {
+    sensorNa.current = sensor
+    if (sensor) si(sisteReplikk.current)
+  }, [sensor])
+  useEffect(() => {
+    if (visning !== 'skjult') return
+    lyd.current?.pause()
+    lyd.current = null
+  }, [visning])
 
   // Klikkeren virker også mens fokus er inne i prototypen (PageDown/PageUp)
   const kobleTaster = () => {
@@ -122,42 +181,23 @@ export function DemoTelefon({ visning, demoNr, last }: { visning: Visning; demoN
     }
   }
 
-  const x = visning === 'demo' ? DEMO_X : 960
   return (
     <>
       <motion.div
         className="demo-telefon"
         style={{ width: VW + KANT * 2, height: VH + KANT * 2, left: 960 - (VW + KANT * 2) / 2, top: 540 - (VH + KANT * 2) / 2, scale: SKALA }}
         initial={false}
-        animate={visning === 'skjult' ? { x: x - 960, opacity: 0, transitionEnd: { display: 'none' } } : { x: x - 960, opacity: 1, display: 'block' }}
-        transition={{ x: { duration: 1.6, ease: FILM }, opacity: { duration: visning === 'film' ? 0.5 : 0.4 } }}
+        animate={visning === 'skjult' ? { opacity: 0, transitionEnd: { display: 'none' } } : { opacity: 1, display: 'block' }}
+        transition={{ opacity: { duration: visning === 'film' ? 0.5 : 0.4 } }}
         aria-hidden={visning === 'skjult'}
       >
-        <iframe ref={ref} title="Vaktlogg – prototypen" className="demo-ramme" style={{ width: VW, height: VH, borderRadius: meta.skjermHjorne * VH }} onLoad={kobleTaster} tabIndex={visning === 'skjult' ? -1 : 0} />
+        <iframe ref={ref} title="Vaktlogg – prototypen" className="demo-ramme" style={{ width: VW, height: VH, borderRadius: meta.skjermHjorne * VH }} onLoad={kobleTaster} allow="autoplay" tabIndex={visning === 'skjult' ? -1 : 0} />
       </motion.div>
 
-      <AnimatePresence>
-        {visning === 'demo' && (
-          <motion.aside key="forklaring" className="demo-forklaring" initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 1, delay: 0.9, ease: MYK }}>
-            <span className="overtittel">Hva du ser – og hvorfor</span>
-            <AnimatePresence mode="wait">
-              <motion.div key={forklaring.id} className="forklaring-kort" initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -12, filter: 'blur(6px)' }} transition={{ duration: 0.6, ease: MYK }}>
-                <small style={{ color: forklaring.farge }}>{forklaring.over}</small>
-                <b className="stor-serif">{forklaring.tittel}</b>
-                <p>{forklaring.innsikt}</p>
-              </motion.div>
-            </AnimatePresence>
-            <div className="demo-spor">
-              {['start', 'salg', 'konkurranse', 'helse', 'sjef', 'slutt'].map((k) => (
-                <span key={k} className={sett.includes(k) ? 'sett' : ''} style={{ ['--f' as string]: FORKLARINGER[k].farge }}>
-                  {FORKLARINGER[k].tittel}
-                </span>
-              ))}
-            </div>
-            <p className="demo-merk">Konseptprototype · fiktiv restaurant · simulerte data</p>
-          </motion.aside>
-        )}
-      </AnimatePresence>
+      <motion.div className="demo-hjorne" initial={false} animate={{ opacity: visning === 'demo' ? 1 : 0 }} transition={{ duration: 1, delay: visning === 'demo' ? 1.2 : 0 }}>
+        <span className={`demo-styrer ${sensor ? 'na' : ''}`}>{speiles ? 'Sensor trykker på mobilen' : 'Trykk på skjermen'}</span>
+        <span className="demo-merk">Konseptprototype · fiktiv restaurant · simulerte data</span>
+      </motion.div>
     </>
   )
 }

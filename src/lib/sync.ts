@@ -163,8 +163,10 @@ export function forrige() {
   else if (t.scene > 0) gaTil(t.scene - 1, manus[t.scene - 1].takter.length - 1)
 }
 
+/** Sensors valg i designvalget (scenen er lagt til side – da gjør dette ingenting). */
 export function velg(n: number) {
   const i = manus.findIndex((s) => s.id === 'sensor')
+  if (i < 0) return
   sett({ valg: n })
   gaTil(i, manus[i].takter.length - 1)
 }

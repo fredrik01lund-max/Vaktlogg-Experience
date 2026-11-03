@@ -1855,3 +1855,258 @@
   pointer-events: none;
   background: radial-gradient(ellipse 52% 40% at 50% 50%, rgba(8, 9, 15, 0.82) 0%, rgba(8, 9, 15, 0.55) 55%, transparent 100%);
 }
+
+/* ── 9. Alt vi pakket inn ── */
+.scene.pakket {
+  background: linear-gradient(100deg, #ffe2c8 0%, #ffe3d3 38%, #ffdcdb 70%, #ffd5de 100%);
+}
+.pakket-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Lyser opp sidene, så funksjonene leses godt – telefonen i midten står klart */
+.pakket-slor {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 246, 240, 0.86) 0%, rgba(255, 246, 240, 0.6) 30%, transparent 40%, transparent 60%, rgba(255, 246, 240, 0.6) 70%, rgba(255, 246, 240, 0.86) 100%);
+}
+.pakket-kol {
+  position: absolute;
+  top: 120px;
+  bottom: 130px;
+  width: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+}
+.pakket-kol.venstre {
+  left: 110px;
+}
+.pakket-kol.hoyre {
+  right: 110px;
+}
+.pakket-kort {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 16px 22px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--kort-skygge);
+  border: 1px solid transparent;
+}
+.pakket-kort i {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 9px;
+  border-radius: 50%;
+  background: var(--f);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--f) 22%, transparent);
+}
+.pakket-kort b {
+  display: block;
+  font-size: 29px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+}
+.pakket-kort small {
+  display: block;
+  margin-top: 4px;
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--dempet);
+}
+.pakket-kort em {
+  display: block;
+  overflow: hidden;
+  margin-top: 8px;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rosa);
+}
+.pakket-kort.grense {
+  border-color: color-mix(in srgb, var(--f) 70%, white);
+}
+.pakket-merk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 60px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  color: var(--svak);
+}
+
+/* ── 10. Prøv selv: telefonen midt på, ingen tekst ved siden av ── */
+.scene.demo .demo-glod {
+  background: radial-gradient(ellipse 34% 60% at 50% 50%, rgba(255, 255, 255, 0.45), transparent 70%);
+}
+.demo-hjorne {
+  position: absolute;
+  left: 110px;
+  right: 110px;
+  bottom: 54px;
+  z-index: 21;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.demo-hjorne .demo-merk {
+  margin: 0;
+}
+.demo-styrer {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--svak);
+  transition: color 0.8s var(--myk);
+}
+.demo-styrer::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.demo-styrer.na {
+  color: var(--rosa);
+}
+.demo-styrer.na::before {
+  animation: styrer-puls 1.6s ease-in-out infinite;
+}
+@keyframes styrer-puls {
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--rosa) 18%, transparent);
+  }
+}
+
+/* ── 11. Frem og tilbake ── */
+.scene.hopping {
+  background: #ffe6d8;
+}
+.hopping-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.8s;
+}
+.hopping-tittel {
+  position: absolute;
+  left: 110px;
+  bottom: 120px;
+}
+.hopping-tittel b {
+  display: block;
+  margin-top: 14px;
+  font-size: 92px;
+}
+.hopping-linje {
+  position: absolute;
+  left: 110px;
+  right: 110px;
+}
+.hopping-linje.innsikt {
+  top: 128px;
+}
+.hopping-linje.prototype {
+  bottom: 92px;
+}
+.hopping-hendelse {
+  display: inline-block;
+  padding: 18px 28px 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--kort-skygge);
+}
+.hopping-hendelse small {
+  display: block;
+  font-family: var(--mono);
+  font-size: 17px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hopping-linje.innsikt small {
+  color: var(--mint);
+}
+.hopping-linje.prototype small {
+  color: var(--fersken);
+}
+.hopping-hendelse span {
+  display: block;
+  margin-top: 6px;
+  font-size: 40px;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+.hopping-slor {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 38%, rgba(255, 240, 232, 0.92) 62%, rgba(255, 240, 232, 0.97) 100%);
+}
+.hopping-test {
+  position: absolute;
+  left: 110px;
+  right: 110px;
+  bottom: 90px;
+}
+.hopping-test .test-steder {
+  margin: 14px 0 26px;
+}
+.hopping-test .test-sted {
+  font-size: 68px;
+}
+.hopping-merk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 18px;
+  font-size: 24px;
+  color: var(--dempet);
+}
+.hopping-merk .merket + * {
+  margin-left: 0;
+}
+
+/* ── Lagt til side (vises fra oversikten) ── */
+.arkiv-visning {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: var(--svart);
+}
+.arkiv-merke {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px dashed var(--linje-2);
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: var(--dempet);
+  white-space: nowrap;
+}
+.arkiv-merke kbd {
+  font-size: 14px;
+}

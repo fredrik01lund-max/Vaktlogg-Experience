@@ -1,16 +1,18 @@
 import { sendStatus } from './sync.ts'
 
 // Filmene lastes helt ned når presentasjonen åpnes, så de aldri står og laster midt i fremføringen.
-// apning = «Vakten ovenfra» (åpningen), telefon = prototypen som avsløres.
+// apning = «Vakten ovenfra» (åpningen), pakket = «Alt vi pakket inn», telefon = prototypen som avsløres,
+// hopping = «Frem og tilbake» (innsikt ↔ prototype).
 
-export type FilmNavn = 'apning' | 'telefon'
-const NAVN: FilmNavn[] = ['apning', 'telefon']
-const url: Record<FilmNavn, string> = { apning: 'film/apning.mp4', telefon: 'film/telefon.mp4' }
-const klar: Record<FilmNavn, 'laster' | 'klar' | 'feil'> = { apning: 'laster', telefon: 'laster' }
+export type FilmNavn = 'apning' | 'pakket' | 'telefon' | 'hopping'
+// I den rekkefølgen de trengs
+const NAVN: FilmNavn[] = ['apning', 'pakket', 'telefon', 'hopping']
+const url = Object.fromEntries(NAVN.map((n) => [n, `film/${n}.mp4`])) as Record<FilmNavn, string>
+const klar = Object.fromEntries(NAVN.map((n) => [n, 'laster'])) as Record<FilmNavn, 'laster' | 'klar' | 'feil'>
 
 export const filmUrl = (navn: FilmNavn = 'telefon') => url[navn]
 
-/** Samlet status til presentatørvinduet: klar når begge filmene er lastet. */
+/** Samlet status til presentatørvinduet: klar når alle filmene er lastet. */
 export const filmTilstand = (): 'laster' | 'klar' | 'feil' => (NAVN.some((n) => klar[n] === 'feil') ? 'feil' : NAVN.every((n) => klar[n] === 'klar') ? 'klar' : 'laster')
 
 async function last(navn: FilmNavn) {
@@ -44,8 +46,8 @@ async function last(navn: FilmNavn) {
 }
 
 export function forhandslastFilm() {
-  // Siste bilde fra åpningen ligger bak tittelen – hent det med en gang
-  new Image().src = 'film/apning-slutt.png'
-  // Åpningen først – den trengs først
-  last('apning').then(() => last('telefon'))
+  // Siste bilde fra åpningen ligger bak tittelen – hent det med en gang (de andre ligger bak taletakten etter filmen)
+  for (const b of ['apning', 'pakket', 'hopping']) new Image().src = `film/${b}-slutt.png`
+  // Én og én, i den rekkefølgen de trengs
+  NAVN.reduce((forrige, n) => forrige.then(() => last(n)), Promise.resolve())
 }

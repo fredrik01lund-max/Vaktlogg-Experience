@@ -10,8 +10,8 @@ import { Foto } from '../ui/Foto.tsx'
 import { FILM, Inn, MYK, useLys, useSek, type SceneProps } from './felles.tsx'
 
 /* ══ 1. «Vakten ovenfra» (stille, 22 s) ═══════════════════════════════════════════
-   Blender-filmen (public/film/apning.mp4, laget av blender/apning_vakt.py): over skulderen på
-   servitøren med brettet, så kran opp over restauranten mens vakten tar av – gjester, bonger,
+   Blender-filmen (public/film/apning.mp4, laget av blender/apning_vakt.py): servitøren stempler inn på
+   telefonen (klokka starter i samme øyeblikk), tar brettet, og kameraet løfter seg over restauranten mens vakten tar av – gjester, bonger,
    bord som skifter farge som i appen, og et lysende spor der hun går. Lysene slukkes, sporet
    blir igjen. Ingen ord – bare klokka, som følger filmen, og tittelen til slutt. */
 
@@ -55,7 +55,7 @@ export function Apning() {
     <div className="scene apning">
       <video ref={video} className="apning-film" src={filmUrl('apning')} muted playsInline preload="auto" onEnded={ferdig} onError={() => setFeil(true)} />
 
-      <motion.div className="apning-klokke" initial={{ opacity: 0 }} animate={{ opacity: t > vaktStart - 0.4 && t < lysAv ? 1 : 0 }} transition={{ duration: 0.8 }}>
+      <motion.div className="apning-klokke" initial={{ opacity: 0 }} animate={{ opacity: t > vaktStart + 0.05 && t < lysAv ? 1 : 0 }} transition={{ duration: 0.8 }}>
         <span className="overtittel">Fredag · Brasserie Fjordgata</span>
         <span className="klokke">
           {String(Math.floor(min / 60)).padStart(2, '0')}

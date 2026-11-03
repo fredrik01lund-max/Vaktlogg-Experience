@@ -1,0 +1,72 @@
+{
+  "fps": 30,
+  "varighet": 16.0,
+  "kort": [
+    {
+      "id": "spill",
+      "navn": "Frivillige spill",
+      "farge": "#F0CC5C",
+      "tid": 2.2
+    },
+    {
+      "id": "live",
+      "navn": "Vakten live",
+      "farge": "#F08FB0",
+      "tid": 3.37
+    },
+    {
+      "id": "helse",
+      "navn": "Helse og skritt",
+      "farge": "#F08FB0",
+      "tid": 4.47
+    },
+    {
+      "id": "salg",
+      "navn": "Salg og tips",
+      "farge": "#F5B46E",
+      "tid": 5.5
+    },
+    {
+      "id": "konkurranse",
+      "navn": "Duell mot eget snitt",
+      "farge": "#F0CC5C",
+      "tid": 6.47
+    },
+    {
+      "id": "gjester",
+      "navn": "Gjester og bord",
+      "farge": "#7CC9A1",
+      "tid": 7.37
+    },
+    {
+      "id": "rapport",
+      "navn": "Sluttrapporten",
+      "farge": "#F5B46E",
+      "tid": 8.21
+    },
+    {
+      "id": "mal",
+      "navn": "Mål og premier",
+      "farge": "#F0CC5C",
+      "tid": 8.98
+    },
+    {
+      "id": "meny",
+      "navn": "Personalmenyen",
+      "farge": "#7CC9A1",
+      "tid": 9.68
+    },
+    {
+      "id": "sjef",
+      "navn": "Lederen ser laget",
+      "farge": "#F08FB0",
+      "tid": 10.32
+    },
+    {
+      "id": "maned",
+      "navn": "Måneden din",
+      "farge": "#F5B46E",
+      "tid": 10.89
+    }
+  ]
+}

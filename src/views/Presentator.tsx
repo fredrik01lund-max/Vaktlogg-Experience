@@ -121,7 +121,7 @@ export function Presentator() {
             <div className="pv-klar">Klar{takt.hvem === 'stille' && nesteTakt ? ` – ${hvemTekst(nesteTakt.hvem)} tar over` : ''}</div>
           ) : null}
 
-          {takt.hvem === 'sensor' && (
+          {takt.hvem === 'sensor' && scene.id === 'sensor' && (
             <div className="pv-sensor">
               {VALG.map((v, i) => (
                 <button key={i} onClick={() => velg(i + 1)}>

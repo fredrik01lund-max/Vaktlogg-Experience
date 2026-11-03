@@ -20,25 +20,24 @@ Publikum følger reisen fra et bredt problem (sykefravær) til et innsiktsbasert
 
 | # | Tid | Scene | Hvem | Hva skjer – og hvorfor |
 |---|---|---|---|---|
-| 1 | 0:00 | Vakten ovenfra | stille | Blender-film uten ord: over skulderen på servitøren med brettet, så kran opp over restauranten mens kvelden går fra 16:00 til 23:30. Gjester kommer, bonger spretter opp, bordene skifter farge som i appens bordkart, og hun legger igjen et lysende spor – skrittene. Lysene slukkes, sporet blir igjen, tittelen kommer. |
-| 2 | 0:22 | Behind the shift | A | Tittel, navn, utgangspunktet *sykefravær*. |
-| 3 | 0:55 | Menneskene bak innsikten | A | Fotomosaikk av menneskene, de fire innsiktskildene, og grepet med «travel vakt som føltes bra / dårlig». |
-| 4 | 1:47 | Portrett og sitat | A | *Cinematic portrait reveal* og det dokumenterte sitatet, holdt adskilt fra personen på bildet. |
-| 5 | 2:17 | Fra foto til data | A | Et bilde fryses, og innsiktene tegnes rundt servitøren. Skritt (selvrapportert) og kassarapporten (observert) blir til tre temaer. |
-| 6 | 3:12 | Problemet snur | A → B | Flippbokstaver: SYKEFRAVÆR blir MOTIVASJON (begge har ti bokstaver). Regissert overlevering fra A til B. |
-| 7 | 3:51 | Theodora | B | Fiktiv persona, brukerreisen i fire faser og «etter vakten» som mulighetsrom. |
-| 8 | 4:41 | Strava for jobben | B | Første idé, og historien om 5 000 ekstra skritt og tre flasker vin. |
-| 9 | 5:13 | To innsikter, én idé | stille → B | Skrittene blir ringen og salget blir V-en i Vaktlogg-merket. Gnisten til slutt er anerkjennelsen. |
-| 10 | 5:35 | Innsikt blir prinsipper | B | Seks designprinsipper. Hvert viser hva det kom fra og hvor det ligger i prototypen. |
-| 11 | 6:17 | Du tar designvalget | B + sensor | Sensor velger hvordan en konkurranse blir rettferdig. Så vises innsikt → beslutning → funksjon. |
-| 12 | 6:47 | Prototypen | stille → C | Blender-filmen: telefonen kommer frem, og kameraet kjører inn til den **ekte** prototypen tar over. Forklaringen ved siden av følger med på hvor C er i appen. |
-| 13 | 8:33 | Testing og iterasjon | C | Hvem som har testet, gjennomført mot planlagt, tidslinjen og gjesteinfo som avgrensningsdilemma. |
-| 14 | 9:35 | NABC | C | Need, Approach, Benefits (merket som hypoteser), Competition. |
-| 15 | 10:16 | Hva vi vet – og ikke vet | A | Hørt og sett / tror / må teste, pluss begrensningene. |
-| 16 | 10:58 | Videre | B | Spørsmålene som gjenstår, og en mulig pilot. |
-| 17 | 11:30 | Avslutning | A, B, C | Bongskinnen kommer tilbake. Siste bong: «Vakt ferdig – du ble sett». |
+| 1 | 0:00 | Vakten ovenfra | stille | Blender-film uten ord: servitøren stempler inn på telefonen (16:00), tar brettet, og kameraet løfter seg over restauranten mens kvelden går. Gjester kommer, bongene flyr fra bordet til bongskinnen på kjøkkenet, kokkene jobber, bordene skifter farge som i appens bordkart, stearinlysene tennes – og hun legger igjen et lysende spor: skrittene. Ved stengetid slukkes lysene, hun stempler ut ved døra (23:30), sporet blir igjen, tittelen kommer. |
+| 2 | 0:25 | Behind the shift | A | Tittel, navn, utgangspunktet *sykefravær*. |
+| 3 | 0:58 | Menneskene bak innsikten | A | Fotomosaikk av menneskene, de fire innsiktskildene, og grepet med «travel vakt som føltes bra / dårlig». |
+| 4 | 1:46 | Portrett og sitat | A | *Cinematic portrait reveal* og det dokumenterte sitatet, holdt adskilt fra personen på bildet. |
+| 5 | 2:16 | Nøkkelfunn | A | Et bilde fryses, og innsiktene tegnes rundt servitøren. Skritt (selvrapportert) og kassarapporten (observert) blir til tre temaer – og rommet etter vakten, der innsatsen forsvinner. |
+| 6 | 3:12 | Problemstillingen | A → B | Flippbokstaver: SYKEFRAVÆR blir MOTIVASJON (begge har ti bokstaver), og den nedkalte problemstillingen skrives frem. Regissert overlevering fra A til B. |
+| 7 | 3:54 | Strava for jobben | B | Første idé, og historien om 5 000 ekstra skritt og tre flasker vin. |
+| 8 | 4:27 | To innsikter, én idé | stille → B | Skrittene blir ringen og salget blir V-en i Vaktlogg-merket. Gnisten til slutt er anerkjennelsen. |
+| 9 | 4:49 | Alt vi pakket inn | stille → B | Blender-film: ekte skjermbilder av funksjonene svever rundt telefonen og flyr inn i den. Så legger funksjonene seg rundt telefonen, hver med innsikten den kom fra – og grensene (prinsippene) lyser opp der de hører hjemme. |
+| 10 | 5:51 | Prøv selv | stille → C → sensor → C | Blender-filmen: telefonen kommer frem, og den **ekte** prototypen tar over midt på skjermen – uten tekst ved siden av. C gir sensor en mobil, og sensor trykker seg gjennom Sir Domeos omvisning (seks stopp, med stemme). Storskjermen viser det samme som mobilen. |
+| 11 | 8:51 | Frem og tilbake | C → stille → C | Blender-film: en lysende kule spretter mellom innsikt og prototype, og hvert hopp er noe som skjedde (tekstene kommer i takt). Til slutt hele mønsteret ovenfra, og hvem som har prøvd prototypen. |
+| 12 | 10:08 | Hva vi vet – og ikke vet | C | Hørt og sett / tror / må teste, pluss begrensningene. |
+| 13 | 10:57 | Videre | B | Spørsmålene som gjenstår, og en mulig pilot. |
+| 14 | 11:33 | Avslutning | A, B, C | Bongskinnen kommer tilbake. Siste bong: «Vakt ferdig – du ble sett». |
 
-Tid per presentatør (fra `npm run sjekk`): **A ≈ 3:41 · B ≈ 3:46 · C ≈ 3:27**, stille sekvenser ≈ 0:56, sensor ≈ 0:10. Fordelingen følger forslaget (A problem og innsikt, B Design Thinking og konsept, C prototype og testing). A kommer tilbake på slutten med refleksjonen over innsiktsarbeidet, og B med veien videre, så alle tre er med i hele buen.
+Tid per presentatør (fra `npm run sjekk`): **A ≈ 2:58 · B ≈ 2:44 · C ≈ 2:34**, stille sekvenser (filmene) ≈ 1:34, sensor ≈ 2:10. A har problem og innsikt, B Design Thinking og konsept, C prototype, testing og refleksjon. Sensor får tid til å kjenne på tjenesten selv – det er demoens hovedgrep.
+
+Færre scener, bedre scener: Theodora, designprinsippene, sensors designvalg, testing og NABC er **lagt til side** (ikke slettet) – se under.
 
 Hver animasjon skal forklare noe. Flippbokstavene viser omdefineringen, frysbildet viser at innsiktene kommer fra arbeidsdagen, sammensmeltingen viser hvordan to innsikter ble én idé, og iterasjonssløyfen viser at prosessen ikke var lineær. Design Thinking-fasen vises diskret øverst til venstre, med en pil tilbake når vi tester.
 
@@ -46,19 +45,19 @@ Hver animasjon skal forklare noe. Flippbokstavene viser omdefineringen, frysbild
 
 ## Slik fremfører dere
 
-1. Åpne presentasjonen på projektoren, trykk **F** (fullskjerm) og **P** (presentatørvisning). Dra presentatørvinduet til den bærbare skjermen.
-2. Presentatørvisningen skal vise **«Hovedskjerm tilkoblet»** og **«Film lastet»**.
-3. Trykk **Nullstill demo**. Prototypen står da på «Hei Emma», uten Sir Domeos omvisningsspørsmål.
-4. Start med klikkeren (→ / PageDown). Stille sekvenser går videre av seg selv. Overalt ellers er det ett klikk per takt.
+1. Koble PC-en og mobilen dere gir sensor til samme nett – en mobil-hotspot holder, internett trengs ikke. Kjør `npm run build:eksamen` og så `npm run eksamen`. Tjeneren skriver ut to adresser.
+2. Åpne storskjerm-adressen på projektoren, trykk **F** (fullskjerm) og **P** (presentatørvisning). Dra presentatørvinduet til den bærbare skjermen.
+3. Åpne mobiladressen på sensors mobil og sett mobilen til å ikke låse seg. Presentatørvisningen skal vise **«Hovedskjerm tilkoblet»** og **«Film lastet»**.
+4. Koble til høyttaler – Sir Domeos stemme kommer fra PC-en. Trykk **Nullstill demo** rett før dere begynner.
+5. Start med klikkeren (→ / PageDown). Filmene går videre av seg selv når de er ferdige. Overalt ellers er det ett klikk per takt.
 
 | Tast | Hva |
 |---|---|
 | → mellomrom PageDown | Neste. Virker også mens fokus er inne i prototypen. |
 | ← PageUp | Forrige |
-| 1–4 | Sensors valg i «Du tar designvalget» (knapper i presentatørvisningen også) |
 | B eller . | Svart skjerm |
-| O | Oversikt: hopp til en scene |
-| R | Last prototypen på nytt med rene data |
+| O | Oversikt: hopp til en scene. Under «Lagt til side» ligger scenene som er tatt ut – Esc lukker |
+| R | Last prototypen på nytt med rene data, og start omvisningen på sensors mobil på nytt |
 | L | Skjul/vis tekst på fotoplassholdere |
 | H | Hjelp |
 
@@ -85,7 +84,15 @@ npm run build:eksamen
 
 Lager `dist-eksamen/`. Det er én `index.html` med all kode og alle fonter, pluss `film/`, `foto/`, `demo/` og `lyd/`. Kopier mappen til en minnepinne og åpne `index.html` med dobbeltklikk. Prototypen ligger med i mappen, så demoen virker uten nett. Bilder som bare er klarert for eksamen (se under) kommer bare med her.
 
-> Fra fil (`file://`) virker presentatørvinduet via `postMessage` når det åpnes med **P**. Forklaringspanelet i demoen viser da første tekst og følger ikke med i appen, fordi nettleseren skiller filene. Vil dere ha alt, start en lokal server i mappen, f.eks. `npx serve dist-eksamen`.
+> Fra fil (`file://`) virker presentatørvinduet via `postMessage` når det åpnes med **P**, og omvisningen med Sir Domeo går på storskjermen (sensor eller C trykker på den). Sensors mobil krever eksamenstjeneren under.
+
+### Sensors mobil: eksamenstjeneren
+
+```bash
+npm run eksamen
+```
+
+[`server/eksamen.mjs`](server/eksamen.mjs) serverer `dist-eksamen/` (eller `dist/`) på port 8080 og videresender sensors mobil til storskjermen over WebSocket (`/speil`). Mobilen åpner `demo/vaktlogg.html?sensor&speil=send`, og prototypen i presentasjonen (`?sensor&speil=vis`) viser det samme: side, tilstand, klokke, rulling og Sir Domeos bobler. Stemmen spilles av storskjermen. Mister mobilen forbindelsen, kobler den seg på igjen av seg selv. Uten tjener (GitHub Pages, fil) går omvisningen på storskjermen i stedet.
 
 ---
 
@@ -127,13 +134,22 @@ Hovedtemaet er prototypens: lys bakgrunn (#f3f6f2), hvite kort, mørk grønnsvar
 
 | Behov | Valg | Hvorfor |
 |---|---|---|
-| Åpningen «Vakten ovenfra» | **Blender** (Cycles, CPU) → MP4 | En hel restaurant med lys fra ettermiddag til natt, et kamera som løfter seg og et spor som tegnes – fortellingen er fast, så den rendres én gang. Klokka og tittelen legges på i nettleseren, i takt med filmen. |
-| Telefonen som avsløres (sekvens 3) | **Blender** (Cycles, CPU) → MP4 | Ekte metall, glass, kantlys og dybdeskarphet i prototypens pastell, som er vanskelig å få troverdig i nettleseren. Filmen endrer seg ikke, så den kan rendres én gang. |
+| Åpningen «Vakten ovenfra» | **Blender** (Cycles, GPU) → MP4 | En hel restaurant med lys fra ettermiddag til natt, et kamera som løfter seg og et spor som tegnes – fortellingen er fast, så den rendres én gang. Klokka og tittelen legges på i nettleseren, i takt med filmen. |
+| Telefonen som avsløres, «Alt vi pakket inn» og «Frem og tilbake» | **Blender** (Cycles, GPU) → MP4 | Ekte metall, glass, kantlys og dybdeskarphet i prototypens pastell, som er vanskelig å få troverdig i nettleseren. Filmen endrer seg ikke, så den kan rendres én gang. |
 | Fotografier i dybde (konsept D) | **Nettleseren** (CSS-lag og bevegelse) | Bildene kommer senere og skal kunne byttes uten ny rendering. En Blender-scene måtte rendres på nytt for hvert nytt bilde, og en ny kamerabevegelse ville gitt en ny fil. Med 2,5D-lag i CSS blir effekten den samme uten at noe må lages på nytt. |
 | Data og innsikt | **SVG + Motion** | Tallene og tekstene skal være riktige og redigerbare, og skarpe på alle skjermer. |
 | Overgangen til prototypen | **Film + ekte iframe** | Filmen ender med skjermen på et kjent sted (`src/lib/telefon.json`). Den ekte prototypen ligger klar nøyaktig der og tones inn over siste bilde. |
 
 ### Blender-filmene
+
+Fire filmer, alle bygd med kode og rendret på grafikkortet (Cycles, OptiX – legg til `gpu` etter steget):
+
+| Film | Skript | Varighet | Hva |
+|---|---|---|---|
+| `apning.mp4` | [`blender/apning_vakt.py`](blender/apning_vakt.py) | 25 s | «Vakten ovenfra» |
+| `pakket.mp4` | [`blender/pakket_ideer.py`](blender/pakket_ideer.py) | 16 s | «Alt vi pakket inn»: ekte skjermbilder (`blender/kort/`) flyr inn i telefonen. Tidene skrives til `src/lib/pakket.json`. |
+| `telefon.mp4` | [`blender/telefon_reveal.py`](blender/telefon_reveal.py) | 10 s | Telefonen som avsløres |
+| `hopping.mp4` | [`blender/hopping.py`](blender/hopping.py) | 20 s | «Frem og tilbake»: kula spretter mellom innsikt og prototype. Hendelsene står i skriptet og skrives til `src/lib/hopping.json`. |
 
 [`blender/apning_vakt.py`](blender/apning_vakt.py) (åpningen) og [`blender/telefon_reveal.py`](blender/telefon_reveal.py) (telefonen) bygger hele scenene med kode: modellene, materialene, lyset, kamerabanen og tidslinjen. De er reproduserbare, og har de samme stegene (`bygg`, `test`, `render`, `film`). Åpningens bordsettinger, servitørens rute og klokkeslettene står øverst i skriptet; tidspunktene presentasjonen trenger skrives til `src/lib/apning.json`.
 
@@ -153,7 +169,9 @@ Skjermbildet på telefonen er `blender/skjerm.png`, prototypens startskjerm i 11
 ## Innhold og kilder
 
 - **Ett manus for alt:** [`src/content/manus.ts`](src/content/manus.ts) styrer hovedskjermen, presentatørvisningen og det utskrevne manuset. Kildene står i [`src/content/kilder.ts`](src/content/kilder.ts).
-- **Tidsplanen:** `npm run sjekk` sjekker at summen er 12:00, at A, B og C har omtrent like mye tid, og at sensordelen holder seg under 30 sekunder. Den kjøres også før hver publisering.
+- **Tidsplanen:** `npm run sjekk` sjekker at summen er 12:00, at A, B og C har omtrent like mye taletid (±12 %), og at sensors omvisning holder seg under 2:30. Den kjøres også før hver publisering.
+- **Lagt til side:** [`src/content/arkiv.ts`](src/content/arkiv.ts) har scenene som er tatt ut av flyten (Theodora, designprinsippene, sensors designvalg, testing, NABC og den gamle demoen der C viste prototypen selv). Ingenting er slettet – de vises fra oversikten (**O**) og står bakerst i manuset. Flytt en scene tilbake til `manus.ts` for å bruke den igjen.
+- **Sir Domeos stemme:** Terje via ElevenLabs (stemmebiblioteket, Eleven v4). Replikkene står i prototypen (`src/sensor-replikker.json`), lydfilene i `public/demo/domeo/`.
 - **Navn og tall:** [`public/oppsett.js`](public/oppsett.js) har navnene, antall transkriberte intervjuer (tom til det er sjekket), testmiljøene, dokumenterte testfunn, valgfri lyd og lenken til prototypen. Filen kan endres også i den ferdige eksamensmappen.
 
 ### Hva som er dokumentert
@@ -173,6 +191,7 @@ npm run dev            # http://localhost:5173
 npm run build          # offentlig versjon -> dist/
 npm run build:eksamen  # eksamensmappen -> dist-eksamen/
 npm run sjekk          # tidsplanen
+npm run eksamen        # eksamenstjeneren med sensors mobil (etter build:eksamen)
 ```
 
 Vite + React + TypeScript, [Motion](https://motion.dev) for animasjon, Fraunces/Inter/JetBrains Mono som lokale fonter. Lerretet er 1920 × 1080 og skaleres til skjermen, så komposisjonen er lik på alle projektorer. Andre formater får svarte kanter.

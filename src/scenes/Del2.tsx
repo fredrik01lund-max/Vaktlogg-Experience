@@ -1,4 +1,9 @@
-import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { manus } from '../content/manus.ts'
+import { filmUrl } from '../lib/film.ts'
+import pakketMeta from '../lib/pakket.json'
+import { hent, neste } from '../lib/sync.ts'
 import { Flipp } from '../ui/Deler.tsx'
 import { FILM, Inn, MYK, useLys, useSek, type SceneProps } from './felles.tsx'
 
@@ -493,3 +498,107 @@ export function Sensor({ takt, valg }: SceneProps) {
   )
 }
 
+
+/* ══ 9. Alt vi pakket inn ═════════════════════════════════════════════════════════
+   Blender-filmen (public/film/pakket.mp4, blender/pakket_ideer.py): ekte skjermbilder av funksjonene svever rundt
+   telefonen og flyr inn i den. Etterpå legger funksjonene seg rundt telefonen – hver med det den kom fra.
+   Andre takt: grensene vi bygde inn (prinsippene) lyser opp der de hører hjemme. */
+
+const OPPHAV: Record<string, { fra: string; grense?: string }> = {
+  spill: { fra: 'Ikke alle vil konkurrere', grense: 'Frivillig' },
+  live: { fra: 'Tempo og bevegelse ble opplevd som positivt' },
+  helse: { fra: 'Interessen for skritt · selvrapportert', grense: 'Ingen premie for flest skritt' },
+  salg: { fra: 'Kassarapporten etter vakten · observert' },
+  konkurranse: { fra: 'Ulike stasjoner, gjester og erfaring' },
+  gjester: { fra: 'Ønske fra testingen' },
+  rapport: { fra: 'Rommet etter vakten' },
+  mal: { fra: 'Mål over tid, ikke kortvarige konkurranser', grense: 'Ingen konkurranser om alkohol' },
+  meny: { fra: 'Belønning for det du selv kan påvirke' },
+  sjef: { fra: 'Usynlig innsats · kudos og takkekort', grense: 'Lederen ser laget – ikke tall per person' },
+  maned: { fra: 'Egen utvikling over tid' },
+}
+
+export function Pakket({ takt }: SceneProps) {
+  useLys(0)
+  const video = useRef<HTMLVideoElement>(null)
+  const [filmFeil, setFilmFeil] = useState(false)
+
+  useEffect(() => {
+    if (takt !== 0) return
+    const v = video.current
+    if (!v) return
+    v.currentTime = 0
+    v.play().catch(() => setFilmFeil(true))
+  }, [takt])
+
+  // Filmen går videre av seg selv – B begynner å snakke når funksjonene legger seg rundt telefonen
+  const ferdig = () => {
+    const t = hent()
+    if (manus[t.scene]?.id === 'pakket' && t.takt === 0) neste()
+  }
+  useEffect(() => {
+    if (!filmFeil || takt !== 0) return
+    const id = window.setTimeout(ferdig, 1500)
+    return () => clearTimeout(id)
+  }, [filmFeil, takt])
+
+  const kort = pakketMeta.kort
+  const halv = Math.ceil(kort.length / 2)
+  return (
+    <div className="scene pakket">
+      <img className="pakket-film" src="film/pakket-slutt.png" alt="" />
+      <motion.video
+        ref={video}
+        className="pakket-film"
+        src={filmUrl('pakket')}
+        muted
+        playsInline
+        preload="auto"
+        onEnded={ferdig}
+        onError={() => setFilmFeil(true)}
+        animate={{ opacity: takt === 0 ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+      />
+      <motion.div className="pakket-slor" initial={{ opacity: 0 }} animate={{ opacity: takt > 0 ? 1 : 0 }} transition={{ duration: 1.2, ease: MYK }} />
+
+      {[kort.slice(0, halv), kort.slice(halv)].map((kol, k) => (
+        <div key={k} className={`pakket-kol ${k ? 'hoyre' : 'venstre'}`}>
+          {kol.map((f, i) => {
+            const o = OPPHAV[f.id]
+            const lyser = takt >= 2 && !!o?.grense
+            return (
+              <motion.div
+                key={f.id}
+                className={`pakket-kort ${lyser ? 'grense' : ''}`}
+                style={{ ['--f' as string]: f.farge }}
+                initial={{ opacity: 0, x: k ? -120 : 120, scale: 0.9 }}
+                animate={
+                  takt === 0
+                    ? { opacity: 0, x: k ? -120 : 120, scale: 0.9 }
+                    : { opacity: takt >= 2 && !o?.grense ? 0.38 : 1, x: 0, scale: lyser ? 1.03 : 1 }
+                }
+                transition={{ duration: 0.9, delay: takt === 1 ? 0.3 + i * 0.16 + k * 0.08 : 0, ease: MYK }}
+              >
+                <i />
+                <div>
+                  <b>{f.navn}</b>
+                  <small>{o?.fra}</small>
+                  <AnimatePresence>
+                    {lyser && (
+                      <motion.em initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.6, delay: 0.3, ease: MYK }}>
+                        {o.grense}
+                      </motion.em>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      ))}
+      <Inn vis={takt >= 1} d={2.4} className="pakket-merk">
+        Ekte skjermbilder fra prototypen · fiktiv restaurant · simulerte data
+      </Inn>
+    </div>
+  )
+}

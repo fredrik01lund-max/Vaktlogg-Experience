@@ -1,6 +1,7 @@
 // Sjekker tidsplanen: npm run sjekk
 // Summen av scenene skal bli 12:00, og de tre presentatørene skal ha omtrent like mye taletid.
 import { manus, PLAN_TOTAL } from '../src/content/manus.ts'
+import { lagtTilSide } from '../src/content/arkiv.ts'
 import { kilder } from '../src/content/kilder.ts'
 import { fordeling, manusTid, mmss, sceneStart, taktPlan, taletid } from '../src/content/tid.ts'
 
@@ -37,9 +38,15 @@ for (const p of ['A', 'B', 'C'] as const) {
     feil++
   }
 }
-if (f.sensor + 0 > 30) {
-  console.log('  ✗ Sensordelen er over 30 s')
+// Sensor prøver prototypen selv i demoen (Sir Domeo guider) – det skal få tid, men ikke ta over
+if (f.sensor > 150) {
+  console.log('  ✗ Sensordelen er over 2:30')
   feil++
 }
+for (const s of lagtTilSide) for (const k of s.kilder) if (!kilder[k]) {
+  console.log(`  ✗ Ukjent kilde «${k}» i ${s.id} (lagt til side)`)
+  feil++
+}
+console.log(`\nLagt til side (ikke i flyten): ${lagtTilSide.map((s) => s.tittel).join(' · ')}`)
 console.log(feil ? `\n${feil} feil` : '\nAlt stemmer.')
 process.exit(feil ? 1 : 0)

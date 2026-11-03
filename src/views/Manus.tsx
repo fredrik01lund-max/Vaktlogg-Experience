@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { kilder } from '../content/kilder.ts'
+import { lagtTilSide } from '../content/arkiv.ts'
 import { manus, PLAN_TOTAL } from '../content/manus.ts'
 import { fordeling, manusTid, mmss, sceneStart, taktPlan } from '../content/tid.ts'
 import type { Hvem, Ordet } from '../content/types.ts'
@@ -122,11 +123,35 @@ export function Manus() {
         <ul className="manus-sjekk">
           <li>Åpne presentasjonen på projektoren, trykk <b>F</b> for fullskjerm og <b>P</b> for presentatørvisningen. Dra presentatørvinduet til den bærbare skjermen.</li>
           <li>Sjekk at presentatørvisningen sier «Hovedskjerm tilkoblet» og «Film lastet».</li>
-          <li>Trykk «Nullstill demo» – prototypen står da klar på «Hei Emma» uten Sir Domeos spørsmål.</li>
+          <li>Sensors mobil: koble PC-en og mobilen til samme nett (en mobil-hotspot holder – internett trengs ikke), start <b>npm run eksamen</b> og åpne presentasjonen på adressen den skriver ut. Åpne mobiladressen den skriver ut på mobilen vi gir sensor, og sett mobilen til å ikke låse seg.</li>
+          <li>Lyd: Sir Domeos stemme kommer fra PC-en – koble til høyttaler og prøv volumet.</li>
+          <li>Trykk «Nullstill demo» – prototypen og mobilen starter omvisningen på nytt.</li>
+          <li>Uten mobil eller tjener: omvisningen går på storskjermen, og sensor (eller C) trykker rett på den.</li>
           <li>Klikkeren: PageDown/PageUp. Den virker også når fokus er inne i prototypen.</li>
-          <li>Uten nett: bruk eksamensmappen (index.html åpnes med dobbeltklikk). Presentatørvinduet virker da også – åpnes med P.</li>
+          <li>Uten nett og uten tjener: bruk eksamensmappen (index.html åpnes med dobbeltklikk). Presentatørvinduet virker da også – åpnes med P.</li>
           <li>Reserve hvis presentatørvinduet ikke virker: dette manuset på papir, og tidsplanen over.</li>
         </ul>
+      </section>
+
+      <section className="manus-scene nedtonet">
+        <h2>Lagt til side</h2>
+        <p className="manus-regi">Ikke med i 12-minuttersflyten. Ligger i src/content/arkiv.ts og kan vises fra oversikten (O).</p>
+        {lagtTilSide.map((s) => (
+          <details key={s.id} className="manus-arkiv">
+            <summary>
+              {s.tittel} <small>· {s.del} · {s.varighet} s</small>
+            </summary>
+            {s.takter.map((k, j) => (
+              <div key={j} className="manus-takt">
+                <div className="manus-hvem">{navnPa(k.hvem)}</div>
+                <div>
+                  {k.sier && <p className="manus-sier">{medNavn(k.sier)}</p>}
+                  {k.regi && <p className="manus-regi">{k.regi}</p>}
+                </div>
+              </div>
+            ))}
+          </details>
+        ))}
       </section>
     </div>
   )

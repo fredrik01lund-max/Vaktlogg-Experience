@@ -431,3 +431,19 @@ button {
 .vignett {
   transition: opacity 1.2s var(--film);
 }
+.oversikt h2.oversikt-arkiv {
+  margin: 44px 0 24px;
+  font-size: 30px;
+  color: var(--dempet);
+}
+.oversikt ol.oversikt-arkiv button {
+  min-height: 92px;
+  border-style: dashed;
+}
+.oversikt ol.oversikt-arkiv button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.oversikt {
+  overflow-y: auto;
+}

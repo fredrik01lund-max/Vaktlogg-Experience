@@ -1,0 +1,61 @@
+{
+  "fps": 30,
+  "varighet": 20.0,
+  "hendelser": [
+    {
+      "bane": "innsikt",
+      "tekst": "Intervjuer og samtaler: fra sykefravær til motivasjon",
+      "tid": 1.2
+    },
+    {
+      "bane": "prototype",
+      "tekst": "Første idé: «Strava for jobben»",
+      "tid": 2.84
+    },
+    {
+      "bane": "innsikt",
+      "tekst": "Observasjon: kassarapporten etter vakten",
+      "tid": 4.41
+    },
+    {
+      "bane": "prototype",
+      "tekst": "Skritt + salg = Vaktlogg",
+      "tid": 5.9
+    },
+    {
+      "bane": "innsikt",
+      "tekst": "Tidlig prototype vist til servitører",
+      "tid": 7.33
+    },
+    {
+      "bane": "prototype",
+      "tekst": "Digital prototype på nett (22.–27.10)",
+      "tid": 8.67
+    },
+    {
+      "bane": "innsikt",
+      "tekst": "Testere prøver uten oss til stede",
+      "tid": 9.94
+    },
+    {
+      "bane": "prototype",
+      "tekst": "Sir Domeo – guiden (28.–29.10)",
+      "tid": 11.14
+    },
+    {
+      "bane": "innsikt",
+      "tekst": "Ønske: oversikt over egne gjester",
+      "tid": 12.27
+    },
+    {
+      "bane": "prototype",
+      "tekst": "Tilbakemelding rett fra appen (30.10)",
+      "tid": 13.32
+    },
+    {
+      "bane": "innsikt",
+      "tekst": "Nye innspill …",
+      "tid": 14.3
+    }
+  ]
+}
