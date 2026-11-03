@@ -22,3 +22,8 @@ blender/frames_hopping
 blender/test_hopping
 blender/__pycache__
 dist-eksamen-trygg
+
+# Alle render- og prøvemapper, også nye (frames_*, test_*)
+blender/frames*
+blender/test*
+tsconfig.tsbuildinfo

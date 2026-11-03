@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { manus } from '../content/manus.ts'
 import { filmUrl } from '../lib/film.ts'
+import hoppingMeta from '../lib/hopping.json'
 import { oppsett, navn } from '../lib/oppsett.ts'
 import { hent, neste } from '../lib/sync.ts'
 import { Bong, Merke } from '../ui/Deler.tsx'
@@ -306,11 +307,13 @@ export function Slutt({ takt }: SceneProps) {
    for prototype, og til slutt løfter kameraet seg over hele sporet. Filmen har ingen tekst – den skal oppleves.
    Etterpå står sporet ovenfra, og parene «vi så → vi endret» kommer frem under det, med dato (A8). */
 
+// Én per bong i filmen (prototypebanen), i samme rekkefølge – kortet står rett under sin bong (hopping.json)
 const ITERASJONER = [
-  { sa: 'Vi viste en tidlig prototype til servitører', endret: 'Første digitale versjon', dato: '22.10' },
+  { sa: 'Det vi hørte og så i intervjuene', endret: 'En tidlig prototype', dato: 'Før 22.10' },
+  { sa: 'Vi viste den til servitører', endret: 'Første digitale versjon', dato: '22.10' },
   { sa: 'Folk skulle kunne prøve uten oss', endret: 'På nett via lenke', dato: '27.10' },
   { sa: 'Uten oss trengte de en guide', endret: 'Sir Domeo', dato: '28.–29.10' },
-  { sa: 'Vi ville høre fra flere', endret: 'Tilbakemelding rett fra appen', dato: '30.10' },
+  { sa: 'Vi ville høre fra flere', endret: 'Tilbake\u00ADmelding rett fra appen', dato: '30.10' },
 ]
 
 export function Hopping({ takt }: SceneProps) {
@@ -343,7 +346,7 @@ export function Hopping({ takt }: SceneProps) {
 
       <motion.div className="hopping-par" initial={{ opacity: 0 }} animate={{ opacity: takt >= 1 ? 1 : 0 }} transition={{ duration: 0.6 }}>
         {ITERASJONER.map((p, i) => (
-          <Inn key={p.dato} vis={takt >= 1} d={0.3 + i * 0.5} className={`hopping-iterasjon ${takt >= 2 ? 'dempet' : ''}`}>
+          <Inn key={p.dato} vis={takt === 1} d={0.3 + i * 0.45} className="hopping-iterasjon" style={{ left: (hoppingMeta.bonger?.[i]?.x ?? 0.2 + i * 0.17) * 1920 }}>
             <span className="liten">{p.sa}</span>
             <b>{p.endret}</b>
             <span className="hopping-dato">{p.dato}</span>

@@ -1,61 +1,83 @@
 {
   "fps": 30,
-  "varighet": 20.0,
-  "hendelser": [
+  "varighet": 12.0,
+  "nedslag": [
     {
       "bane": "innsikt",
-      "tekst": "Intervjuer og samtaler: fra sykefravær til motivasjon",
-      "tid": 1.2
+      "dato": null,
+      "tid": 1.3
     },
     {
       "bane": "prototype",
-      "tekst": "Første idé: «Strava for jobben»",
-      "tid": 2.84
+      "dato": "TIDLIG",
+      "tid": 2.35
     },
     {
       "bane": "innsikt",
-      "tekst": "Observasjon: kassarapporten etter vakten",
-      "tid": 4.41
+      "dato": null,
+      "tid": 3.3
     },
     {
       "bane": "prototype",
-      "tekst": "Skritt + salg = Vaktlogg",
-      "tid": 5.9
+      "dato": "22.10",
+      "tid": 4.15
     },
     {
       "bane": "innsikt",
-      "tekst": "Tidlig prototype vist til servitører",
-      "tid": 7.33
+      "dato": null,
+      "tid": 4.95
     },
     {
       "bane": "prototype",
-      "tekst": "Digital prototype på nett (22.–27.10)",
-      "tid": 8.67
+      "dato": "27.10",
+      "tid": 5.67
     },
     {
       "bane": "innsikt",
-      "tekst": "Testere prøver uten oss til stede",
-      "tid": 9.94
+      "dato": null,
+      "tid": 6.37
     },
     {
       "bane": "prototype",
-      "tekst": "Sir Domeo – guiden (28.–29.10)",
-      "tid": 11.14
+      "dato": "28.10",
+      "tid": 7.03
     },
     {
       "bane": "innsikt",
-      "tekst": "Ønske: oversikt over egne gjester",
-      "tid": 12.27
+      "dato": null,
+      "tid": 7.65
     },
     {
       "bane": "prototype",
-      "tekst": "Tilbakemelding rett fra appen (30.10)",
-      "tid": 13.32
+      "dato": "30.10",
+      "tid": 8.25
+    }
+  ],
+  "bonger": [
+    {
+      "navn": "Bong 1",
+      "x": 0.208,
+      "y": 0.3566
     },
     {
-      "bane": "innsikt",
-      "tekst": "Nye innspill …",
-      "tid": 14.3
+      "navn": "Bong 3",
+      "x": 0.3843,
+      "y": 0.3566
+    },
+    {
+      "navn": "Bong 5",
+      "x": 0.5606,
+      "y": 0.3566
+    },
+    {
+      "navn": "Bong 7",
+      "x": 0.7369,
+      "y": 0.3566
+    },
+    {
+      "navn": "Bong 9",
+      "x": 0.9132,
+      "y": 0.3566
     }
   ]
 }
