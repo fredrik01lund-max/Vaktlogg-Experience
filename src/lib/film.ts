@@ -11,12 +11,14 @@ export const filmTilstand = () => tilstand
 
 export async function forhandslastFilm() {
   try {
+    // Fra fil (dobbeltklikk) kan nettleseren ikke hente med fetch – gå rett til videoelementet
+    if (location.protocol === 'file:') throw new Error('fil')
     const svar = await fetch(STI)
     if (!svar.ok) throw new Error(String(svar.status))
     url = URL.createObjectURL(await svar.blob())
     tilstand = 'klar'
   } catch {
-    // Fra fil (dobbeltklikk) kan nettleseren ikke hente med fetch – da laster videoen selv
+    // Da laster videoelementet filmen selv
     const v = document.createElement('video')
     v.preload = 'auto'
     v.muted = true
