@@ -1,0 +1,10 @@
+FOTO SOM BARE ER KLARERT FOR EKSAMEN
+
+Legg bilder her når personene på bildet har sagt ja til at bildet vises under eksamen,
+men IKKE til offentlig publisering på nettet.
+
+• Denne mappen ligger ikke i git og kommer aldri på GitHub Pages.
+• Skriv filnavnet i public/foto/foto.js og sett samtykke: { eksamen: true, offentlig: false }.
+• Bildene vises når dere øver lokalt (npm run dev) og i eksamensversjonen (npm run build:eksamen),
+  som kopierer dem inn i dist-eksamen/foto/.
+• Ta vare på tillatelsene (hvem, hva de sa ja til, dato) et annet sted enn i denne mappen.

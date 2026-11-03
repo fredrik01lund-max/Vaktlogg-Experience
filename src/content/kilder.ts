@@ -1,0 +1,22 @@
+// Kildene påstandene i presentasjonen bygger på. Vises i presentatørvisningen og manuset.
+// «Dok. A» = Vaktlogg – oppdatert prosjektbeskrivelse og Design Thinking-prosess.
+export const kilder: Record<string, string> = {
+  'A1': 'Dok. A §1 – Bakgrunn og opprinnelig problemstilling (sykefravær → motivasjon)',
+  'A2': 'Dok. A §2 – Empathize: intervjuer, samtaler, observasjoner (Noode Sky, Park 29) og egen bransjeerfaring',
+  'A2-1': 'Dok. A §2, Innsikt 1 – Anerkjennelse og motivasjon (sitatet om å få lite tilbake; gjestetilbakemeldinger; kolleger)',
+  'A2-2': 'Dok. A §2, Innsikt 2 – Skritt og fysisk aktivitet (hovmester: 12 000–25 000 skritt, selvrapportert)',
+  'A2-3': 'Dok. A §2, Innsikt 3 – Salgsstatistikk (observert: ansatte sjekket kassarapporten etter vakten)',
+  'A2-4': 'Dok. A §2 – Der innsiktene møttes (ca. 5 000 ekstra skritt, tre flasker vin, «verdt det»)',
+  'A3': 'Dok. A §3 – Define: ny problemstilling, persona Theodora (fiktiv) og brukerreisen i fire faser',
+  'A4': 'Dok. A §4 – Ideate: «Strava for jobben», Vaktlogg og designprinsippene',
+  'A5': 'Dok. A §5 – Prototype: tidlig prototype, digital prototype (React/TS/Vite), simulerte data',
+  'A6': 'Dok. A §6 – Test: hvem som har prøvd, testopplegg, Sir Domeo, tilbakemeldingssystem, gjesteinformasjon',
+  'A7': 'Dok. A §7 – Iterasjon: seks endringer',
+  'A8': 'Dok. A §8 – Milepæler 22.–30. oktober 2026',
+  'A9': 'Dok. A §9 – Begrensninger og kritisk refleksjon',
+  'A10': 'Dok. A §10 – Fremtidig utvikling og pilot',
+  'A11': 'Dok. A §11 – NABC',
+  'A12': 'Dok. A §12–13 – Hovedbudskap og formålet med presentasjonen',
+  'P': 'Prototypen: github.com/fredrik01lund-max/Vaktlogg (kode) og fredrik01lund-max.github.io/Vaktlogg (live)',
+  'B': 'Dok. B – WS4 Konseptjustering og presentasjon: storytelling, brukeren som hovedperson, NABC',
+}

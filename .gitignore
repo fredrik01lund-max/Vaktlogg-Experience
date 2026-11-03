@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-eksamen
+*.zip
+*.log
+
+# Bilder som bare er klarert for eksamen – aldri på nettet (LES-MEG ligger i git som forklaring)
+foto-eksamen/*
+!foto-eksamen/LES-MEG.txt
+
+# Blender: enkeltbilder og prøverender (filmen selv ligger i public/film)
+blender/frames
+blender/test
+blender/*.blend1

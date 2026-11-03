@@ -1,0 +1,471 @@
+"""Sekvens 3 – Prototype Reveal: en telefon kommer frem fra mørket, snur seg mot kameraet,
+skjermen våkner med Vaktloggs startskjerm, og kameraet kjører inn til skjermen står rett foran oss.
+
+Siste bilde er laget for å matche live-demoen i presentasjonen: skjermen står midt i bildet og
+er SKJERM_ANDEL av bildehøyden. Presentasjonen leser tallene fra public/film/telefon.json og legger
+den ekte prototypen (iframe) nøyaktig oppå før den toner over.
+
+Kjør (Blender 5.2, ingen GPU nødvendig – rendres med Cycles på CPU):
+  blender --background --factory-startup --python blender/telefon_reveal.py -- bygg      # lager telefon.blend
+  blender --background --factory-startup --python blender/telefon_reveal.py -- test      # tre prøvebilder i blender/test/
+  blender --background --factory-startup --python blender/telefon_reveal.py -- render    # alle bilder til blender/frames/
+  blender --background --factory-startup --python blender/telefon_reveal.py -- film      # frames -> public/film/telefon.mp4
+
+Bytt skjermbilde: legg et nytt blender/skjerm.png (1170 x 2532, telefonformat) og kjør bygg + render + film.
+"""
+
+import bpy
+import bmesh
+import json
+import math
+import os
+import shutil
+import sys
+
+HER = os.path.dirname(os.path.abspath(__file__))
+ROT = os.path.dirname(HER)
+SKJERMBILDE = os.path.join(HER, "skjerm.png")
+FRAMES = os.path.join(HER, "frames")
+FILM = os.path.join(ROT, "public", "film")
+
+FPS = 30
+SLUTT = 300  # 10 sekunder
+BREDDE, HOYDE = 1920, 1080
+SKJERM_ANDEL = 0.86  # skjermens høyde som andel av bildehøyden i siste bilde
+LINSE = 70.0  # mm, vertikal sensor 24 mm
+
+# Telefonen (1 enhet = 10 cm): 71,6 x 147,6 x 7,8 mm
+TW, TH, TD = 0.716, 1.476, 0.078
+HJORNE = 0.095
+SW, SH = 0.656, 1.416  # skjermen (samme forhold som skjermbildet 1170 x 2532)
+SKJERM_HJORNE = 0.078
+FRONT_Y = -TD / 2
+
+
+def srgb(h):
+    h = h.lstrip("#")
+    c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    return tuple(x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c) + (1.0,)
+
+
+def tom_scene():
+    for o in list(bpy.data.objects):
+        bpy.data.objects.remove(o, do_unlink=True)
+    sc = bpy.context.scene
+    sc.render.engine = "CYCLES"
+    sc.cycles.device = "CPU"
+    sc.cycles.samples = 48
+    sc.cycles.use_adaptive_sampling = True
+    sc.cycles.adaptive_threshold = 0.02
+    sc.cycles.use_denoising = True
+    try:
+        sc.cycles.denoiser = "OPENIMAGEDENOISE"
+    except Exception:
+        pass
+    sc.cycles.max_bounces = 6
+    sc.render.resolution_x, sc.render.resolution_y = BREDDE, HOYDE
+    sc.render.resolution_percentage = 100
+    sc.render.fps = FPS
+    sc.frame_start, sc.frame_end = 1, SLUTT
+    # Standard: skjermbildets farger gjengis nøyaktig, så overgangen til den ekte prototypen blir sømløs
+    sc.view_settings.view_transform = "Standard"
+    sc.view_settings.look = "None"
+    w = bpy.data.worlds.new("Mørke")
+    sc.world = w
+    try:
+        w.use_nodes = True
+    except Exception:
+        pass
+    bg = w.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0, 0, 0, 1)
+    bg.inputs["Strength"].default_value = 0
+    return sc
+
+
+def mat(navn, farge, metall=0.0, ruhet=0.5, coat=0.0):
+    m = bpy.data.materials.new(navn)
+    try:
+        m.use_nodes = True
+    except Exception:
+        pass
+    p = m.node_tree.nodes.get("Principled BSDF")
+    p.inputs["Base Color"].default_value = farge
+    p.inputs["Metallic"].default_value = metall
+    p.inputs["Roughness"].default_value = ruhet
+    if coat:
+        p.inputs["Coat Weight"].default_value = coat
+        p.inputs["Coat Roughness"].default_value = 0.05
+    return m
+
+
+def rundet_flate(navn, b, h, r, y, segmenter=14):
+    """Avrundet rektangel i XZ-planet som vender mot -Y, med UV fra 0 til 1 over hele flaten."""
+    me = bpy.data.meshes.new(navn)
+    bm = bmesh.new()
+    v = [bm.verts.new((x, y, z)) for x, z in ((-b / 2, -h / 2), (b / 2, -h / 2), (b / 2, h / 2), (-b / 2, h / 2))]
+    bm.faces.new(v)
+    bmesh.ops.bevel(bm, geom=list(bm.verts), offset=r, segments=segmenter, affect="VERTICES", profile=0.5)
+    uv = bm.loops.layers.uv.new("UVMap")
+    for f in bm.faces:
+        for lp in f.loops:
+            x, _, z = lp.vert.co
+            lp[uv].uv = ((x + b / 2) / b, (z + h / 2) / h)
+    # Normalen skal peke mot kameraet (-Y)
+    for f in bm.faces:
+        if f.normal.y > 0:
+            f.normal_flip()
+    bm.to_mesh(me)
+    bm.free()
+    o = bpy.data.objects.new(navn, me)
+    bpy.context.scene.collection.objects.link(o)
+    return o
+
+
+def kropp():
+    me = bpy.data.meshes.new("Kropp")
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.0)
+    for v in bm.verts:
+        v.co.x *= TW
+        v.co.y *= TD
+        v.co.z *= TH
+    loddrett = [e for e in bm.edges if abs(e.verts[0].co.y - e.verts[1].co.y) > 1e-6]
+    bmesh.ops.bevel(bm, geom=loddrett, offset=HJORNE, segments=18, affect="EDGES", profile=0.5)
+    bm.to_mesh(me)
+    bm.free()
+    o = bpy.data.objects.new("Kropp", me)
+    bpy.context.scene.collection.objects.link(o)
+    bev = o.modifiers.new("Kant", "BEVEL")
+    bev.width = 0.016
+    bev.segments = 8
+    bev.limit_method = "ANGLE"
+    bev.angle_limit = math.radians(60)
+    bev.harden_normals = True
+    for p in me.polygons:
+        p.use_smooth = True
+    return o
+
+
+def knapp(navn, x, z, h, materiale, foreldre):
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(x, 0, z))
+    o = bpy.context.active_object
+    o.name = navn
+    o.scale = (0.012, 0.03, h)
+    b = o.modifiers.new("Rund", "BEVEL")
+    b.width = 0.006
+    b.segments = 4
+    o.data.materials.append(materiale)
+    o.parent = foreldre
+    return o
+
+
+def kurve(navn, punkter, tykkelse, materiale, foreldre, sirkel_radius=None, slutt=1.0):
+    cu = bpy.data.curves.new(navn, "CURVE")
+    cu.dimensions = "3D"
+    cu.bevel_depth = tykkelse
+    cu.bevel_resolution = 6
+    cu.use_fill_caps = True
+    if sirkel_radius:
+        sp = cu.splines.new("NURBS")
+        n = 64
+        sp.points.add(n - 1)
+        for i in range(n):
+            a = 2 * math.pi * i / n
+            sp.points[i].co = (sirkel_radius * math.cos(a), sirkel_radius * math.sin(a), 0, 1)
+        sp.use_cyclic_u = True
+        sp.order_u = 4
+        cu.bevel_factor_mapping_end = "SPLINE"
+        cu.bevel_factor_end = slutt
+    else:
+        sp = cu.splines.new("POLY")
+        sp.points.add(len(punkter) - 1)
+        for i, (x, y) in enumerate(punkter):
+            sp.points[i].co = (x, y, 0, 1)
+    o = bpy.data.objects.new(navn, cu)
+    bpy.context.scene.collection.objects.link(o)
+    o.data.materials.append(materiale)
+    o.parent = foreldre
+    return o
+
+
+def skjerm_materiale():
+    m = bpy.data.materials.new("Skjerm")
+    try:
+        m.use_nodes = True
+    except Exception:
+        pass
+    nt = m.node_tree
+    p = nt.nodes.get("Principled BSDF")
+    p.inputs["Base Color"].default_value = (0.0, 0.0, 0.0, 1)
+    p.inputs["Roughness"].default_value = 0.035
+    p.inputs["Specular IOR Level"].default_value = 0.25
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(SKJERMBILDE)
+    tex.interpolation = "Cubic"
+    nt.links.new(tex.outputs["Color"], p.inputs["Emission Color"])
+    p.inputs["Emission Strength"].default_value = 0.0
+    return m, p
+
+
+def glod_materiale():
+    """Svak, varm glød bak telefonen (gir dybde). Tones ut før siste bilde."""
+    m = bpy.data.materials.new("Glød")
+    try:
+        m.use_nodes = True
+    except Exception:
+        pass
+    nt = m.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    ut = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    mp = nt.nodes.new("ShaderNodeMapping")
+    mp.inputs["Scale"].default_value = (3.0, 3.2, 1.0)
+    gr = nt.nodes.new("ShaderNodeTexGradient")
+    gr.gradient_type = "SPHERICAL"
+    cr = nt.nodes.new("ShaderNodeValToRGB")
+    cr.color_ramp.interpolation = "EASE"
+    cr.color_ramp.elements[0].color = (0, 0, 0, 1)
+    cr.color_ramp.elements[1].position = 1.0
+    cr.color_ramp.elements[1].color = srgb("#B5546E")
+    nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    nt.links.new(mp.outputs["Vector"], gr.inputs["Vector"])
+    nt.links.new(gr.outputs["Fac"], cr.inputs["Fac"])
+    nt.links.new(cr.outputs["Color"], em.inputs["Color"])
+    nt.links.new(em.outputs["Emission"], ut.inputs["Surface"])
+    em.inputs["Strength"].default_value = 0.0
+    return m, em
+
+
+def lys(navn, plass, farge, styrke, storrelse, mal):
+    l = bpy.data.lights.new(navn, "AREA")
+    l.shape = "RECTANGLE"
+    l.size, l.size_y = storrelse
+    l.color = farge[:3]
+    l.energy = styrke
+    o = bpy.data.objects.new(navn, l)
+    bpy.context.scene.collection.objects.link(o)
+    o.location = plass
+    c = o.constraints.new("TRACK_TO")
+    c.target = mal
+    c.track_axis = "TRACK_NEGATIVE_Z"
+    c.up_axis = "UP_Y"
+    return o
+
+
+def nokkel(ting, egenskap, verdier):
+    """verdier: [(bilde, verdi), ...] – Bezier med myk inn/ut mellom nøklene."""
+    for f, v in verdier:
+        if isinstance(ting, bpy.types.NodeSocket):
+            ting.default_value = v
+            ting.keyframe_insert("default_value", frame=f)
+        else:
+            setattr(ting, egenskap, v)
+            ting.keyframe_insert(egenskap, frame=f)
+
+
+def bygg():
+    sc = tom_scene()
+
+    tel = bpy.data.objects.new("Telefon", None)
+    sc.collection.objects.link(tel)
+
+    ramme = mat("Ramme", srgb("#2A2A2E"), metall=1.0, ruhet=0.24)
+    glass = mat("Frontglass", (0, 0, 0, 1), ruhet=0.03)
+    bak = mat("Bakglass", srgb("#3A1724"), ruhet=0.42, coat=1.0)
+    logo = mat("Logo", srgb("#F2C6B4"), metall=1.0, ruhet=0.14)
+    linse = mat("Linse", srgb("#05070C"), ruhet=0.02, coat=1.0)
+
+    k = kropp()
+    k.data.materials.append(ramme)
+    k.parent = tel
+
+    f = rundet_flate("Front", TW - 0.018, TH - 0.018, HJORNE - 0.008, FRONT_Y - 0.0004)
+    f.data.materials.append(glass)
+    f.parent = tel
+
+    sk_mat, sk_bsdf = skjerm_materiale()
+    s = rundet_flate("Skjerm", SW, SH, SKJERM_HJORNE, FRONT_Y - 0.0008)
+    s.data.materials.append(sk_mat)
+    s.parent = tel
+
+    b = rundet_flate("Bakside", TW - 0.018, TH - 0.018, HJORNE - 0.008, FRONT_Y - 0.0004)  # snus 180° rundt Z under
+    b.rotation_euler = (0, 0, math.pi)
+    b.data.materials.append(bak)
+    b.parent = tel
+
+    # Kameraøy på baksiden (oppe til venstre sett bakfra)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0.17, -FRONT_Y + 0.006, 0.52))
+    oy = bpy.context.active_object
+    oy.name = "Kameraøy"
+    oy.scale = (0.3, 0.012, 0.3)
+    bv = oy.modifiers.new("Rund", "BEVEL")
+    bv.width = 0.06
+    bv.segments = 10
+    oy.data.materials.append(ramme)
+    oy.parent = tel
+    for i, (x, z) in enumerate(((0.10, 0.60), (0.10, 0.44), (0.25, 0.52))):
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.058, depth=0.02, vertices=48, location=(x, -FRONT_Y + 0.016, z), rotation=(math.pi / 2, 0, 0))
+        c = bpy.context.active_object
+        c.name = f"Linse{i}"
+        c.data.materials.append(linse)
+        c.parent = tel
+        bpy.ops.object.shade_smooth()
+
+    # Vaktlogg-merket i blankt metall på baksiden: ring nesten rundt + V
+    ring = kurve("LogoRing", None, 0.011, logo, tel, sirkel_radius=0.13, slutt=0.78)
+    ring.location = (0, -FRONT_Y + 0.004, -0.02)
+    ring.rotation_euler = (math.pi / 2, math.radians(-35), 0)
+    v = kurve("LogoV", [(-0.052, 0.042), (0, -0.054), (0.052, 0.042)], 0.014, logo, tel)
+    v.location = (0, -FRONT_Y + 0.004, -0.02)
+    v.rotation_euler = (math.pi / 2, 0, 0)
+
+    knapp("Av/på", TW / 2 + 0.004, 0.26, 0.11, ramme, tel)
+    knapp("Volum opp", -TW / 2 - 0.004, 0.30, 0.07, ramme, tel)
+    knapp("Volum ned", -TW / 2 - 0.004, 0.14, 0.07, ramme, tel)
+    knapp("Handling", -TW / 2 - 0.004, 0.46, 0.035, ramme, tel)
+
+    # Glød bak
+    bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 7.0, 0.4), rotation=(math.pi / 2, 0, 0))
+    gp = bpy.context.active_object
+    gp.name = "Glød"
+    gp.scale = (24, 16, 1)
+    g_mat, g_em = glod_materiale()
+    gp.data.materials.append(g_mat)
+
+    # Kamera
+    cd = bpy.data.cameras.new("Kamera")
+    cd.lens = LINSE
+    cd.sensor_fit = "VERTICAL"
+    cd.sensor_height = 24
+    cd.dof.use_dof = True
+    cd.dof.aperture_fstop = 2.2
+    cam = bpy.data.objects.new("Kamera", cd)
+    sc.collection.objects.link(cam)
+    sc.camera = cam
+    mal = bpy.data.objects.new("Mål", None)
+    sc.collection.objects.link(mal)
+    cd.dof.focus_object = mal
+    tt = cam.constraints.new("TRACK_TO")
+    tt.target = mal
+    tt.track_axis = "TRACK_NEGATIVE_Z"
+    tt.up_axis = "UP_Y"
+
+    vfov = 2 * math.atan(12 / LINSE)
+    avstand = (SH / SKJERM_ANDEL / 2) / math.tan(vfov / 2)
+    slutt_y = FRONT_Y - 0.0008 - avstand
+
+    # Lys: varm hovedlys, to fargede kantlys bak (Vaktlogg-fersken og -rosa), et feiende striplys bak kameraet
+    hoved = lys("Hovedlys", (-4.5, -5.5, 4.0), srgb("#FFE2C6"), 0, (3.0, 3.0), tel)
+    kant_v = lys("Kantlys venstre", (-3.2, 2.6, 0.8), srgb("#FFB48A"), 0, (0.35, 5.0), tel)
+    kant_h = lys("Kantlys høyre", (3.2, 2.6, 0.2), srgb("#F49AC4"), 0, (0.35, 5.0), tel)
+    feie = lys("Feiende lys", (-9.0, -16.0, 1.2), srgb("#FFFFFF"), 0, (0.8, 9.0), mal)
+
+    # --- Tidslinje (30 bilder/s) ---
+    # 0–1,5 s mørke, kantlysene våkner · 1,5–4,6 s telefonen snur seg mot oss · 3,8–4,8 s skjermen våkner
+    # 4,6–9,4 s kameraet kjører inn · 9,4–10 s står helt stille (presentasjonen toner over her)
+    nokkel(tel, "location", [(1, (0.0, 0.0, -0.42)), (138, (0.0, 0.0, 0.0))])
+    nokkel(tel, "rotation_euler", [(1, (math.radians(-9), 0, math.radians(205))), (138, (0, 0, 0))])
+    nokkel(kant_v.data, "energy", [(1, 0), (36, 1800), (150, 1400), (280, 400)])
+    nokkel(kant_h.data, "energy", [(6, 0), (44, 1800), (150, 1400), (280, 400)])
+    nokkel(hoved.data, "energy", [(12, 0), (60, 900), (150, 700), (282, 500)])
+    nokkel(feie, "location", [(96, (-5.0, -16.0, 1.2)), (146, (3.0, -16.0, 1.2))])
+    nokkel(feie.data, "energy", [(94, 0), (104, 4000), (136, 4000), (148, 0)])
+    nokkel(sk_bsdf.inputs["Emission Strength"], None, [(140, 0.0), (168, 1.0)])
+    nokkel(g_em.inputs["Strength"], None, [(1, 0.0), (60, 0.16), (170, 0.12), (262, 0.0)])
+    nokkel(cam, "location", [(1, (1.6, -13.5, 1.3)), (138, (0.45, -9.2, 0.3)), (282, (0.0, slutt_y, 0.0)), (SLUTT, (0.0, slutt_y, 0.0))])
+    # Fokus følger telefonen; blenderen strammes inn mot slutten så hele skjermen er skarp
+    nokkel(cd.dof, "aperture_fstop", [(1, 1.8), (150, 2.4), (270, 16.0)])
+
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(HER, "telefon.blend"))
+
+    meta = {
+        "fps": FPS,
+        "bilder": SLUTT,
+        "varighet": SLUTT / FPS,
+        "bredde": BREDDE,
+        "hoyde": HOYDE,
+        "skjermAndel": SKJERM_ANDEL,
+        "skjermForhold": SW / SH,
+        "skjermHjorne": SKJERM_HJORNE / SH,
+        "stilleFra": 282 / FPS,
+    }
+    os.makedirs(FILM, exist_ok=True)
+    # Presentasjonen leser tallene ved bygging (src/lib/telefon.json); kopien i public/film er for oversikt
+    for sti in (os.path.join(FILM, "telefon.json"), os.path.join(ROT, "src", "lib", "telefon.json")):
+        with open(sti, "w", encoding="utf-8") as fh:
+            json.dump(meta, fh, indent=2)
+    print("bygget", meta)
+
+
+def test():
+    sc = bpy.context.scene
+    sc.render.resolution_percentage = 50
+    sc.cycles.samples = 32
+    ut = os.path.join(HER, "test")
+    os.makedirs(ut, exist_ok=True)
+    for f in (25, 55, 85, 120, 150, 300):
+        sc.frame_set(f)
+        sc.render.filepath = os.path.join(ut, f"bilde_{f:03d}.png")
+        bpy.ops.render.render(write_still=True)
+
+
+def render():
+    sc = bpy.context.scene
+    os.makedirs(FRAMES, exist_ok=True)
+    sc.render.filepath = os.path.join(FRAMES, "####")
+    sc.render.image_settings.file_format = "PNG"
+    sc.render.use_overwrite = False  # kan avbrytes og fortsettes
+    sc.render.use_placeholder = True
+    bpy.ops.render.render(animation=True)
+
+
+def film():
+    """Setter bildene sammen til H.264 (MP4) med Blenders egen ffmpeg, og lagrer start/sluttbilde."""
+    sc = bpy.context.scene
+    sc.render.resolution_x, sc.render.resolution_y = BREDDE, HOYDE
+    sc.render.resolution_percentage = 100
+    sc.render.fps = FPS
+    filer = sorted(f for f in os.listdir(FRAMES) if f.endswith(".png"))
+    se = sc.sequence_editor_create()
+    stripes = getattr(se, "strips", None) or se.sequences
+    st = stripes.new_image("Bilder", os.path.join(FRAMES, filer[0]), 1, 1)
+    for f in filer[1:]:
+        st.elements.append(f)
+    sc.frame_start, sc.frame_end = 1, len(filer)
+    sc.render.use_sequencer = True
+    im = sc.render.image_settings
+    try:
+        im.media_type = "VIDEO"
+    except Exception:
+        pass
+    im.file_format = "FFMPEG"
+    ff = sc.render.ffmpeg
+    ff.format = "MPEG4"
+    ff.codec = "H264"
+    ff.constant_rate_factor = "HIGH"
+    ff.ffmpeg_preset = "BEST"
+    ff.gopsize = 15
+    ff.audio_codec = "NONE"
+    os.makedirs(FILM, exist_ok=True)
+    sc.render.filepath = os.path.join(FILM, "telefon_")
+    bpy.ops.render.render(animation=True)
+    laget = [f for f in os.listdir(FILM) if f.startswith("telefon_") and f.endswith(".mp4")]
+    if laget:
+        mal = os.path.join(FILM, "telefon.mp4")
+        if os.path.exists(mal):
+            os.remove(mal)
+        os.replace(os.path.join(FILM, laget[0]), mal)
+    shutil.copy(os.path.join(FRAMES, filer[-1]), os.path.join(FILM, "telefon-slutt.png"))
+    print("film ferdig", laget)
+
+
+steg = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv else "bygg"
+if steg == "bygg":
+    bygg()
+elif steg in ("test", "render"):
+    bpy.ops.wm.open_mainfile(filepath=os.path.join(HER, "telefon.blend"))
+    test() if steg == "test" else render()
+elif steg == "film":
+    film()
