@@ -177,6 +177,37 @@ body.vis-foto {
   color: var(--mint);
   font-weight: 600;
 }
+/* Sensors tid i prototypen: grønn → gul når planen er brukt → rød ved 2:30 (C tar over) */
+.pv-sensortid {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(143, 217, 192, 0.12);
+  color: var(--mint);
+  font-size: 20px;
+}
+.pv-sensortid b {
+  font-size: 26px;
+}
+.pv-sensortid.snart {
+  background: rgba(233, 194, 122, 0.16);
+  color: var(--gull);
+}
+.pv-sensortid.over {
+  background: rgba(255, 138, 122, 0.2);
+  color: #ff8a7a;
+}
+.pv-sensortid i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: currentColor;
+}
 .pv-sensor {
   display: grid;
   grid-template-columns: 1fr 1fr;

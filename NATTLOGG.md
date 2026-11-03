@@ -84,7 +84,7 @@ De gamle scenene legges i `arkiv.ts` uendret, så de fortsatt kan vises fra over
 
 ### Filmer
 
-1. **Telefon:** ny film i restauranten etter stengetid. Telefonen ligger på bordet, skjermen våkner og kameraet ender rett ovenfra. Bakgrunnen i demoen blir siste bilde.
+1. **Telefon:** ny film i restauranten. Første versjon var lagt etter stengetid. Art directoren påpekte at det ikke stemmer med skjermen, som sier «Start vakt». Filmen er derfor flyttet til like før vakten, med ettermiddagssol gjennom et sprossevindu, kaffe og vaktlista på papir. Telefonen ligger på brettet, skjermen våkner, og kameraet ender rett ovenfra. Siste bilde blir bakgrunnen i demoen.
 2. **Hopping:** ny, 12 s, med færre og lesbare hopp, ekte font, vekt i kula og banene i øvre del av bildet.
 3. **Åpning:** kortere (cirka 17 s), bedre spor, bord og stoler, varm verden rundt og bongskinnen plantet.
 4. **Pakket:** legges til side, og scenen erstattes uten film.
@@ -106,6 +106,99 @@ Alle filmene bygges på `studio.py` og får samme lys og materialer.
   - Rendring: kvalitetsinnstillinger og MP4 med høy bitrate (PERC_LOSSLESS) mot striper.
   - Prøvd ut med en materialprøve. Treverket måtte justeres to ganger: først sikksakk, så kordfløyel, til slutt naturlige årer.
 
+### Runde 1–2 (commit 6faa5a8, pushet)
+
+- **Manus:**
+  - Ti scener, planlagt 9:41.
+  - Fordeling: A 265, B 253 og C 274 ord. Sensor får 2:10.
+  - sjekk måler nå også ord og har grenser (mål 10:00, hard grense 12:00).
+- **Faktarettelser mot transkripsjonene** (I1–I3 og guiden er lagt til som kilder).
+- **Prototypen** (cfac1f4, pushet):
+  - Emmas foto er tatt ut og erstattet med initial.
+  - Rekordvarselet for flasker over 1 500 kr er fjernet.
+  - Nye skjermbilder er tatt.
+- **Sir Domeo, replikk 2:** den rettede teksten krever ny lydfil. ElevenLabs hadde logget ut, og jeg kan ikke logge inn. Teksten står derfor tilbake på det lydfilen sier (e7c487a). Ny tekst ligger i morgenrapporten.
+- **Designsystem:** `system.css` og `flyt.css`. Fonter: Besley, Schibsted Grotesk og Courier Prime.
+- **Eksamensdagen:**
+  - Presentatørvisningen har fått «Klar til start», «Test lyd» og mobilstatus.
+  - Mobilen nullstilles, og takten går videre automatisk når sensor trykker.
+  - Filmene har vakt mot heng, og tjeneren er gjort robust.
+- **Tester:**
+  - tsc og sjekk er grønne.
+  - xp-sync 18/18.
+  - xp-gammel og xp-omlast er OK.
+
+### Runde 3 – filmene (pågår)
+
+- **Telefon (`telefon_bord.py`):**
+  - Art director runde 1 ga disse endringene:
+    - historien flyttet til før vakten
+    - vaktlista og bongteksten synes igjen (`transform_apply` flyttet teksten bort)
+    - kameraet regnes ut bilde for bilde fra én parameter, så skjermen står midt i bildet hele veien
+    - dybdeskarpheten delt på 10 (1 enhet = 10 cm)
+    - stearinlyset fjernet
+    - gummibrett med stålkant
+  - Egne funn i testbildene:
+    - skjermlyset synes som en hvit prikk i glasset, så det er nå usynlig i refleksjoner
+    - «opp» for kameraet blander verdens loddlinje og telefonens topp, ellers ville starten vært rotert 77°
+    - barlysene varieres i dybde og styrke
+    - sola faller gjennom en vegg med sprossevindu
+  - Art director runde 2 sa at bildet leste som kveld: alt var ravgult, og bakgrunnen var et svart tomrom med lyspunkter. Endringer etter det:
+    - varm sol, men nøytral himmel og kjølig fyllys
+    - en bakvegg i dagslys med høye vinduer
+    - verden synes bare i refleksjoner, så stål, glasur og lakk får noe å speile
+    - termopapiret er hvitt og satinert
+    - espresso med crema, og en hank som ikke er en perfekt ring
+    - skjeen er fjernet
+    - roligere tre
+    - runde lysflekker (blenderlameller 0)
+    - start på 7,5° og skarp skjerm tidligere
+    - vaktlista ligger som en bevisst diagonal
+  - Egen runde etterpå: brettet har fått vanlig størrelse (38 cm) og ligger slik at kanten går i en bevisst bue over øvre venstre hjørne i sluttbildet. Kaffen står på baren utenfor sluttbildet.
+  - Fullrendring: 160 samples.
+- **Åpning:**
+  - «Utsikten» var en plate bak veggen som ovenfra svevde over den. Den er flyttet rett bak vinduene.
+  - Art director runde 1 fant blant annet:
+    - nøklene til kameraet lå i feil rekkefølge etter at tidslinjen ble kortet ned, så kameraet steg, dykket og steg igjen
+    - hodet i nærbildet leste som en ballong
+    - servitøren var en rød strek
+    - feil fargegrading (AgX, mens de andre filmene bruker Standard)
+    - hvite plastbord, og ikke den samme restauranten
+    - flatt overskyet lys
+  - Alt dette er rettet:
+    - kameranøkler med absolutte tider (`nokkel` stopper nå hvis tidene ikke står i rekkefølge)
+    - hår og hårknute
+    - kortere lukker
+    - Standard
+    - mørke bordplater, der appens bordstatus er flyttet til en liten brikke
+    - sol gjennom sprossevinduer under et tak kameraet ikke ser
+    - kvadratiske fliser
+    - gjester med hår som vender mot bordet
+    - mørke kapper på snittet
+  - Jeg fant også en gammel feil: sporet ble tegnet foran servitøren. Kurven hadde nullange biter der hun stod stille, så «bevel factor» tegnet hele etapper på forhånd. Sporet har nå sin egen kurve uten stillestående punkter.
+  - Sporet er additivt, så gangene hun går ofte, lyser sterkere.
+  - Art director runde 2 fant fire problemer:
+    - Sluttbildet var rosa over alt: taket, som kameraet ikke ser, holdt på lyset fra sporet.
+    - Servitøren teleporterte fortsatt, med faste 0,32 s til kjøkkenet uansett avstand.
+    - Frysbildet hadde gått tilbake: hun stod liten i et hjørne.
+    - Ruta leste fortsatt som en plantegning.
+  - Endringer etter runde 2:
+    - Taket fjernes når lyset går.
+    - Hver tur tar tid etter avstanden (16 m/s i filmtid). Det fikk ikke plass, så de tre siste bordsettingene er tatt ut (10 av 13).
+    - Frysbildet regnes ut fra ruta: et øyeblikk der hun serverer ved bord 16 eller 17. `frys` leser tidspunktet fra `apning.json`.
+    - Sporet er tynnere og svakere per tur, og gangene sprer seg mer.
+    - Roligere fliser, ekte glass på brettet og litt himmelfarge i vinduene.
+    - Kameraet løfter seg over hodet hennes før det svinger ut.
+  - Fullrendring: 128 samples. Den første rendringen hoppet over alt, fordi den gamle filmens 750 bilder lå i mappen. De er flyttet til `frames_apning_gammel`.
+- **Hopping:**
+  - Rendret (360 bilder, 45 min sammen med de andre) og committet (7ff112a).
+  - I nettleseren gikk de to siste kortene i hverandre, og «Tilbakemelding» fløt ut av kortet. Kortene er smalere og har myk orddeling, og takt 2 tar dem ut, så panelet ikke dekker dem.
+- **.gitignore** fanget ikke nye rendermapper (frames_telefon, test_hopark). Nå ignoreres alle `blender/frames*` og `blender/test*`. Ingenting var committet.
+- **Hopping:** fullrendring pågår (360 bilder).
+
 ## Gjenstår
 
-(fylles inn)
+- Runde 3: filmene, i rekkefølgen telefon (ny, i restauranten), hopping (ny), åpning (kortere og bedre).
+- Runde 4: detaljer, presentatørvisningen og README.
+- Fase 4: et nytt, friskt panel.
+- Morgenrapport.

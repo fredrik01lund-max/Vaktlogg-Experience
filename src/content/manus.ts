@@ -181,6 +181,7 @@ export const manus: Scene[] = [
     id: 'demo',
     tittel: 'Prøv selv',
     del: 'Prototype og testing',
+    tema: 'mork',
     fase: 'prototype',
     varighet: 166,
     takter: [
@@ -212,6 +213,7 @@ export const manus: Scene[] = [
     id: 'hopping',
     tittel: 'Frem og tilbake',
     del: 'Prototype og testing',
+    tema: 'mork',
     fase: 'test',
     varighet: 62,
     takter: [

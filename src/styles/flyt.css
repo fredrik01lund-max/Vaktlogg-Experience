@@ -394,12 +394,15 @@
 
 /* Merking nede til venstre, navnelinjen har høyre hjørne */
 .lerret .demo-hjorne {
+  /* Stablet nede til venstre, så ingenting går inn i telefonen (den står midt i bildet) */
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: flex-start;
-  gap: 18px;
+  gap: 12px;
   right: auto;
 }
 .lerret .demo-styrer {
-  margin-left: 12px;
+  margin-left: 4px;
   font-family: var(--sans);
   font-size: 22px;
   letter-spacing: 0;

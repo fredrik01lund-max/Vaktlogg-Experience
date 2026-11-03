@@ -56,6 +56,14 @@ const FASER: { id: Fase; navn: string }[] = [
   { id: 'test', navn: 'Test' },
 ]
 
+/** Fullskjerm, og fang Esc (Chrome/Edge): klikkerens «spill av»-knapp sender ofte Esc, som ellers avslutter fullskjermen. */
+function fullskjerm() {
+  document.documentElement
+    .requestFullscreen?.()
+    .then(() => (navigator as Navigator & { keyboard?: { lock?: (k: string[]) => Promise<void> } }).keyboard?.lock?.(['Escape']))
+    .catch(() => {})
+}
+
 /** Skalerer lerretet (1920 × 1080) til vinduet, med svarte kanter ved andre formater. */
 function useSkala() {
   const [s, setS] = useState({ k: 1, x: 0, y: 0 })
@@ -114,7 +122,7 @@ export function Salen() {
       else if (k === 'p' || k === 'P') apneVindu('presentator')
       else if (k === 'f' || k === 'F') {
         if (document.fullscreenElement) document.exitFullscreen()
-        else document.documentElement.requestFullscreen().catch(() => {})
+        else fullskjerm()
       } else if (k === 'o' || k === 'O') setOversikt((v) => !v)
       else if (k === 'h' || k === 'H' || k === '?') setHjelp((v) => !v)
       else if (k === 'l' || k === 'L') vekslePlassholdertekst()
@@ -219,7 +227,7 @@ export function Salen() {
   const fremdrift = ((t.scene + (t.takt + 1) / scene.takter.length) / manus.length) * 100
 
   return (
-    <div className={`salen ${peker ? '' : 'skjul-peker'}`} onDoubleClick={() => document.documentElement.requestFullscreen?.().catch(() => {})}>
+    <div className={`salen ${peker ? '' : 'skjul-peker'}`} onDoubleClick={fullskjerm}>
       <div className={`lerret tema-${tema}`} style={{ transform: `translate(${skala.x}px, ${skala.y}px) scale(${skala.k})` }}>
         <Lys styrke={t.startet ? lys : 0.25} tema={tema} />
 

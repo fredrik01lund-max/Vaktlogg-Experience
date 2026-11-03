@@ -164,6 +164,10 @@
   font-family: var(--serif);
   font-weight: 600;
 }
+/* Navnet kan havne over lyse partier i filmbildene (vaktlista i demoen) */
+.lerret .navnelinje {
+  text-shadow: 0 1px 14px rgba(18, 12, 10, 0.7);
+}
 .lerret .navnelinje small {
   font-family: var(--sans);
   font-size: 20px;

@@ -124,6 +124,14 @@ export function Presentator() {
             <div className="pv-klar">Klar{takt.hvem === 'stille' && nesteTakt ? ` – ${hvemTekst(nesteTakt.hvem)} tar over` : ''}</div>
           ) : null}
 
+          {takt.hvem === 'sensor' && scene.id !== 'sensor' && (
+            <div className={`pv-sensortid ${iTakt > 150 ? 'over' : iTakt > (takt.sek ?? 130) ? 'snart' : ''}`}>
+              <b>Sensor prøver selv: {mmss(iTakt)}</b>
+              <span>{iTakt > 150 ? 'Ta over nå.' : `Planlagt ${mmss(takt.sek ?? 130)} – C tar over senest ved 2:30.`}</span>
+              <i style={{ width: `${Math.min(100, (iTakt / 150) * 100)}%` }} />
+            </div>
+          )}
+
           {takt.hvem === 'sensor' && scene.id === 'sensor' && (
             <div className="pv-sensor">
               {VALG.map((v, i) => (
