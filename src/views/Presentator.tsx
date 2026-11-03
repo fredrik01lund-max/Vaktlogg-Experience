@@ -4,7 +4,7 @@ import { manus, PLAN_TOTAL } from '../content/manus.ts'
 import { mmss, planTid, sceneStart, taktPlan } from '../content/tid.ts'
 import type { Ordet } from '../content/types.ts'
 import { FARGE, medNavn, navnMangler, oppsett } from '../lib/oppsett.ts'
-import { apneVindu, forrige, gaTil, neste, nullstill, nyDemo, start, svart, useStatus, useTilstand, velg } from '../lib/sync.ts'
+import { apneVindu, forrige, gaTil, lydtest, neste, nullstill, nyDemo, start, svart, useStatus, useTilstand, velg } from '../lib/sync.ts'
 import { VALG } from '../scenes/Del2.tsx'
 
 // Presentatørvisningen: eget vindu på bærbar-skjermen. Viser hvem som snakker, manus,
@@ -83,10 +83,13 @@ export function Presentator() {
         <div className="pv-status">
           <span className={hovedTilkoblet ? 'ok' : 'feil'}>{hovedTilkoblet ? 'Hovedskjerm tilkoblet' : 'Hovedskjerm ikke funnet'}</span>
           <span className={status.film === 'klar' ? 'ok' : status.film === 'feil' ? 'feil' : ''}>Film {status.film === 'klar' ? 'lastet' : status.film === 'feil' ? 'mangler' : 'laster …'}</span>
+          {status.mobil !== null && status.mobil !== undefined && <span className={status.mobil > 0 ? 'ok' : 'feil'}>{status.mobil > 0 ? 'Sensors mobil tilkoblet' : 'Sensors mobil IKKE tilkoblet'}</span>}
         </div>
         <div className="pv-knapper">
           {!hovedTilkoblet && <button onClick={() => apneVindu('hoved')}>Åpne hovedskjerm</button>}
-          <button onClick={nyDemo} title="Last prototypen på nytt med rene data">Nullstill demo</button>
+          <button onClick={() => nullstill()} title="Tilbake til venteskjermen, klokka på 0:00 – uten å starte">Klar til start</button>
+          <button onClick={lydtest} title="Hovedskjermen spiller Sir Domeos første replikk">Test lyd</button>
+          <button onClick={nyDemo} title="Last prototypen på nytt med rene data (også på sensors mobil)">Nullstill demo</button>
           <button onClick={() => (confirm('Starte hele presentasjonen på nytt og nullstille tiden?') ? (nullstill(), start()) : null)}>Start på nytt</button>
         </div>
       </header>

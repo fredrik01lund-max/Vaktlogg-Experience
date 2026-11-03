@@ -5,33 +5,39 @@ import { manus } from '../content/manus.ts'
 import type { Fase, Hvem } from '../content/types.ts'
 import { filmTilstand } from '../lib/film.ts'
 import { FARGE, oppsett } from '../lib/oppsett.ts'
-import { apneVindu, forrige, gaTil, hent, neste, nyDemo, sendStatus, start, svart, useTilstand } from '../lib/sync.ts'
-import { Apning, Innsikter, Metode, Portrett, TittelScene } from '../scenes/Del1.tsx'
+import { apneVindu, forrige, gaTil, hent, neste, nyDemo, paLydtest, sendStatus, start, svart, useTilstand } from '../lib/sync.ts'
+import { Innsikter, Metode, Portrett, TittelScene } from '../scenes/Del1.tsx'
 import { Ide, Pakket, Persona, Prinsipper, Sensor, Snu, ToInnsikter } from '../scenes/Del2.tsx'
 import { Hopping, Nabc, Refleksjon, Slutt, Testing, Videre } from '../scenes/Del3.tsx'
 import { Demo, DemoTelefon } from '../scenes/Demo.tsx'
+import { Folk, Funn, Prioritert, Valg, Vakten, Vet } from '../scenes/Flyt.tsx'
 import { MYK, useLysNivaa, type SceneProps } from '../scenes/felles.tsx'
 import { vekslePlassholdertekst } from '../ui/Foto.tsx'
 import { Lys } from '../ui/Lys.tsx'
 
 const SCENER: Record<string, ComponentType<SceneProps>> = {
-  apning: Apning,
-  tittel: TittelScene,
-  metode: Metode,
-  portrett: Portrett,
-  innsikter: Innsikter,
+  vakten: Vakten,
+  folk: Folk,
+  funn: Funn,
   snu: Snu,
-  ide: Ide,
-  'to-innsikter': ToInnsikter,
-  pakket: Pakket,
+  valg: Valg,
+  prioritert: Prioritert,
   hopping: Hopping,
-  refleksjon: Refleksjon,
-  videre: Videre,
+  vet: Vet,
   slutt: Slutt,
 }
 
 // Lagt til side (src/content/arkiv.ts): kan vises fra oversikten, men er ikke med i flyten
 const ARKIV: Record<string, ComponentType<SceneProps>> = {
+  tittel: TittelScene,
+  metode: Metode,
+  portrett: Portrett,
+  innsikter: Innsikter,
+  ide: Ide,
+  'to-innsikter': ToInnsikter,
+  pakket: Pakket,
+  refleksjon: Refleksjon,
+  videre: Videre,
   persona: Persona,
   prinsipper: Prinsipper,
   sensor: Sensor,
@@ -39,7 +45,7 @@ const ARKIV: Record<string, ComponentType<SceneProps>> = {
   nabc: Nabc,
 }
 
-// Prototypen lastes fra «Alt vi pakket inn» (scenen før demoen) til scenen etter
+// Prototypen lastes fra scenen før demoen (Det vi prioriterte) til scenen etter
 const DEMO_I = manus.findIndex((s) => s.id === 'demo')
 
 const FASER: { id: Fase; navn: string }[] = [
@@ -135,10 +141,19 @@ export function Salen() {
 
   // ── Status til presentatørvinduet (er filmen lastet, er hovedskjermen her) ──
   useEffect(() => {
-    const id = window.setInterval(() => sendStatus({ film: filmTilstand(), demo: '' }), 2000)
-    sendStatus({ film: filmTilstand(), demo: '' })
+    const id = window.setInterval(() => sendStatus({ film: filmTilstand() }), 2000)
+    sendStatus({ film: filmTilstand() })
     return () => clearInterval(id)
   }, [])
+
+  // ── «Test lyd» fra presentatørvisningen: hovedskjermen spiller Sir Domeos første replikk ──
+  useEffect(
+    () =>
+      paLydtest(() => {
+        new Audio('demo/domeo/sensor-0.mp3').play().catch(() => {})
+      }),
+    [],
+  )
 
   // ── Valgfri restaurantlyd i åpningen ──
   useEffect(() => {
@@ -231,7 +246,7 @@ export function Salen() {
         {/* Lagt til side: en arkivert scene vises over flyten til Esc trykkes (flyten står stille imens) */}
         {arkiv && <ArkivVisning i={arkiv.i} takt={arkiv.takt} valg={arkiv.valg} />}
 
-        <DemoTelefon visning={t.startet && scene.id === 'demo' && !arkiv ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && t.scene >= DEMO_I - 1 && t.scene <= DEMO_I + 1} sensor={t.startet && scene.id === 'demo' && takt.hvem === 'sensor'} />
+        <DemoTelefon visning={t.startet && scene.id === 'demo' && !arkiv ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && t.scene >= DEMO_I - 1 && t.scene <= DEMO_I + 1} sensor={t.startet && scene.id === 'demo' && takt.hvem === 'sensor'} overlevering={t.startet && scene.id === 'demo' && t.takt === 1} />
 
         {t.startet && scene.fase && !arkiv && (
           <div className={`faser ${scene.id === 'demo' ? 'hoyre' : ''}`} aria-hidden="true">

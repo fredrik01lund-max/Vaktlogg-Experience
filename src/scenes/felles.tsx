@@ -6,7 +6,8 @@ export type SceneProps = { takt: number; valg: number | null }
 export const MYK = [0.22, 1, 0.36, 1] as const
 export const FILM = [0.65, 0, 0.35, 1] as const
 
-/** Kommer mykt inn (fra uskarphet) når «vis» er sann, og trekker seg ut igjen når den ikke er det. */
+/** Kommer inn når «vis» er sann, og trekker seg ut igjen når den ikke er det. Bevisst enkelt: en kort
+ *  forflytning og en toning – ingen uskarphet (blur-inn på alt er et av de tydeligste mal-sporene). */
 export function Inn({
   vis = true,
   d = 0,
@@ -26,17 +27,40 @@ export function Inn({
   style?: CSSProperties
   children?: ReactNode
 }) {
+  const dy = Math.sign(y) * Math.min(Math.abs(y), 10)
+  const dx = Math.sign(x) * Math.min(Math.abs(x), 14)
   return (
     <motion.div
       className={className}
       style={style}
-      initial={{ opacity: 0, y, x, filter: 'blur(10px)' }}
-      animate={vis ? { opacity: 1, y: 0, x: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } } : { opacity: 0, y: -y * 0.4, x: 0, filter: 'blur(10px)' }}
-      transition={{ duration: vis ? tid : 0.6, delay: vis ? d : 0, ease: MYK }}
+      initial={{ opacity: 0, y: dy, x: dx }}
+      animate={vis ? { opacity: 1, y: 0, x: 0 } : { opacity: 0, y: 0, x: 0 }}
+      transition={{ duration: vis ? Math.min(tid, 0.55) : 0.3, delay: vis ? d * 0.8 : 0, ease: MYK }}
     >
       {children}
     </motion.div>
   )
+}
+
+/** Vakt for filmene: står en film stille i 3 sekunder mens den skal gå (skjult vindu, dekoder som henger),
+ *  kalles stoppet() – så presentasjonen aldri blir stående uten at noen vet at de skal klikke. */
+export function useFilmVakt(video: { current: HTMLVideoElement | null }, aktiv: boolean, stoppet: () => void) {
+  useEffect(() => {
+    const v = video.current
+    if (!v || !aktiv) return
+    let sist = -1
+    let stille = 0
+    const id = window.setInterval(() => {
+      if (v.ended) return
+      stille = v.currentTime === sist ? stille + 1 : 0
+      sist = v.currentTime
+      if (stille >= 6) {
+        clearInterval(id)
+        stoppet()
+      }
+    }, 500)
+    return () => clearInterval(id)
+  }, [aktiv])
 }
 
 /** Sekunder siden komponenten kom på skjermen (oppdateres 20 ganger i sekundet). */

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import meta from '../lib/telefon.json'
-import { filmTilstand, filmUrl } from '../lib/film.ts'
+import { filmUrl } from '../lib/film.ts'
 import { manus } from '../content/manus.ts'
 import { forrige, hent, neste, sendStatus } from '../lib/sync.ts'
 import { MYK, useLys, type SceneProps } from './felles.tsx'
@@ -79,15 +79,19 @@ function harSpeil() {
 
 /** Telefonen med den ekte prototypen. Lastes rett før demoen (last) og tegnes ikke mens den er skjult –
  *  Sir Domeo i 3D koster mye, og skal ikke stjele tid fra filmen og animasjonene ellers.
- *  sensor: sensor har mobilen nå – da snakker Sir Domeo (stemmen spilles her, ikke på mobilen). */
-export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visning; demoNr: number; last: boolean; sensor: boolean }) {
+ *  sensor: sensor har mobilen nå – da snakker Sir Domeo (stemmen spilles her, ikke på mobilen).
+ *  overlevering: C gir mobilen til sensor. Glemmer C å klikke videre, går presentasjonen videre av seg selv
+ *  idet sensor trykker «Start vakt» (Sir Domeo går til neste replikk) – da blir han aldri stum. */
+export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { visning: Visning; demoNr: number; last: boolean; sensor: boolean; overlevering: boolean }) {
   const ref = useRef<HTMLIFrameElement>(null)
   const [forklaring, setForklaring] = useState<Forklaring>(FORKLARINGER.start)
   const [speiles, setSpeiles] = useState(false)
   const forrigeNr = useRef<number | null>(null)
 
   // Ny demo: rene data og last på nytt. Utenfor demoen er prototypen ikke lastet i det hele tatt.
-  // Trykker presentatøren R (ny demo) mens den er lastet, starter også sensors mobil omvisningen på nytt.
+  // Sensors mobil nullstilles én gang per demoNr: første gang prototypen lastes i en fremføring (start() øker
+  // demoNr), og hver gang presentatøren trykker R. Prototypen husker hvilket nummer den har nullstilt for, så en
+  // omlasting midt i demoen ikke starter sensors omvisning på nytt.
   useEffect(() => {
     const f = ref.current
     if (!f) return
@@ -96,7 +100,7 @@ export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visnin
       forrigeNr.current = null
       return
     }
-    const nullstill = forrigeNr.current !== null && forrigeNr.current !== demoNr
+    const nullstill = true
     forrigeNr.current = demoNr
     klargjorPrototype()
     let aktiv = true
@@ -121,13 +125,31 @@ export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visnin
   }, [visning])
 
   useEffect(() => {
-    sendStatus({ film: filmTilstand(), demo: forklaring.tittel })
+    sendStatus({ demo: forklaring.tittel })
   }, [forklaring])
+
+  // Er sensors mobil koblet til? Vises i presentatørvinduet, så dere ser det før mobilen gis til sensor.
+  useEffect(() => {
+    if (!speiles) {
+      sendStatus({ mobil: null })
+      return
+    }
+    const sjekk = () =>
+      fetch('speil-status', { cache: 'no-store' })
+        .then((r) => r.json())
+        .then((j) => sendStatus({ mobil: Number(j?.mobiler ?? 0) }))
+        .catch(() => sendStatus({ mobil: 0 }))
+    sjekk()
+    const id = window.setInterval(sjekk, 2000)
+    return () => clearInterval(id)
+  }, [speiles])
 
   // ── Sir Domeos stemme: prototypen sier fra (postMessage) hver gang han begynner på en replikk ──
   const lyd = useRef<HTMLAudioElement | null>(null)
   const sisteReplikk = useRef<string | null>(null)
   const sensorNa = useRef(sensor)
+  const overleveringNa = useRef(overlevering)
+  overleveringNa.current = overlevering
   const si = (id: string | null) => {
     lyd.current?.pause()
     lyd.current = null
@@ -141,8 +163,15 @@ export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visnin
   useEffect(() => {
     const ta = (e: MessageEvent) => {
       if (e.source !== ref.current?.contentWindow || !e.data || typeof e.data !== 'object' || !('vaktloggDomeo' in e.data)) return
-      sisteReplikk.current = e.data.vaktloggDomeo as string | null
-      if (sensorNa.current) si(sisteReplikk.current)
+      const id = e.data.vaktloggDomeo as string | null
+      const forrige = sisteReplikk.current
+      sisteReplikk.current = id
+      if (sensorNa.current) si(id)
+      // Sensor har trykket seg videre mens C fortsatt står på overleveringen: gå videre til sensors takt
+      else if (overleveringNa.current && id && forrige && id !== forrige && id !== 'sensor-0') {
+        const t = hent()
+        if (manus[t.scene]?.id === 'demo' && t.takt === 1) neste()
+      }
     }
     window.addEventListener('message', ta)
     return () => window.removeEventListener('message', ta)
@@ -158,7 +187,7 @@ export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visnin
     lyd.current = null
   }, [visning])
 
-  // Klikkeren virker også mens fokus er inne i prototypen (PageDown/PageUp)
+  // Klikkeren virker også mens fokus er inne i prototypen (PageDown/PageUp, og piltastene hvis klikkeren sender dem)
   const kobleTaster = () => {
     try {
       const w = ref.current?.contentWindow
@@ -166,10 +195,10 @@ export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visnin
       w.addEventListener(
         'keydown',
         (e: KeyboardEvent) => {
-          if (e.key === 'PageDown') {
+          if (e.key === 'PageDown' || e.key === 'ArrowRight') {
             e.preventDefault()
             neste()
-          } else if (e.key === 'PageUp') {
+          } else if (e.key === 'PageUp' || e.key === 'ArrowLeft') {
             e.preventDefault()
             forrige()
           }
@@ -195,8 +224,9 @@ export function DemoTelefon({ visning, demoNr, last, sensor }: { visning: Visnin
       </motion.div>
 
       <motion.div className="demo-hjorne" initial={false} animate={{ opacity: visning === 'demo' ? 1 : 0 }} transition={{ duration: 1, delay: visning === 'demo' ? 1.2 : 0 }}>
-        <span className={`demo-styrer ${sensor ? 'na' : ''}`}>{speiles ? 'Sensor trykker på mobilen' : 'Trykk på skjermen'}</span>
-        <span className="demo-merk">Konseptprototype · fiktiv restaurant · simulerte data</span>
+        <span className="merket fiktiv">Fiktiv restaurant</span>
+        <span className="merket illustrasjon">Simulerte tall</span>
+        <span className={`demo-styrer ${sensor ? 'na' : ''}`}>{speiles ? 'Sensor styrer fra mobilen' : 'Styres herfra'}</span>
       </motion.div>
     </>
   )
@@ -252,8 +282,24 @@ export function Demo({ takt, onVisning }: SceneProps & { onVisning: (v: Visning)
 
   useEffect(() => () => onVisning('skjult'), [onVisning])
 
+  // Vakt: står filmen stille i 3 s mens den skal gå (vinduet skjult, dekoderen hang), går demoen videre likevel
+  useEffect(() => {
+    const v = video.current
+    if (!v || takt !== 0) return
+    let sist = -1
+    let stille = 0
+    const id = window.setInterval(() => {
+      if (v.currentTime === sist && !v.ended) stille += 1
+      else stille = 0
+      sist = v.currentTime
+      if (stille >= 6) setFilmFeil(true)
+    }, 500)
+    return () => clearInterval(id)
+  }, [takt])
+
   return (
     <div className="scene demo">
+      <img className="demo-film" src="film/telefon-slutt.png" alt="" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
       <motion.video
         ref={video}
         className="demo-film"

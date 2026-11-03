@@ -1,0 +1,582 @@
+/* ══ Scenene i den nye flyten (nattøkta 3.–4.11) ══════════════════════════════════
+   Bygd på rutenettet og skriftskalaen i system.css. Papirflater (#fffdf8) med blekk (#1e1a17) brukes der noe
+   skal leses som et dokument eller et fysisk objekt: intervjuguiden, kortet med funnet, iterasjonene. */
+
+/* ── 1. Vakten (tittel og utgangspunkt) ── */
+.lerret .utgangspunkt-trekk.tekst {
+  margin-top: 28px;
+  color: var(--dempet);
+}
+
+/* ── 2. Hvem vi snakket med ── */
+.folk-venstre {
+  width: 988px;
+}
+.folk-venstre > div {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 988px;
+}
+.kildetabell {
+  margin-top: 44px;
+  border-collapse: collapse;
+  width: 100%;
+}
+.kildetabell th,
+.kildetabell td {
+  padding: 18px 0;
+  border-top: 1px solid var(--linje-2);
+  text-align: left;
+  vertical-align: baseline;
+}
+.kildetabell tr:last-child th,
+.kildetabell tr:last-child td {
+  border-bottom: 1px solid var(--linje-2);
+}
+.kildetabell th {
+  width: 340px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 40px;
+}
+.kildetabell td {
+  font-size: var(--t-tekst);
+  line-height: 1.3;
+}
+.folk-briller {
+  margin-top: 28px;
+  max-width: 820px;
+}
+.folk-sporsmal-tekst {
+  margin: 18px 0 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 80px;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+}
+.folk-venstre > .folk-sitat {
+  width: 1400px;
+}
+.folk-sitat blockquote {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 450;
+  font-size: 88px;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  text-indent: -0.42em;
+}
+.folk-hvem {
+  margin-top: 36px;
+  font-size: var(--t-tekst);
+}
+.folk-gjester {
+  margin-top: 64px;
+  max-width: 1100px;
+  color: var(--dempet);
+}
+.guide-ark {
+  position: absolute;
+  left: var(--k8);
+  top: 196px;
+  width: 692px;
+  padding: 44px 48px 52px;
+  background: #fffdf8;
+  color: #1e1a17;
+  box-shadow:
+    0 1px 2px rgba(30, 26, 23, 0.08),
+    0 18px 40px -22px rgba(30, 26, 23, 0.35);
+}
+.guide-hode {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 18px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid #1e1a17;
+  font-size: var(--t-merke);
+}
+.guide-hode b {
+  font-family: var(--serif);
+  font-size: 34px;
+}
+.guide-ark ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.guide-ark li {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(30, 26, 23, 0.15);
+  font-size: 27px;
+  line-height: 1.3;
+}
+.guide-ark li span {
+  font-family: var(--bong);
+  font-weight: 700;
+}
+.guide-ark li.merket-linje {
+  background: linear-gradient(transparent 12%, #fbe6a2 12%, #fbe6a2 88%, transparent 88%);
+}
+
+/* ── 3. Nøkkelfunn ── */
+.scene.funn {
+  background: #0e0c0b;
+}
+.funn-bilde {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.funn-punkt {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: -13px 0 0 -13px;
+}
+.funn-punkt i {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 4px solid currentColor;
+  background: rgba(255, 255, 255, 0.85);
+}
+.funn-punkt span {
+  padding: 8px 16px 9px;
+  background: #fffdf8;
+  color: #1e1a17;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 34px;
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.5);
+}
+.funn-merk {
+  position: absolute;
+  right: var(--marg);
+  bottom: 72px;
+}
+.lerret .funn-merk .merket {
+  color: #fbe6a2;
+  background: rgba(14, 12, 11, 0.55);
+}
+.funn-kort {
+  position: absolute;
+  left: var(--k1);
+  top: 168px;
+  bottom: 120px;
+  width: 640px;
+  padding: 48px 52px;
+  background: #fffdf8;
+  color: #1e1a17;
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+}
+.funn-kort .h2 {
+  margin-top: 14px;
+}
+.funn-kort .tekst {
+  margin-top: 22px;
+}
+.funn-nr {
+  font-size: var(--t-merke);
+  font-weight: 600;
+  color: rgba(30, 26, 23, 0.6);
+}
+.funn-tall {
+  margin: 28px 0 18px;
+  font-size: var(--t-tekst);
+  line-height: 1.4;
+}
+.funn-tall b {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 44px;
+}
+.lerret .funn-kort .merket {
+  color: #1e1a17;
+}
+.lerret .funn-kort .merket.observert {
+  color: #1f6b4a;
+}
+.funn-kort .liten {
+  color: rgba(30, 26, 23, 0.65);
+}
+.funn-etter {
+  color: rgba(30, 26, 23, 0.75);
+}
+.funn-tomt {
+  margin: 40px 0 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 52px;
+  line-height: 1.08;
+}
+.funn-tre {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  margin: 48px 0 0;
+  padding: 24px 0 0;
+  border-top: 2px solid #1e1a17;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 30px;
+}
+
+/* ── 5. Fra Strava til Vaktlogg: beslutningen ── */
+.valg-alternativer {
+  position: absolute;
+  left: var(--k1);
+  top: 440px;
+  width: 1100px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: valg;
+}
+.valg-alternativer li {
+  position: relative;
+  padding: 20px 0 20px 72px;
+  border-top: 1px solid var(--linje-2);
+  counter-increment: valg;
+}
+.valg-alternativer li::before {
+  content: counter(valg);
+  position: absolute;
+  left: 0;
+  top: 22px;
+  font-family: var(--bong);
+  font-weight: 700;
+  font-size: 34px;
+}
+.valg-tekst {
+  position: relative;
+  display: inline-block;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 48px;
+  line-height: 1.1;
+}
+.valg-tekst .strek {
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: 54%;
+  height: 4px;
+  background: #9a2f5c;
+  transform-origin: left center;
+}
+.valg-alternativer small {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--t-tekst);
+  color: var(--dempet);
+}
+.valg-alternativer li.valgt .valg-tekst {
+  box-shadow: inset 0 -16px 0 #bfe9d3;
+}
+.valg-vin {
+  position: absolute;
+  left: var(--k9);
+  top: 460px;
+  width: 620px;
+  padding: 36px 40px;
+  border: 3px solid currentColor;
+  transform: rotate(-1.2deg);
+}
+.valg-vin .ingress {
+  margin-top: 18px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 52px;
+  line-height: 1.05;
+}
+.valg-vin .liten {
+  margin: 14px 0 0;
+}
+
+/* ── 6. Det vi prioriterte ── */
+.prioritert-venstre {
+  width: 1040px;
+}
+.par-liste {
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.par-liste li {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: baseline;
+  padding: 20px 0;
+  border-top: 1px solid var(--linje-2);
+}
+.par-liste li:last-child {
+  border-bottom: 1px solid var(--linje-2);
+}
+.par-fra {
+  font-size: var(--t-tekst);
+  line-height: 1.3;
+}
+.lerret .par-fra .merket {
+  margin-left: 10px;
+  font-size: 18px;
+  vertical-align: 4px;
+}
+.par-til {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.1;
+}
+.par-til::before {
+  content: '→ ';
+  font-family: var(--sans);
+  font-weight: 400;
+  color: var(--dempet);
+}
+.par-liste li.na .par-til {
+  box-shadow: inset 0 -12px 0 #fbe6a2;
+}
+.prioritert-ogsa {
+  margin-top: 36px;
+}
+.prioritert-ogsa .tekst {
+  color: var(--dempet);
+}
+.prioritert-leder {
+  margin-top: 24px;
+  font-family: var(--serif);
+  font-weight: 600;
+}
+.prioritert-telefon {
+  position: absolute;
+  left: 1300px;
+  top: 96px;
+  width: 400px;
+  height: 866px;
+  border-radius: 58px;
+  background: #0c0c0e;
+  box-shadow:
+    0 0 0 3px #e6ddd3,
+    0 40px 80px -30px rgba(30, 26, 23, 0.45);
+  overflow: hidden;
+}
+.prioritert-telefon img {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 372px;
+  height: 838px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 46px;
+}
+
+/* ── 7. Prøv selv: merking nede til venstre, navnelinjen har høyre hjørne ── */
+.lerret .demo-hjorne {
+  justify-content: flex-start;
+  gap: 18px;
+  right: auto;
+}
+.lerret .demo-styrer {
+  margin-left: 12px;
+  font-family: var(--sans);
+  font-size: 22px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ── 8. Frem og tilbake ── */
+.hopping-par {
+  position: absolute;
+  left: var(--k1);
+  right: var(--marg);
+  bottom: 330px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--renne);
+}
+.hopping-iterasjon {
+  padding: 26px 28px 28px;
+  background: #fffdf8;
+  color: #1e1a17;
+  box-shadow: 0 18px 40px -26px rgba(30, 26, 23, 0.45);
+  transition: opacity 0.5s;
+}
+.hopping-iterasjon.dempet {
+  opacity: 0.45;
+}
+.hopping-iterasjon .liten {
+  display: block;
+  color: rgba(30, 26, 23, 0.7);
+}
+.hopping-iterasjon b {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.08;
+}
+.hopping-dato {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--bong);
+  font-weight: 700;
+  font-size: 24px;
+}
+.hopping-motsatt {
+  position: absolute;
+  left: var(--k1);
+  right: var(--marg);
+  bottom: 64px;
+  display: grid;
+  gap: 14px;
+}
+.hopping-motsatt .ingress {
+  font-family: var(--serif);
+  font-weight: 500;
+  max-width: 1500px;
+}
+
+/* ── 9. Hva vi vet, og hva nå ── */
+.vet-tre {
+  position: absolute;
+  left: var(--k1);
+  right: var(--marg);
+  top: var(--heng);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--renne);
+}
+.vet-kolonne {
+  padding-top: 22px;
+  border-top: 3px solid var(--papir);
+}
+.vet-kolonne h3,
+.vet-svakheter h3 {
+  margin: 0 0 18px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 48px;
+}
+.vet-kolonne .tekst + .tekst {
+  margin-top: 14px;
+}
+.vet-svakheter {
+  position: absolute;
+  left: var(--k1);
+  right: var(--marg);
+  top: 640px;
+}
+.vet-svakheter h3 {
+  font-size: 36px;
+}
+.vet-svakheter ol {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px var(--renne);
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: var(--t-tekst);
+}
+.vet-videre {
+  position: absolute;
+  left: var(--k1);
+  right: var(--marg);
+  top: var(--heng);
+}
+.vet-videre ol {
+  margin: 40px 0 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 12px;
+}
+.vet-pilot {
+  margin-top: 56px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.vet-pilot .ingress {
+  font-family: var(--serif);
+  font-weight: 600;
+}
+
+/* ── 5. Ideen og historien (gjenbrukt Ide-scene, nytt oppsett) ── */
+.lerret .ide-steg span {
+  font-size: 22px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.lerret .ide-steg b {
+  font-size: 30px;
+}
+.lerret .historie {
+  top: 470px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px var(--renne);
+  padding: 0 var(--marg);
+}
+.lerret .historie-tall b {
+  font-weight: 600;
+  font-size: 64px;
+  line-height: 1.02;
+}
+.lerret .historie-tall span {
+  margin-top: 14px;
+  font-size: 28px;
+  line-height: 1.3;
+}
+.lerret .historie-sitat {
+  grid-column: 1 / -1;
+  margin-top: 36px;
+  font-size: 60px;
+  font-weight: 500;
+}
+.lerret .historie-merk {
+  grid-column: 1 / -1;
+}
+
+/* ── Merket bygges (gjenbrukt ToInnsikter) ── */
+.lerret .ti-etikett,
+.lerret .ti-etikett span {
+  font-family: var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.lerret .ti-etikett b {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 40px;
+  letter-spacing: 0;
+}
+.lerret .ti-etikett span {
+  font-size: 24px;
+}
+.lerret .ti-linje {
+  font-size: 36px;
+}
+
+/* ── 10. Avslutning ── */
+.lerret .slutt-linje.liten {
+  font-size: 40px;
+  line-height: 1.25;
+  max-width: 1300px;
+}
+.lerret .tittel-vaktlogg {
+  letter-spacing: 0.32em;
+}
+.lerret .tittel-navn {
+  font-family: var(--sans);
+  font-size: 26px;
+  letter-spacing: 0.04em;
+}

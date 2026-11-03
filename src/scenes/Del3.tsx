@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import { manus } from '../content/manus.ts'
 import { filmUrl } from '../lib/film.ts'
-import hoppingMeta from '../lib/hopping.json'
 import { oppsett, navn } from '../lib/oppsett.ts'
 import { hent, neste } from '../lib/sync.ts'
 import { Bong, Merke } from '../ui/Deler.tsx'
 import { Foto } from '../ui/Foto.tsx'
 import { foto } from '../lib/foto.ts'
-import { FILM, Inn, MYK, useLys, type SceneProps } from './felles.tsx'
+import { FILM, Inn, MYK, useFilmVakt, useLys, type SceneProps } from './felles.tsx'
 
 /* ══ 13. Testing og iterasjon ═══════════════════════════════════════════════════ */
 
@@ -268,13 +267,13 @@ export function Slutt({ takt }: SceneProps) {
 
       <div className="slutt-linjer">
         <Inn vis={takt <= 2} className="slutt-linje stor-serif">
-          Vi startet med å undersøke fravær.
+          Vi startet med sykefravær.
         </Inn>
         <Inn vis={takt >= 1 && takt <= 2} d={0.3} className="slutt-linje liten">
-          Gjennom innsikt og brukermedvirkning endte vi med å utforske hvordan servitører kan oppleve mer motivasjon og anerkjennelse i arbeidshverdagen.
+          Vi endte med motivasjon, og med spørsmålet om hva servitøren sitter igjen med etter vakten.
         </Inn>
-        <Inn vis={takt === 2} d={3.2} className="slutt-linje kursiv stor-serif">
-          Vaktlogg er konseptet som vokste frem gjennom denne prosessen.
+        <Inn vis={takt === 2} d={2.6} className="slutt-linje kursiv stor-serif">
+          Når vakten er over, kan hun se hva hun fikk til.
         </Inn>
       </div>
 
@@ -302,108 +301,70 @@ export function Slutt({ takt }: SceneProps) {
   )
 }
 
-/* ══ 11. Frem og tilbake ══════════════════════════════════════════════════════════
-   Blender-filmen (public/film/hopping.mp4, blender/hopping.py): en lysende kule spretter mellom banen for innsikt
-   og banen for prototype. Hvert nedslag er noe som skjedde – teksten kommer i takt med filmen (hopping.json),
-   innsikt øverst og prototype nederst, som banene i bildet. Til slutt løfter kameraet seg og viser mønsteret. */
+/* ══ 8. Frem og tilbake ══════════════════════════════════════════════════════════
+   Blender-filmen (public/film/hopping.mp4, blender/hopping.py): kula spretter mellom banen for innsikt og banen
+   for prototype, og til slutt løfter kameraet seg over hele sporet. Filmen har ingen tekst – den skal oppleves.
+   Etterpå står sporet ovenfra, og parene «vi så → vi endret» kommer frem under det, med dato (A8). */
+
+const ITERASJONER = [
+  { sa: 'Vi viste en tidlig prototype til servitører', endret: 'Første digitale versjon', dato: '22.10' },
+  { sa: 'Folk skulle kunne prøve uten oss', endret: 'På nett via lenke', dato: '27.10' },
+  { sa: 'Uten oss trengte de en guide', endret: 'Sir Domeo', dato: '28.–29.10' },
+  { sa: 'Vi ville høre fra flere', endret: 'Tilbakemelding rett fra appen', dato: '30.10' },
+]
 
 export function Hopping({ takt }: SceneProps) {
   useLys(0)
   const video = useRef<HTMLVideoElement>(null)
-  const [t, setT] = useState(0)
   const [filmFeil, setFilmFeil] = useState(false)
 
   useEffect(() => {
     const v = video.current
-    if (!v) return
-    if (takt !== 1) {
-      v.pause()
-      if (takt === 0) v.currentTime = 0
-      return
-    }
+    if (!v || takt !== 0) return
     v.currentTime = 0
     v.play().catch(() => setFilmFeil(true))
-    let id = 0
-    const tikk = () => {
-      setT(v.currentTime)
-      id = requestAnimationFrame(tikk)
-    }
-    id = requestAnimationFrame(tikk)
-    return () => cancelAnimationFrame(id)
   }, [takt])
 
   const ferdig = () => {
     const n = hent()
-    if (manus[n.scene]?.id === 'hopping' && n.takt === 1) neste()
+    if (manus[n.scene]?.id === 'hopping' && n.takt === 0) neste()
   }
+  useFilmVakt(video, takt === 0, () => setFilmFeil(true))
   useEffect(() => {
-    if (!filmFeil || takt !== 1) return
-    const id = window.setTimeout(ferdig, 3000)
+    if (!filmFeil || takt !== 0) return
+    const id = window.setTimeout(ferdig, 2500)
     return () => clearTimeout(id)
   }, [filmFeil, takt])
 
-  // Den siste hendelsen på hver bane som har skjedd – til kameraet løfter seg over hele mønsteret
-  const { hendelser, varighet } = hoppingMeta
-  const oversikt = varighet - 3.6
-  const siste = (bane: string) => (takt === 1 && t < oversikt ? [...hendelser].reverse().find((h) => h.bane === bane && h.tid <= t + 0.05) : undefined)
-  const nr = (h?: { tid: number }) => (h ? hendelser.findIndex((x) => x.tid === h.tid) + 1 : 0)
-
   return (
     <div className="scene hopping">
-      <img className="hopping-film" src="film/hopping-slutt.png" alt="" style={{ opacity: takt === 2 ? 1 : 0 }} />
-      <motion.video
-        ref={video}
-        className="hopping-film"
-        src={filmUrl('hopping')}
-        muted
-        playsInline
-        preload="auto"
-        onEnded={ferdig}
-        onError={() => setFilmFeil(true)}
-        animate={{ opacity: takt === 2 ? 0 : 1 }}
-        transition={{ duration: 0.8 }}
-      />
+      <img className="hopping-film" src="film/hopping-slutt.png" alt="" />
+      <motion.video ref={video} className="hopping-film" src={filmUrl('hopping')} muted playsInline preload="auto" onEnded={ferdig} onError={() => setFilmFeil(true)} animate={{ opacity: takt === 0 ? 1 : 0 }} transition={{ duration: 0.6 }} />
 
-      <Inn vis={takt === 0} className="hopping-tittel">
-        <span className="overtittel">Innsikt ↔ prototype</span>
-        <b className="stor-serif">Frem og tilbake – hele veien</b>
-      </Inn>
+      <motion.div className="hopping-par" initial={{ opacity: 0 }} animate={{ opacity: takt >= 1 ? 1 : 0 }} transition={{ duration: 0.6 }}>
+        {ITERASJONER.map((p, i) => (
+          <Inn key={p.dato} vis={takt >= 1} d={0.3 + i * 0.5} className={`hopping-iterasjon ${takt >= 2 ? 'dempet' : ''}`}>
+            <span className="liten">{p.sa}</span>
+            <b>{p.endret}</b>
+            <span className="hopping-dato">{p.dato}</span>
+          </Inn>
+        ))}
+      </motion.div>
 
-      {(['innsikt', 'prototype'] as const).map((bane) => {
-        const h = siste(bane)
-        return (
-          <div key={bane} className={`hopping-linje ${bane}`}>
-            <AnimatePresence mode="wait">
-              {h && (
-                <motion.div key={h.tid} className="hopping-hendelse" initial={{ opacity: 0, y: bane === 'innsikt' ? -18 : 18, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, filter: 'blur(6px)' }} transition={{ duration: 0.45, ease: MYK }}>
-                  <small>
-                    {String(nr(h)).padStart(2, '0')} · {bane === 'innsikt' ? 'Innsikt' : 'Prototype'}
-                  </small>
-                  <span>{h.tekst}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-
-      <motion.div className="hopping-slor" initial={{ opacity: 0 }} animate={{ opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 1.2 }} />
-      <div className="hopping-test">
-        <Inn vis={takt === 2} d={0.4} className="overtittel">
-          Har prøvd prototypen · personer med tilknytning til blant annet
-        </Inn>
-        <div className="test-steder">
-          {oppsett.innsikt.testmiljoer.map((s, i) => (
-            <Inn key={s} vis={takt === 2} d={0.6 + i * 0.12} className="test-sted stor-serif">
-              {s}
-            </Inn>
-          ))}
+      <Inn vis={takt >= 2} className="hopping-motsatt">
+        <p className="ingress">Ønsket om oversikt over egne gjester og bord var ikke en del av motivasjonsideen. Vi prøvde det, og lærte at vi må prioritere.</p>
+        <p className="tekst">
+          Personer med tilknytning til blant annet {oppsett.innsikt.testmiljoer.join(', ').replace(/, ([^,]*)$/, ' og $1')} har prøvd prototypen, noen sammen med oss og noen alene via lenken.
+        </p>
+        <div className="stempel-rad">
+          <span className="merket observert">Gjennomført</span>
+          <span className="liten">demonstrasjoner, utforsking via lenke, muntlige og skriftlige tilbakemeldinger</span>
         </div>
-        <Inn vis={takt === 2} d={1.4} className="hopping-merk">
-          <span className="merket observert">Gjennomført</span> demonstrasjoner, egen utforsking via lenke, tilbakemeldinger i appen
-          <span className="merket illustrasjon">Utarbeidet</span> testopplegg med hypoteser
-        </Inn>
-      </div>
+        <div className="stempel-rad">
+          <span className="merket illustrasjon">Utarbeidet</span>
+          <span className="liten">et testopplegg med hypoteser, ikke gjennomført ennå</span>
+        </div>
+      </Inn>
     </div>
   )
 }

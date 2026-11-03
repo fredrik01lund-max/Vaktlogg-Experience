@@ -7,7 +7,7 @@ import { foto } from '../lib/foto.ts'
 import { oppsett, navn } from '../lib/oppsett.ts'
 import { hent, neste } from '../lib/sync.ts'
 import { Foto } from '../ui/Foto.tsx'
-import { FILM, Inn, MYK, useLys, useSek, type SceneProps } from './felles.tsx'
+import { FILM, Inn, MYK, useFilmVakt, useLys, useSek, type SceneProps } from './felles.tsx'
 
 /* ══ 1. «Vakten ovenfra» (stille, 22 s) ═══════════════════════════════════════════
    Blender-filmen (public/film/apning.mp4, laget av blender/apning_vakt.py): servitøren stempler inn på
@@ -38,8 +38,11 @@ export function Apning() {
 
   // Når filmen er ferdig, går presentasjonen videre til tittelen – og A begynner å snakke
   const ferdig = () => {
-    if (manus[hent().scene]?.id === 'apning') neste()
+    const t = hent()
+    const id = manus[t.scene]?.id
+    if ((id === 'apning' || id === 'vakten') && t.takt === 0) neste()
   }
+  useFilmVakt(video, true, () => setFeil(true))
   useEffect(() => {
     if (!feil) return
     const id = window.setTimeout(ferdig, 4000)
@@ -56,7 +59,7 @@ export function Apning() {
       <video ref={video} className="apning-film" src={filmUrl('apning')} muted playsInline preload="auto" onEnded={ferdig} onError={() => setFeil(true)} />
 
       <motion.div className="apning-klokke" initial={{ opacity: 0 }} animate={{ opacity: t > vaktStart + 0.05 && t < lysAv ? 1 : 0 }} transition={{ duration: 0.8 }}>
-        <span className="overtittel">Fredag · Brasserie Fjordgata</span>
+        <span className="overtittel">En tenkt fredag på en fiktiv restaurant</span>
         <span className="klokke">
           {String(Math.floor(min / 60)).padStart(2, '0')}
           <i>:</i>
@@ -114,13 +117,9 @@ export function TittelScene({ takt }: SceneProps) {
         <Inn vis={takt >= 1} d={0.5} className="utgangspunkt-ord stor-serif">
           Sykefravær
         </Inn>
-        <div className="utgangspunkt-trekk">
-          {['Knapp bemanning', 'Små marginer', 'Fysisk krevende arbeidsdager'].map((s, i) => (
-            <Inn key={s} vis={takt >= 1} d={1.2 + i * 0.35} className="merket">
-              {s}
-            </Inn>
-          ))}
-        </div>
+        <Inn vis={takt >= 1} d={1.2} className="utgangspunkt-trekk tekst">
+          Knapp bemanning, små marginer og lange, fysiske dager.
+        </Inn>
       </div>
     </div>
   )

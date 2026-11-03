@@ -42,7 +42,7 @@ async function last(navn: FilmNavn) {
       v.load()
     })
   }
-  sendStatus({ film: filmTilstand(), demo: '' })
+  sendStatus({ film: filmTilstand() })
 }
 
 export function forhandslastFilm() {

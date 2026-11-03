@@ -1,0 +1,241 @@
+/* ══ Designsystemet (nattøkta 3.–4.11) ═══════════════════════════════════════════
+   Lastes sist og gjelder hele presentasjonen. Målet er et uttrykk som ser laget ut, ikke generert:
+   - Én serif med karakter (Besley – Clarendon, som på menykort og emaljeskilt) og én nøktern grotesk
+     (Schibsted Grotesk – tegnet for norske aviser). Courier Prime bare der bongskriveren hører hjemme:
+     på bonger og på stemplene som merker forbehold (selvrapportert, observert, illustrasjon …).
+   - Seks skriftstørrelser, ingenting under 24 px (lesbart bakerst i rommet på en blek projektor).
+   - Et 12-kolonners rutenett: 96 px marg, kolonner på 100 px, 48 px renner. Overskrifter henger fra y = 216.
+   - Ingen effektlag på lyse scener: ingen korn, ingen bokeh, ingen glød, ingen gradienttekst.
+   Prototypens farger er beholdt som grunnfarger, men brukes flatt og med fast betydning. */
+
+:root {
+  --serif: 'Besley Variable', 'Besley', Georgia, serif;
+  --sans: 'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, 'Segoe UI', sans-serif;
+  --mono: var(--sans);
+  --bong: 'Courier Prime', 'Courier New', monospace;
+
+  /* Skriftskala (px på 1920 × 1080-lerretet) */
+  --t-merke: 24px;
+  --t-tekst: 32px;
+  --t-ingress: 44px;
+  --t-h2: 64px;
+  --t-h1: 96px;
+  --t-display: 144px;
+
+  /* Rutenett */
+  --marg: 96px;
+  --kol: 100px;
+  --renne: 48px;
+  --heng: 216px;
+  --grunn: 1008px;
+}
+/* Kolonne n starter her (1-basert): marg + (n-1) × (kol + renne) */
+.lerret {
+  --k1: 96px;
+  --k2: 244px;
+  --k3: 392px;
+  --k4: 540px;
+  --k5: 688px;
+  --k6: 836px;
+  --k7: 984px;
+  --k8: 1132px;
+  --k9: 1280px;
+  --k10: 1428px;
+  --k11: 1576px;
+  --k12: 1724px;
+}
+
+.lerret {
+  font-family: var(--sans);
+  font-feature-settings: 'kern', 'liga';
+}
+.lerret h1,
+.lerret h2,
+.lerret h3,
+.lerret .stor-serif {
+  text-wrap: balance;
+}
+.lerret p,
+.lerret li {
+  text-wrap: pretty;
+}
+
+/* Overtitler: en vanlig, liten setning – ikke sperrede versaler i mono */
+.lerret .overtittel {
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--dempet);
+}
+.lerret .stor-serif {
+  font-family: var(--serif);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-optical-sizing: auto;
+}
+
+/* Forbehold som bongstempel: Courier, svart ramme, ingen avrunding, litt skjevt – som stemplet på papir */
+.lerret .merket {
+  gap: 0;
+  padding: 6px 12px 5px;
+  border-radius: 0;
+  border: 2px solid currentColor;
+  font-family: var(--bong);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--papir);
+  background: transparent;
+  transform: rotate(-1deg);
+}
+.lerret .merket:nth-child(even) {
+  transform: rotate(0.8deg);
+}
+.lerret .merket::before {
+  display: none;
+}
+.lerret .merket.illustrasjon {
+  color: #8a5a00;
+}
+.lerret .merket.observert {
+  color: #1f6b4a;
+}
+.lerret .merket.fiktiv {
+  color: #9a2f5c;
+}
+.lerret.tema-mork .merket.illustrasjon {
+  color: #e9c27a;
+}
+.lerret.tema-mork .merket.observert {
+  color: #8fd9c0;
+}
+.lerret.tema-mork .merket.fiktiv {
+  color: #f6a2c8;
+}
+
+/* Effektlaget: bare i mørke scener (åpningen er natt i en restaurant – der hører lysene hjemme) */
+.lerret.tema-lys .korn,
+.lerret.tema-lys .vignett,
+.lerret.tema-lys .lys-lerret {
+  display: none;
+}
+.lerret.tema-mork .korn {
+  opacity: 0.04;
+}
+
+/* Ingen gradienttekst – ensfarget blekk */
+.lerret .tittel-bak,
+.lerret .sitat-tegn,
+.lerret .slutt-linje.kursiv {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  color: var(--papir);
+}
+
+/* Design Thinking-fasene: stille tekst øverst til venstre, ikke sperrede versaler */
+.lerret .faser {
+  left: var(--k1);
+  top: 52px;
+  gap: 28px;
+  font-family: var(--sans);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--svak);
+}
+.lerret .faser span.na {
+  color: var(--papir);
+}
+.lerret .faser span.na::after {
+  bottom: -8px;
+  height: 3px;
+  border-radius: 0;
+  background: currentColor;
+}
+
+/* Navnelinjen: nede til høyre, alltid fri fra merking (som står nede til venstre) */
+.lerret .navnelinje b {
+  font-family: var(--serif);
+  font-weight: 600;
+}
+.lerret .navnelinje small {
+  font-family: var(--sans);
+  font-size: 20px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Fremdriften: en tynn strek i blekk, ikke merkegradienten */
+.lerret .fremdrift {
+  background: var(--papir);
+  opacity: 0.25;
+}
+
+/* Fotnoter og merking: aldri mindre enn 24 px, aldri blek */
+.lerret .fotnote,
+.lerret .demo-merk,
+.lerret .pakket-merk {
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  letter-spacing: 0;
+  color: var(--papir-2);
+}
+
+/* ── Felles byggeklosser for de nye scenene ── */
+.lerret .rute {
+  position: absolute;
+  left: var(--k1);
+  right: var(--marg);
+  top: var(--heng);
+}
+.lerret .h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: var(--t-h1);
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+.lerret .h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: var(--t-h2);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.lerret .ingress {
+  margin: 0;
+  font-size: var(--t-ingress);
+  line-height: 1.25;
+  font-weight: 500;
+}
+.lerret .tekst {
+  margin: 0;
+  font-size: var(--t-tekst);
+  line-height: 1.35;
+}
+.lerret .liten {
+  font-size: var(--t-merke);
+  line-height: 1.3;
+  color: var(--dempet);
+}
+.lerret .kilde-linje {
+  position: absolute;
+  left: var(--k1);
+  bottom: calc(1080px - var(--grunn));
+  font-size: var(--t-merke);
+  color: var(--dempet);
+}
+.lerret .stempel-rad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+  align-items: center;
+}

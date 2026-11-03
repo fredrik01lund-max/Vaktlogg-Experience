@@ -12,7 +12,7 @@ import { FILM, Inn, MYK, useLys, useSek, type SceneProps } from './felles.tsx'
 
 const PEKTE_PA = [
   { t: 'Lav lønn', x: -620, y: -250 },
-  { t: 'Høyt arbeidstempo', x: 560, y: -270 },
+  { t: 'Lange dager', x: 560, y: -270 },
   { t: 'Fysisk belastning', x: -700, y: 210 },
   { t: 'Begrenset anerkjennelse', x: 560, y: 230 },
 ]
@@ -37,7 +37,7 @@ export function Snu({ takt }: SceneProps) {
           </motion.span>
         ))}
         <motion.div className="snu-motsatt" initial={{ opacity: 0, y: 30 }} animate={{ opacity: takt === 0 ? 1 : 0, y: takt === 0 ? 0 : 30 }} transition={{ duration: 1.2, delay: takt === 0 ? 2.6 : 0, ease: MYK }}>
-          Men noen gikk på jobb syke – for ikke å svikte kollegene.
+          En servitør gikk på jobb syk fordi de alltid mangler folk.
         </motion.div>
 
         <motion.div animate={{ y: takt >= 1 ? -90 : 0, scale: takt >= 2 ? 0.72 : 1 }} transition={{ duration: 1.4, delay: takt === 1 ? 4.6 : 0, ease: MYK }}>
@@ -179,19 +179,23 @@ export function Ide({ takt }: SceneProps) {
       </motion.div>
 
       <div className="historie">
-        <Inn vis={takt >= 1} d={0.3} className="historie-tall" style={{ color: 'var(--aktivitet)' }}>
-          <b>+ ca. 5 000</b>
-          <span>skritt mer enn vanlig – hun lærte blant annet opp en ny kollega</span>
+        <Inn vis={takt >= 1} d={0.3} className="historie-tall" style={{ color: 'var(--salg)' }}>
+          <b>Vin til 5 000 kr</b>
+          <span>sjefen hadde lovet en premie til den som solgte den</span>
         </Inn>
-        <Inn vis={takt >= 1} d={0.9} className="historie-tall" style={{ color: 'var(--salg)' }}>
-          <b>3 flasker vin</b>
-          <span>solgt samme vakt</span>
+        <Inn vis={takt >= 1} d={0.9} className="historie-tall" style={{ color: 'var(--aktivitet)' }}>
+          <b>«Gikk veldig mye»</b>
+          <span>hun lærte opp en ny servitør samtidig</span>
         </Inn>
-        <Inn vis={takt >= 1} d={1.6} className="historie-sitat stor-serif">
-          Hun beskrev den ekstra innsatsen som verdt det.
+        <Inn vis={takt >= 1} d={1.5} className="historie-tall" style={{ color: 'var(--salg)' }}>
+          <b>3 flasker</b>
+          <span>solgt samme kveld</span>
         </Inn>
-        <Inn vis={takt >= 1} d={2} className="historie-merk">
-          <span className="merket illustrasjon">Gjenfortalt fra ett intervju · selvrapportert</span>
+        <Inn vis={takt >= 1} d={2.1} className="historie-sitat stor-serif">
+          «Det var verdt det.»
+        </Inn>
+        <Inn vis={takt >= 1} d={2.4} className="historie-merk">
+          <span className="merket illustrasjon">Fortalt i ett intervju</span>
         </Inn>
       </div>
     </div>
@@ -337,8 +341,7 @@ export function ToInnsikter({ takt }: SceneProps) {
           Vaktlogg
         </Inn>
         <Inn vis={takt >= 1} d={0.3} className="ti-linje">
-          <span style={{ color: 'var(--aktivitet)' }}>Aktivitet</span> + <span style={{ color: 'var(--salg)' }}>salg</span> + <span style={{ color: 'var(--anerkjennelse)' }}>anerkjennelse</span>
-          <em> – i én personlig tjeneste, med motivasjon som mål</em>
+          <span style={{ color: 'var(--aktivitet)' }}>Skritt</span> og <span style={{ color: 'var(--salg)' }}>salg</span> i samme app, og <span style={{ color: 'var(--anerkjennelse)' }}>anerkjennelse</span> fra kollegene
         </Inn>
       </div>
     </div>

@@ -23,12 +23,14 @@ export type Tilstand = {
   demoNr: number
 }
 
-export type Status = { film: 'laster' | 'klar' | 'feil'; demo: string; sist: number }
+/** mobil: antall mobiler koblet til eksamenstjeneren (null = ingen tjener, f.eks. GitHub Pages eller fil). */
+export type Status = { film: 'laster' | 'klar' | 'feil'; demo: string; mobil: number | null; sist: number }
 
 type Melding =
   | { type: 'tilstand'; t: Tilstand; fra: string }
   | { type: 'hei'; fra: string }
   | { type: 'status'; s: Omit<Status, 'sist'>; fra: string }
+  | { type: 'lydtest'; fra: string }
 
 const ID = Math.random().toString(36).slice(2)
 // Lagret tilstand hører til én bestemt scenerekkefølge: endres manus (scener eller antall takter),
@@ -56,7 +58,7 @@ function lesLagret(): Tilstand {
 }
 
 let tilstand: Tilstand = lesLagret()
-let status: Status = { film: 'laster', demo: '', sist: 0 }
+let status: Status = { film: 'laster', demo: '', mobil: null, sist: 0 }
 const lyttere = new Set<() => void>()
 const varsle = () => lyttere.forEach((f) => f())
 
@@ -95,6 +97,8 @@ function motta(m: Melding) {
   } else if (m.type === 'status') {
     status = { ...m.s, sist: Date.now() }
     varsle()
+  } else if (m.type === 'lydtest') {
+    lydtestLyttere.forEach((f) => f())
   }
 }
 
@@ -122,10 +126,24 @@ export function sett(endring: Partial<Tilstand>) {
   send({ type: 'tilstand', t: tilstand, fra: ID })
 }
 
+// Status settes sammen fra flere kilder (filmene, demoen, mobilen) – hver sender bare sin del
 let minStatus: Omit<Status, 'sist'> | null = null
-export function sendStatus(s: Omit<Status, 'sist'>) {
-  minStatus = s
-  send({ type: 'status', s, fra: ID })
+export function sendStatus(s: Partial<Omit<Status, 'sist'>>) {
+  minStatus = { film: 'laster', demo: '', mobil: null, ...minStatus, ...s }
+  send({ type: 'status', s: minStatus, fra: ID })
+}
+
+/** Presentatøren trykker «Test lyd»: hovedskjermen spiller en replikk, så dere hører at lyden går ut i rommet. */
+const lydtestLyttere = new Set<() => void>()
+export function lydtest() {
+  send({ type: 'lydtest', fra: ID })
+  lydtestLyttere.forEach((f) => f())
+}
+export function paLydtest(f: () => void) {
+  lydtestLyttere.add(f)
+  return () => {
+    lydtestLyttere.delete(f)
+  }
 }
 
 export function useTilstand(): Tilstand {

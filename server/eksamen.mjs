@@ -19,6 +19,13 @@ if (!MAPPE) {
   console.error('Fant ingen bygget presentasjon. Kjør først: npm run build:eksamen')
   process.exit(1)
 }
+if (!process.argv[2] && path.basename(MAPPE) === 'dist') {
+  console.warn('\n  ⚠ Fant ikke dist-eksamen – bruker dist/ (den offentlige versjonen). Kjør npm run build:eksamen.')
+}
+
+// En feil i én forespørsel skal aldri stoppe tjeneren midt i fremføringen
+process.on('uncaughtException', (e) => console.error('  Feil (tjeneren kjører videre):', e?.message ?? e))
+process.on('unhandledRejection', (e) => console.error('  Feil (tjeneren kjører videre):', e?.message ?? e))
 
 const TYPER = {
   '.html': 'text/html; charset=utf-8',
@@ -45,7 +52,14 @@ const tjener = http.createServer((req, res) => {
     res.end(JSON.stringify({ speil: true, mobiler: sendere() }))
     return
   }
-  let fil = path.normalize(path.join(MAPPE, decodeURIComponent(url.pathname)))
+  let sti
+  try {
+    sti = decodeURIComponent(url.pathname)
+  } catch {
+    res.writeHead(400).end()
+    return
+  }
+  let fil = path.normalize(path.join(MAPPE, sti))
   if (!fil.startsWith(MAPPE)) {
     res.writeHead(403).end()
     return
@@ -63,11 +77,15 @@ const tjener = http.createServer((req, res) => {
       const start = range[1] ? Number(range[1]) : 0
       const slutt = range[2] ? Number(range[2]) : st.size - 1
       res.writeHead(206, { 'content-type': type, 'content-length': slutt - start + 1, 'content-range': `bytes ${start}-${slutt}/${st.size}`, 'accept-ranges': 'bytes' })
-      fs.createReadStream(fil, { start, end: slutt }).pipe(res)
+      fs.createReadStream(fil, { start, end: slutt })
+        .on('error', () => res.destroy())
+        .pipe(res)
       return
     }
     res.writeHead(200, { 'content-type': type, 'content-length': st.size, 'accept-ranges': 'bytes', 'cache-control': 'no-cache' })
-    fs.createReadStream(fil).pipe(res)
+    fs.createReadStream(fil)
+      .on('error', () => res.destroy())
+      .pipe(res)
   })
 })
 
@@ -98,11 +116,11 @@ wss.on('connection', (ws, req) => {
   })
 })
 
+/** IPv4-adressene med navnet på nettverkskortet, så det er lett å velge riktig (Wi-Fi/hotspot, ikke VPN eller WSL). */
 function adresser() {
-  return Object.values(os.networkInterfaces())
-    .flat()
-    .filter((a) => a && a.family === 'IPv4' && !a.internal)
-    .map((a) => a.address)
+  return Object.entries(os.networkInterfaces()).flatMap(([navn, liste]) =>
+    (liste ?? []).filter((a) => a.family === 'IPv4' && !a.internal).map((a) => ({ navn, adresse: a.address })),
+  )
 }
 
 tjener.listen(PORT, '0.0.0.0', () => {
@@ -111,7 +129,9 @@ tjener.listen(PORT, '0.0.0.0', () => {
   console.log(`  Storskjermen:  http://localhost:${PORT}/`)
   if (ip.length) {
     console.log(`  Sensor-mobilen (samme nett som PC-en):`)
-    for (const a of ip) console.log(`                 http://${a}:${PORT}/demo/vaktlogg.html?sensor&speil=send`)
+    for (const a of ip) console.log(`                 http://${a.adresse}:${PORT}/demo/vaktlogg.html?sensor&speil=send   (${a.navn})`)
+    console.log('  Bruk adressen på kortet mobilen er koblet til (Wi-Fi / hotspot). Spør Windows om brannmuren:')
+    console.log('  tillat Node på både private og offentlige nett – en hotspot blir ofte regnet som offentlig.')
   } else {
     console.log('  Fant ikke noe nettverk – koble PC-en til mobil-hotspot eller Wi-Fi og start på nytt.')
   }
