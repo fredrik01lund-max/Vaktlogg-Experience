@@ -1,99 +1,76 @@
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
+import { manus } from '../content/manus.ts'
+import apningMeta from '../lib/apning.json'
+import { filmUrl } from '../lib/film.ts'
 import { foto } from '../lib/foto.ts'
 import { oppsett, navn } from '../lib/oppsett.ts'
-import { Bong, Klokke, type BongData } from '../ui/Deler.tsx'
+import { hent, neste } from '../lib/sync.ts'
 import { Foto } from '../ui/Foto.tsx'
 import { FILM, Inn, MYK, useLys, useSek, type SceneProps } from './felles.tsx'
 
-/* ══ 1. Restaurantåpningen (stille, 22 s) ════════════════════════════════════════
-   Bongene ruller inn på skinnen og vakten tar av – så blir det stille. Ingen tale,
-   virker uten lyd. Fotografier fra restauranten blinker forbi bak bongene når de finnes. */
-
-const BONGER: BongData[] = [
-  { bord: 'BORD 12', pax: '4 PAX', tid: '17:10', linjer: ['2 × ANDEBRYST', '1 × TORSK', '1 × RISOTTO'], merk: 'ALLERGI: NØTTER' },
-  { bord: 'BORD 14', pax: '2 PAX', tid: '17:25', linjer: ['2 × VINMENY'] },
-  { bord: 'BORD 11', pax: '6 PAX', tid: '17:40', linjer: ['BURSDAG', 'DESSERT KL 20'] },
-  { bord: 'BORD 16', pax: '3 PAX', tid: '18:05', linjer: ['3 × DAGENS'] },
-  { bord: 'BORD 13', pax: '2 PAX', tid: '18:30', linjer: ['KOMMER SENT'] },
-  { bord: 'BORD 15', pax: '5 PAX', tid: '18:45', linjer: ['2 × TARTAR', '3 × TORSK'], merk: 'GLUTENFRI' },
-  { bord: 'BORD 17', pax: '2 PAX', tid: '19:10', linjer: ['REGNINGEN'] },
-  { bord: 'BORD 12', tid: '19:40', linjer: ['4 × DESSERT'] },
-  { bord: 'BORD 11', tid: '20:15', linjer: ['6 × KAFFE'] },
-  { bord: 'BORD 16', tid: '20:30', linjer: ['VENTER PÅ MAT'], merk: 'HASTER' },
-  { bord: 'BORD 14', tid: '20:45', linjer: ['EKSTRA BRØD'] },
-  { bord: 'BORD 13', tid: '21:05', linjer: ['2 × HOVEDRETT'] },
-  { bord: 'BORD 15', tid: '21:30', linjer: ['REGNINGEN'] },
-  { bord: 'BORD 17', pax: '4 PAX', tid: '22:10', linjer: ['NYTT BORD'] },
-]
-// Bongene kommer stadig tettere – kvelden tar av
-const ANKOMST = [3.0, 4.5, 5.8, 6.9, 7.8, 8.6, 9.3, 9.9, 10.4, 10.9, 11.35, 11.75, 12.1, 12.45]
-const STOPP = 13.6
-const ROTASJON = [-2.2, 1.6, -0.8, 2.4, -1.8, 0.9, -2.6, 1.9, -1.2, 2.1, -0.5, 1.3, -2.0, 0.7]
-const GLIMT = [
-  { id: 'apning-1', fra: 5.2, til: 6.6 },
-  { id: 'apning-2', fra: 8.9, til: 10.1 },
-  { id: 'apning-3', fra: 11.6, til: 12.6 },
-]
+/* ══ 1. «Vakten ovenfra» (stille, 22 s) ═══════════════════════════════════════════
+   Blender-filmen (public/film/apning.mp4, laget av blender/apning_vakt.py): over skulderen på
+   servitøren med brettet, så kran opp over restauranten mens vakten tar av – gjester, bonger,
+   bord som skifter farge som i appen, og et lysende spor der hun går. Lysene slukkes, sporet
+   blir igjen. Ingen ord – bare klokka, som følger filmen, og tittelen til slutt. */
 
 export function Apning() {
-  const t = useSek()
-  useLys(t < 1 ? 0 : t < STOPP ? 0.95 : t < 19.4 ? 0.28 : 0.7)
-  const synlige = ANKOMST.filter((a) => t >= a).length
-  const stoppet = t >= STOPP
-  const sperre = t < 19.4
+  useLys(0)
+  const video = useRef<HTMLVideoElement>(null)
+  const [t, setT] = useState(0)
+  const [feil, setFeil] = useState(false)
+
+  // Tiden følger filmen selv, så klokka og tittelen står i takt med bildet
+  useEffect(() => {
+    const v = video.current
+    if (!v) return
+    v.currentTime = 0
+    v.play().catch(() => setFeil(true))
+    let id = 0
+    const tikk = () => {
+      setT(v.currentTime)
+      id = requestAnimationFrame(tikk)
+    }
+    id = requestAnimationFrame(tikk)
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  // Når filmen er ferdig, går presentasjonen videre til tittelen – og A begynner å snakke
+  const ferdig = () => {
+    if (manus[hent().scene]?.id === 'apning') neste()
+  }
+  useEffect(() => {
+    if (!feil) return
+    const id = window.setTimeout(ferdig, 4000)
+    return () => clearTimeout(id)
+  }, [feil])
+
+  const { vaktStart, vaktSlutt, lysAv, varighet } = apningMeta
+  const andel = Math.min(1, Math.max(0, (t - vaktStart) / (vaktSlutt - vaktStart)))
+  const min = Math.round(16 * 60 + andel * 450)
+  const tittel = feil || t > varighet - 2.6
 
   return (
     <div className="scene apning">
-      {GLIMT.map((g) =>
-        foto(g.id).status === 'ok' ? (
-          <motion.div key={g.id} className="apning-glimt" initial={{ opacity: 0 }} animate={{ opacity: t >= g.fra && t < g.til ? 0.55 : 0 }} transition={{ duration: 0.35 }}>
-            <Foto id={g.id} kamera="inn" tid={4} />
-          </motion.div>
-        ) : null,
-      )}
+      <video ref={video} className="apning-film" src={filmUrl('apning')} muted playsInline preload="auto" onEnded={ferdig} onError={() => setFeil(true)} />
 
-      <motion.div className="skinne" initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: t > 1.2 ? 1 : 0, opacity: t > 1.2 && !(t > 14.5) ? 1 : 0 }} transition={{ duration: 1.6, ease: FILM }} />
-
-      <div className="bongrekke">
-        {BONGER.slice(0, synlige).map((b, i) => {
-          const fraHoyre = synlige - 1 - i // 0 = nyeste
-          const x = 1540 - fraHoyre * 214
-          const faller = stoppet
-          return (
-            <motion.div
-              key={i}
-              className="bong-holder"
-              initial={{ x: 2100, y: 0, rotate: 8, opacity: 1 }}
-              animate={
-                faller
-                  ? { x, y: 760, rotate: ROTASJON[i] * 6, opacity: 0 }
-                  : { x, y: 0, rotate: ROTASJON[i], opacity: x < -200 ? 0 : 1 }
-              }
-              transition={faller ? { duration: 1.1, delay: (i % 5) * 0.08, ease: [0.5, 0, 0.9, 0.4] } : { type: 'spring', stiffness: 120, damping: 17, mass: 0.9 }}
-            >
-              <Bong b={b} />
-            </motion.div>
-          )
-        })}
-      </div>
-
-      <motion.div className="apning-klokke" initial={{ opacity: 0 }} animate={{ opacity: t > 2.2 && t < 19.2 ? 1 : 0 }} transition={{ duration: 0.8 }}>
+      <motion.div className="apning-klokke" initial={{ opacity: 0 }} animate={{ opacity: t > vaktStart - 0.4 && t < lysAv ? 1 : 0 }} transition={{ duration: 0.8 }}>
         <span className="overtittel">Fredag · Brasserie Fjordgata</span>
-        <Klokke fra={16 * 60} til={23 * 60 + 30} sek={STOPP - 2.6} start={t > 2.6} />
+        <span className="klokke">
+          {String(Math.floor(min / 60)).padStart(2, '0')}
+          <i>:</i>
+          {String(min % 60).padStart(2, '0')}
+        </span>
       </motion.div>
 
-      <Inn vis={t > 14.9 && t < 17.1} className="apning-linje stor-serif" tid={1.2}>
-        Vakten er over.
-      </Inn>
-      <Inn vis={t > 17.3 && t < 19.4} className="apning-linje stor-serif kursiv" tid={1.2}>
-        Hva sitter hun igjen med?
-      </Inn>
-
-      <Tittel vis={t > 19.7} />
+      {/* Mørkere midtparti bak tittelen, så teksten står klart over det lysende sporet */}
+      <motion.div className="tittel-dimmer" initial={{ opacity: 0 }} animate={{ opacity: tittel ? 1 : 0 }} transition={{ duration: 1.6 }} />
+      <Tittel vis={tittel} />
 
       {/* Filmformat (2,39:1) til tittelen kommer */}
-      <motion.div className="sperre topp" initial={{ height: 138 }} animate={{ height: sperre ? 138 : 0 }} transition={{ duration: 1.8, ease: FILM }} />
-      <motion.div className="sperre bunn" initial={{ height: 138 }} animate={{ height: sperre ? 138 : 0 }} transition={{ duration: 1.8, ease: FILM }} />
+      <motion.div className="sperre topp" initial={{ height: 138 }} animate={{ height: tittel ? 0 : 138 }} transition={{ duration: 1.8, ease: FILM }} />
+      <motion.div className="sperre bunn" initial={{ height: 138 }} animate={{ height: tittel ? 0 : 138 }} transition={{ duration: 1.8, ease: FILM }} />
     </div>
   )
 }
@@ -114,12 +91,18 @@ function Tittel({ vis, navnene = false }: { vis: boolean; navnene?: boolean }) {
   )
 }
 
-/* ══ 2. Behind the shift – åpning og utgangspunkt (A) ═══════════════════════════ */
+/* ══ 2. Behind the shift – åpning og utgangspunkt (A) ═══════════════════════════
+   Bak tittelen står siste bilde fra åpningsfilmen (sporet i mørket), så overgangen er sømløs. */
 
 export function TittelScene({ takt }: SceneProps) {
-  useLys(takt === 0 ? 0.7 : 0.35)
+  useLys(takt === 0 ? 0 : 0.35)
+  const [harBilde, setHarBilde] = useState(true)
   return (
     <div className="scene tittel-scene">
+      {harBilde && (
+        <motion.img className="apning-film" src="film/apning-slutt.png" alt="" onError={() => setHarBilde(false)} initial={false} animate={{ opacity: takt === 0 ? 1 : 0, scale: takt === 0 ? 1 : 1.04 }} transition={{ duration: 1.6, ease: MYK }} />
+      )}
+      <motion.div className="tittel-dimmer" initial={false} animate={{ opacity: takt === 0 && harBilde ? 1 : 0 }} transition={{ duration: 1.2 }} />
       <motion.div animate={{ y: takt >= 1 ? -330 : 0, scale: takt >= 1 ? 0.55 : 1, opacity: takt >= 1 ? 0 : 1 }} transition={{ duration: 1.3, ease: MYK }} style={{ position: 'absolute', inset: 0 }}>
         <Tittel vis navnene />
       </motion.div>

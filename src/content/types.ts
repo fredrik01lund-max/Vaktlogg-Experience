@@ -23,6 +23,8 @@ export type Scene = {
   /** Del av fortellingen (vises i presentatørvisningen og manuset). */
   del: 'Åpning' | 'Problem og innsikt' | 'Design Thinking og konsept' | 'Prototype og testing' | 'Refleksjon og videre' | 'Avslutning'
   fase?: Fase
+  /** Fargetema: lyst (prototypens, standard) eller mørkt (åpningen – natten). */
+  tema?: 'lys' | 'mork'
   /** Planlagt varighet i sekunder. Summen skal bli 720 (12 minutter). */
   varighet: number
   takter: Takt[]

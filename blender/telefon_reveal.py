@@ -207,9 +207,11 @@ def skjerm_materiale():
     return m, p
 
 
-def glod_materiale():
-    """Svak, varm glød bak telefonen (gir dybde). Tones ut før siste bilde."""
-    m = bpy.data.materials.new("Glød")
+def bakteppe_materiale():
+    """Bakteppet: skrå pastellovergang fersken → rosa (som prototypens --dock-grad) med et lysere midtparti.
+    Lyser selv med styrke 1, så fargene gjengis nøyaktig (Standard-visning) – presentasjonen bruker de
+    samme fargene rundt telefonen etter filmen."""
+    m = bpy.data.materials.new("Bakteppe")
     try:
         m.use_nodes = True
     except Exception:
@@ -218,24 +220,44 @@ def glod_materiale():
     for n in list(nt.nodes):
         nt.nodes.remove(n)
     ut = nt.nodes.new("ShaderNodeOutputMaterial")
-    em = nt.nodes.new("ShaderNodeEmission")
     tc = nt.nodes.new("ShaderNodeTexCoord")
+    # Skrå overgang: lokal x (−0,5…0,5) dreid og flyttet til 0…1
     mp = nt.nodes.new("ShaderNodeMapping")
-    mp.inputs["Scale"].default_value = (3.0, 3.2, 1.0)
+    mp.inputs["Location"].default_value = (0.5, 0.5, 0)
+    mp.inputs["Rotation"].default_value = (0, 0, math.radians(-28))
+    mp.inputs["Scale"].default_value = (1.6, 1.6, 1)
     gr = nt.nodes.new("ShaderNodeTexGradient")
-    gr.gradient_type = "SPHERICAL"
+    gr.gradient_type = "LINEAR"
     cr = nt.nodes.new("ShaderNodeValToRGB")
-    cr.color_ramp.interpolation = "EASE"
-    cr.color_ramp.elements[0].color = (0, 0, 0, 1)
-    cr.color_ramp.elements[1].position = 1.0
-    cr.color_ramp.elements[1].color = srgb("#B5546E")
+    cr.color_ramp.elements[0].position = 0.25
+    cr.color_ramp.elements[0].color = srgb("#FFD2AC")
+    cr.color_ramp.elements[1].position = 0.75
+    cr.color_ramp.elements[1].color = srgb("#F7BBD2")
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Strength"].default_value = 1.0
+    # Lyst midtparti bak telefonen
+    mp2 = nt.nodes.new("ShaderNodeMapping")
+    mp2.inputs["Scale"].default_value = (2.6, 3.6, 1)
+    kule = nt.nodes.new("ShaderNodeTexGradient")
+    kule.gradient_type = "SPHERICAL"
+    em2 = nt.nodes.new("ShaderNodeEmission")
+    em2.inputs["Color"].default_value = srgb("#FFF6EE")
+    legg = nt.nodes.new("ShaderNodeAddShader")
     nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
     nt.links.new(mp.outputs["Vector"], gr.inputs["Vector"])
     nt.links.new(gr.outputs["Fac"], cr.inputs["Fac"])
     nt.links.new(cr.outputs["Color"], em.inputs["Color"])
-    nt.links.new(em.outputs["Emission"], ut.inputs["Surface"])
-    em.inputs["Strength"].default_value = 0.0
-    return m, em
+    nt.links.new(tc.outputs["Object"], mp2.inputs["Vector"])
+    nt.links.new(mp2.outputs["Vector"], kule.inputs["Vector"])
+    svak = nt.nodes.new("ShaderNodeMath")
+    svak.operation = "MULTIPLY"
+    svak.inputs[1].default_value = 0.22
+    nt.links.new(kule.outputs["Fac"], svak.inputs[0])
+    nt.links.new(svak.outputs["Value"], em2.inputs["Strength"])
+    nt.links.new(em.outputs["Emission"], legg.inputs[0])
+    nt.links.new(em2.outputs["Emission"], legg.inputs[1])
+    nt.links.new(legg.outputs["Shader"], ut.inputs["Surface"])
+    return m
 
 
 def lys(navn, plass, farge, styrke, storrelse, mal):
@@ -271,11 +293,14 @@ def bygg():
     tel = bpy.data.objects.new("Telefon", None)
     sc.collection.objects.link(tel)
 
-    ramme = mat("Ramme", srgb("#2A2A2E"), metall=1.0, ruhet=0.24)
+    # Prototypens farger: lys aluminium, bakside i pastell rosa (--pink-fill), merket som appikonet
+    # (hvit ring, plommefarget V)
+    ramme = mat("Ramme", srgb("#E8E1DA"), metall=1.0, ruhet=0.28)
     glass = mat("Frontglass", (0, 0, 0, 1), ruhet=0.03)
-    bak = mat("Bakglass", srgb("#3A1724"), ruhet=0.42, coat=1.0)
-    logo = mat("Logo", srgb("#F2C6B4"), metall=1.0, ruhet=0.14)
-    linse = mat("Linse", srgb("#05070C"), ruhet=0.02, coat=1.0)
+    bak = mat("Bakglass", srgb("#F6C2D6"), ruhet=0.5, coat=0.6)
+    logo = mat("Logo", srgb("#FFFFFF"), ruhet=0.18, coat=1.0)
+    logo_v = mat("LogoV", srgb("#8A3352"), ruhet=0.2, coat=1.0)
+    linse = mat("Linse", srgb("#0B0D12"), ruhet=0.02, coat=1.0)
 
     k = kropp()
     k.data.materials.append(ramme)
@@ -317,7 +342,7 @@ def bygg():
     ring = kurve("LogoRing", None, 0.011, logo, tel, sirkel_radius=0.13, slutt=0.78)
     ring.location = (0, -FRONT_Y + 0.004, -0.02)
     ring.rotation_euler = (math.pi / 2, math.radians(-35), 0)
-    v = kurve("LogoV", [(-0.052, 0.042), (0, -0.054), (0.052, 0.042)], 0.014, logo, tel)
+    v = kurve("LogoV", [(-0.052, 0.042), (0, -0.054), (0.052, 0.042)], 0.014, logo_v, tel)
     v.location = (0, -FRONT_Y + 0.004, -0.02)
     v.rotation_euler = (math.pi / 2, 0, 0)
 
@@ -326,13 +351,29 @@ def bygg():
     knapp("Volum ned", -TW / 2 - 0.004, 0.14, 0.07, ramme, tel)
     knapp("Handling", -TW / 2 - 0.004, 0.46, 0.035, ramme, tel)
 
-    # Glød bak
+    # Bakteppe i prototypens pastell (som demolinjens --dock-grad: fersken → rosa), lyser selv
     bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 7.0, 0.4), rotation=(math.pi / 2, 0, 0))
     gp = bpy.context.active_object
-    gp.name = "Glød"
-    gp.scale = (24, 16, 1)
-    g_mat, g_em = glod_materiale()
-    gp.data.materials.append(g_mat)
+    gp.name = "Bakteppe"
+    gp.scale = (40, 26, 1)
+    gp.data.materials.append(bakteppe_materiale())
+
+    # Fire pastellringer – fargene på appens fire bokser: Helse rosa, Salg oransje, Konkurranse gul, Gjester grønn
+    ringer = []
+    for i, (farge, plass, r, vri) in enumerate(
+        (
+            ("#F4A6C2", (-1.55, -1.4, 0.55), 0.42, (70, 20, 10)),
+            ("#FFC48E", (1.75, 1.6, -0.45), 0.6, (60, -30, 40)),
+            ("#F7D774", (1.25, -2.4, 1.05), 0.3, (20, 60, 0)),
+            ("#9EDDBE", (-1.9, 2.3, -0.95), 0.55, (80, 10, -30)),
+        )
+    ):
+        bpy.ops.mesh.primitive_torus_add(major_radius=r, minor_radius=r * 0.24, major_segments=96, minor_segments=32, location=plass, rotation=tuple(math.radians(a) for a in vri))
+        ring_o = bpy.context.active_object
+        ring_o.name = f"Pastellring{i}"
+        bpy.ops.object.shade_smooth()
+        ring_o.data.materials.append(mat(f"Ring{i}", srgb(farge), ruhet=0.38, coat=0.35))
+        ringer.append(ring_o)
 
     # Kamera
     cd = bpy.data.cameras.new("Kamera")
@@ -356,24 +397,39 @@ def bygg():
     avstand = (SH / SKJERM_ANDEL / 2) / math.tan(vfov / 2)
     slutt_y = FRONT_Y - 0.0008 - avstand
 
-    # Lys: varm hovedlys, to fargede kantlys bak (Vaktlogg-fersken og -rosa), et feiende striplys bak kameraet
-    hoved = lys("Hovedlys", (-4.5, -5.5, 4.0), srgb("#FFE2C6"), 0, (3.0, 3.0), tel)
-    kant_v = lys("Kantlys venstre", (-3.2, 2.6, 0.8), srgb("#FFB48A"), 0, (0.35, 5.0), tel)
-    kant_h = lys("Kantlys høyre", (3.2, 2.6, 0.2), srgb("#F49AC4"), 0, (0.35, 5.0), tel)
+    # Lys: lyst og mykt (høy nøkkel), med fersken og rosa kantlys bak og et feiende striplys bak kameraet
+    hoved = lys("Hovedlys", (-4.5, -5.5, 4.0), srgb("#FFF1E4"), 0, (4.0, 4.0), tel)
+    fyll = lys("Fyllys", (5.0, -6.0, -1.0), srgb("#FDE3EC"), 0, (5.0, 5.0), tel)
+    kant_v = lys("Kantlys venstre", (-3.2, 2.6, 0.8), srgb("#FFC48E"), 0, (0.35, 5.0), tel)
+    kant_h = lys("Kantlys høyre", (3.2, 2.6, 0.2), srgb("#F4A6C2"), 0, (0.35, 5.0), tel)
     feie = lys("Feiende lys", (-9.0, -16.0, 1.2), srgb("#FFFFFF"), 0, (0.8, 9.0), mal)
+    # Lys verden: myke refleksjoner i aluminiumen
+    bg = sc.world.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = srgb("#FFF3EA")
+    bg.inputs["Strength"].default_value = 0.4
 
     # --- Tidslinje (30 bilder/s) ---
-    # 0–1,5 s mørke, kantlysene våkner · 1,5–4,6 s telefonen snur seg mot oss · 3,8–4,8 s skjermen våkner
-    # 4,6–9,4 s kameraet kjører inn · 9,4–10 s står helt stille (presentasjonen toner over her)
-    nokkel(tel, "location", [(1, (0.0, 0.0, -0.42)), (138, (0.0, 0.0, 0.0))])
+    # 0–1,5 s lyset kommer på, ringene svever · 1,5–4,6 s telefonen stiger og snur seg mot oss
+    # 4,7–5,6 s skjermen våkner · 4,6–9,4 s kameraet kjører inn, ringene glir ut av bildet
+    # 9,4–10 s står helt stille (presentasjonen toner over her)
+    nokkel(tel, "location", [(1, (0.0, 0.0, -0.55)), (138, (0.0, 0.0, 0.0))])
     nokkel(tel, "rotation_euler", [(1, (math.radians(-9), 0, math.radians(205))), (138, (0, 0, 0))])
-    nokkel(kant_v.data, "energy", [(1, 0), (36, 1800), (150, 1400), (280, 400)])
-    nokkel(kant_h.data, "energy", [(6, 0), (44, 1800), (150, 1400), (280, 400)])
-    nokkel(hoved.data, "energy", [(12, 0), (60, 900), (150, 700), (282, 500)])
+    nokkel(kant_v.data, "energy", [(1, 0), (36, 900), (150, 700), (280, 250)])
+    nokkel(kant_h.data, "energy", [(6, 0), (44, 900), (150, 700), (280, 250)])
+    nokkel(hoved.data, "energy", [(1, 250), (40, 1100), (282, 900)])
+    nokkel(fyll.data, "energy", [(1, 120), (40, 500), (282, 400)])
     nokkel(feie, "location", [(96, (-5.0, -16.0, 1.2)), (146, (3.0, -16.0, 1.2))])
     nokkel(feie.data, "energy", [(94, 0), (104, 4000), (136, 4000), (148, 0)])
     nokkel(sk_bsdf.inputs["Emission Strength"], None, [(140, 0.0), (168, 1.0)])
-    nokkel(g_em.inputs["Strength"], None, [(1, 0.0), (60, 0.16), (170, 0.12), (262, 0.0)])
+    # Ingen refleks i glasset på siste bilde – skjermen skal være nøyaktig som prototypen
+    nokkel(sk_bsdf.inputs["Specular IOR Level"], None, [(138, 0.25), (166, 0.06), (262, 0.0)])
+    # Ringene snurrer sakte og driver utover, og er ute av bildet før kameraet står stille
+    for i, ring_o in enumerate(ringer):
+        x, y, z = ring_o.location
+        rx, ry, rz = ring_o.rotation_euler
+        ut_x = 3.2 if x > 0 else -3.2
+        nokkel(ring_o, "location", [(1, (x, y, z - 0.3)), (150, (x * 1.05, y, z)), (262, (x + ut_x, y - 1.0, z * 1.6))])
+        nokkel(ring_o, "rotation_euler", [(1, (rx, ry, rz)), (262, (rx + math.radians(70 + 25 * i), ry + math.radians(40), rz + math.radians(90)))])
     nokkel(cam, "location", [(1, (1.6, -13.5, 1.3)), (138, (0.45, -9.2, 0.3)), (282, (0.0, slutt_y, 0.0)), (SLUTT, (0.0, slutt_y, 0.0))])
     # Fokus følger telefonen; blenderen strammes inn mot slutten så hele skjermen er skarp
     nokkel(cd.dof, "aperture_fstop", [(1, 1.8), (150, 2.4), (270, 16.0)])
@@ -399,7 +455,35 @@ def bygg():
     print("bygget", meta)
 
 
+def bruk_gpu():
+    """Render på grafikkortet (OptiX, ellers CUDA) når «gpu» står på kommandolinjen – mange ganger raskere enn CPU."""
+    if "gpu" not in sys.argv:
+        return
+    prefs = bpy.context.preferences.addons["cycles"].preferences
+    for typ in ("OPTIX", "CUDA"):
+        try:
+            prefs.compute_device_type = typ
+        except TypeError:
+            continue
+        prefs.get_devices()
+        gpuer = [d for d in prefs.devices if d.type == typ]
+        if gpuer:
+            for d in prefs.devices:
+                d.use = d.type == typ
+            sc = bpy.context.scene
+            sc.cycles.device = "GPU"
+            # Støyfjerning og lagring var flaskehalsen: fjern støy på kortet, og lagre PNG med lett komprimering
+            if hasattr(sc.cycles, "denoising_use_gpu"):
+                sc.cycles.denoising_use_gpu = True
+            sc.render.use_persistent_data = True
+            sc.render.image_settings.compression = 15
+            print("rendrer på", typ, [d.name for d in gpuer], flush=True)
+            return
+    print("fant ingen GPU – rendrer på CPU")
+
+
 def test():
+    bruk_gpu()
     sc = bpy.context.scene
     sc.render.resolution_percentage = 50
     sc.cycles.samples = 32
@@ -412,6 +496,7 @@ def test():
 
 
 def render():
+    bruk_gpu()
     sc = bpy.context.scene
     os.makedirs(FRAMES, exist_ok=True)
     sc.render.filepath = os.path.join(FRAMES, "####")
@@ -435,6 +520,10 @@ def film():
         st.elements.append(f)
     sc.frame_start, sc.frame_end = 1, len(filer)
     sc.render.use_sequencer = True
+    # Bildene er ferdig fargebehandlet – ingen ny visningstransform (AgX gjorde filmen grå og flat)
+    sc.view_settings.view_transform = "Standard"
+    sc.view_settings.look = "None"
+    sc.sequencer_colorspace_settings.name = "sRGB"
     im = sc.render.image_settings
     try:
         im.media_type = "VIDEO"

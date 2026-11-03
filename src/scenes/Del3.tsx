@@ -66,7 +66,7 @@ export function Testing({ takt }: SceneProps) {
           Iterasjon · hver versjon kom av noe vi lærte
         </Inn>
         <svg className="iterasjon-linje" viewBox="0 0 1600 260" aria-hidden="true">
-          <motion.path d="M60 150H1540" stroke="rgba(244,237,228,0.25)" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: takt === 1 ? 1 : 0 }} transition={{ duration: 1.8, ease: FILM }} />
+          <motion.path d="M60 150H1540" stroke="var(--linje-2)" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: takt === 1 ? 1 : 0 }} transition={{ duration: 1.8, ease: FILM }} />
           {[0, 1, 2, 3].map((i) => {
             const x1 = 60 + (i + 1) * 370
             const x0 = 60 + i * 370
@@ -87,11 +87,11 @@ export function Testing({ takt }: SceneProps) {
           })}
           <defs>
             <linearGradient id="iterG" x1="0" x2="1">
-              <stop offset="0" stopColor="#F6A2C8" />
-              <stop offset="1" stopColor="#FFC896" />
+              <stop offset="0" stopColor="#F08FB0" />
+              <stop offset="1" stopColor="#F5B46E" />
             </linearGradient>
             <marker id="pil" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0 0L10 5L0 10z" fill="#F6A2C8" />
+              <path d="M0 0L10 5L0 10z" fill="#F08FB0" />
             </marker>
           </defs>
         </svg>
@@ -114,8 +114,8 @@ export function Testing({ takt }: SceneProps) {
           Brukerdrevet – men avgrenset
         </Inn>
         <svg className="omfang-svg" viewBox="0 0 900 600" aria-hidden="true">
-          <motion.circle cx="380" cy="300" r="230" fill="rgba(246,162,200,0.08)" stroke="rgba(246,162,200,0.6)" strokeWidth="2" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: takt === 2 ? 1 : 0.7, opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 1.2, ease: MYK }} style={{ transformOrigin: '380px 300px' }} />
-          <motion.circle cx="640" cy="170" r="110" fill="rgba(143,217,192,0.1)" stroke="rgba(143,217,192,0.7)" strokeWidth="2" strokeDasharray="6 6" initial={{ x: 200, opacity: 0 }} animate={{ x: takt === 2 ? 0 : 200, opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 1.4, delay: 0.8, ease: MYK }} />
+          <motion.circle cx="380" cy="300" r="230" fill="rgba(249,202,219,0.35)" stroke="#F08FB0" strokeWidth="2" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: takt === 2 ? 1 : 0.7, opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 1.2, ease: MYK }} style={{ transformOrigin: '380px 300px' }} />
+          <motion.circle cx="640" cy="170" r="110" fill="rgba(191,233,211,0.45)" stroke="#7CC9A1" strokeWidth="2" strokeDasharray="6 6" initial={{ x: 200, opacity: 0 }} animate={{ x: takt === 2 ? 0 : 200, opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 1.4, delay: 0.8, ease: MYK }} />
         </svg>
         <Inn vis={takt === 2} d={0.5} className="omfang-kjerne">
           <small>Kjernen</small>

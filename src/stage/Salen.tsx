@@ -184,12 +184,13 @@ export function Salen() {
 
   const settVisning = useCallback((v: 'skjult' | 'film' | 'demo') => setDemoVisning(v), [])
   const Scene = SCENER[scene.id]
+  const tema = t.startet ? (scene.tema ?? 'lys') : 'mork'
   const fremdrift = ((t.scene + (t.takt + 1) / scene.takter.length) / manus.length) * 100
 
   return (
     <div className={`salen ${peker ? '' : 'skjul-peker'}`} onDoubleClick={() => document.documentElement.requestFullscreen?.().catch(() => {})}>
-      <div className="lerret" style={{ transform: `translate(${skala.x}px, ${skala.y}px) scale(${skala.k})` }}>
-        <Lys styrke={t.startet ? lys : 0.25} />
+      <div className={`lerret tema-${tema}`} style={{ transform: `translate(${skala.x}px, ${skala.y}px) scale(${skala.k})` }}>
+        <Lys styrke={t.startet ? lys : 0.25} tema={tema} />
 
         {!t.startet ? (
           <div className="venter">
@@ -217,10 +218,10 @@ export function Salen() {
           <div className={`faser ${scene.id === 'demo' ? 'hoyre' : ''}`} aria-hidden="true">
             {scene.id === 'testing' && (
               <svg className="sloyfe" width="560" height="30" viewBox="0 0 560 30">
-                <path d="M520 26 C 500 2, 230 2, 210 24" fill="none" stroke="#F6A2C8" strokeWidth="1.5" strokeDasharray="4 5" markerEnd="url(#sloyfePil)" />
+                <path d="M520 26 C 500 2, 230 2, 210 24" fill="none" stroke="#F08FB0" strokeWidth="1.5" strokeDasharray="4 5" markerEnd="url(#sloyfePil)" />
                 <defs>
                   <marker id="sloyfePil" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                    <path d="M0 0L10 5L0 10z" fill="#F6A2C8" />
+                    <path d="M0 0L10 5L0 10z" fill="#F08FB0" />
                   </marker>
                 </defs>
               </svg>

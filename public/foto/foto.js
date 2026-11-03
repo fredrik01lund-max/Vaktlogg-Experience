@@ -36,11 +36,6 @@ window.VAKTLOGG_FOTO = {
   behandling: { metning: 0.78, kontrast: 1.08, lysstyrke: 0.96, varme: 0.12, korn: 0.06 },
 
   plasser: {
-    // ── Åpningen (stille sekvens): korte, raske glimt fra restauranten bak bongene ──
-    'apning-1': { fil: '', fokus: [0.5, 0.5], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: false, beskrivelse: 'Restaurant før åpning: dekket bord, varmt lys (liggende)' },
-    'apning-2': { fil: '', fokus: [0.5, 0.5], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: false, beskrivelse: 'Kjøkkenpasset eller bongskinnen i full fart (liggende)' },
-    'apning-3': { fil: '', fokus: [0.5, 0.5], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: false, beskrivelse: 'Servitør i bevegelse, gjerne uskarp (liggende)' },
-
     // ── Menneskene bak innsikten: mosaikk (blandet stående og liggende går fint) ──
     'mennesker-1': { fil: '', fokus: [0.5, 0.35], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: true, beskrivelse: 'Servitør (portrett)' },
     'mennesker-2': { fil: '', fokus: [0.5, 0.35], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: true, beskrivelse: 'Hovmester eller servitør i arbeid' },

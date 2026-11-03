@@ -54,4 +54,5 @@ export function medNavn(tekst: string): string {
   return tekst.replace(/\{([ABC])\}/g, (_, h: Hvem) => navn(h))
 }
 
-export const FARGE: Record<Hvem, string> = { A: '#FFC896', B: '#8FD9C0', C: '#F6A2C8' }
+// Prototypens sterke pastelltoner: synlige både på lys og mørk bakgrunn
+export const FARGE: Record<Hvem, string> = { A: '#F5B46E', B: '#7CC9A1', C: '#F08FB0' }

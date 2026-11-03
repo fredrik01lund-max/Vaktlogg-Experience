@@ -20,7 +20,7 @@ Publikum følger reisen fra et bredt problem (sykefravær) til et innsiktsbasert
 
 | # | Tid | Scene | Hvem | Hva skjer – og hvorfor |
 |---|---|---|---|---|
-| 1 | 0:00 | Restaurantåpningen | stille | Bonger ruller inn på kjøkkenskinnen mens klokka går fra 16:00 til 23:30 og tempoet øker. Så blir det stille: «Vakten er over. Hva sitter hun igjen med?» Virker uten lyd. |
+| 1 | 0:00 | Vakten ovenfra | stille | Blender-film uten ord: over skulderen på servitøren med brettet, så kran opp over restauranten mens kvelden går fra 16:00 til 23:30. Gjester kommer, bonger spretter opp, bordene skifter farge som i appens bordkart, og hun legger igjen et lysende spor – skrittene. Lysene slukkes, sporet blir igjen, tittelen kommer. |
 | 2 | 0:22 | Behind the shift | A | Tittel, navn, utgangspunktet *sykefravær*. |
 | 3 | 0:55 | Menneskene bak innsikten | A | Fotomosaikk av menneskene, de fire innsiktskildene, og grepet med «travel vakt som føltes bra / dårlig». |
 | 4 | 1:47 | Portrett og sitat | A | *Cinematic portrait reveal* og det dokumenterte sitatet, holdt adskilt fra personen på bildet. |
@@ -93,7 +93,6 @@ Lager `dist-eksamen/`. Det er én `index.html` med all kode og alle fonter, plus
 
 Fotografiene legges inn uten å endre kode. Alt styres av [`public/foto/foto.js`](public/foto/foto.js), som har plass til
 
-- 3 glimt i åpningen
 - 8 bilder i mosaikken
 - 1 portrett
 - 1 servitør i arbeid (foto → data)
@@ -120,18 +119,23 @@ Fotografiene legges inn uten å endre kode. Alt styres av [`public/foto/foto.js`
 
 ---
 
+## Farger
+
+Hovedtemaet er prototypens: lys bakgrunn (#f3f6f2), hvite kort, mørk grønnsvart tekst og pastellfargene med samme betydning som i appen – aktivitet/Helse rosa, salg oransje, anerkjennelse gul, laget grønt, plommefarget blekk. Mørkt brukes bevisst bare i åpningen og tittelen (natten og vakten) og i portrettet (som kommer frem fra mørket). Hver scene velger tema i `manus.ts` (`tema: 'mork'`); tokens ligger i `src/styles/base.css`.
+
 ## Teknikkvalg
 
 | Behov | Valg | Hvorfor |
 |---|---|---|
-| Telefonen som avsløres (sekvens 3) | **Blender** (Cycles, CPU) → MP4 | Ekte metall, glass, kantlys og dybdeskarphet, som er vanskelig å få troverdig i nettleseren. Filmen endrer seg ikke, så den kan rendres én gang. |
+| Åpningen «Vakten ovenfra» | **Blender** (Cycles, CPU) → MP4 | En hel restaurant med lys fra ettermiddag til natt, et kamera som løfter seg og et spor som tegnes – fortellingen er fast, så den rendres én gang. Klokka og tittelen legges på i nettleseren, i takt med filmen. |
+| Telefonen som avsløres (sekvens 3) | **Blender** (Cycles, CPU) → MP4 | Ekte metall, glass, kantlys og dybdeskarphet i prototypens pastell, som er vanskelig å få troverdig i nettleseren. Filmen endrer seg ikke, så den kan rendres én gang. |
 | Fotografier i dybde (konsept D) | **Nettleseren** (CSS-lag og bevegelse) | Bildene kommer senere og skal kunne byttes uten ny rendering. En Blender-scene måtte rendres på nytt for hvert nytt bilde, og en ny kamerabevegelse ville gitt en ny fil. Med 2,5D-lag i CSS blir effekten den samme uten at noe må lages på nytt. |
 | Data og innsikt | **SVG + Motion** | Tallene og tekstene skal være riktige og redigerbare, og skarpe på alle skjermer. |
 | Overgangen til prototypen | **Film + ekte iframe** | Filmen ender med skjermen på et kjent sted (`src/lib/telefon.json`). Den ekte prototypen ligger klar nøyaktig der og tones inn over siste bilde. |
 
-### Blender-filmen
+### Blender-filmene
 
-[`blender/telefon_reveal.py`](blender/telefon_reveal.py) bygger hele scenen med kode: telefonen, materialene, lyset, kamerabanen og tidslinjen. Den er reproduserbar.
+[`blender/apning_vakt.py`](blender/apning_vakt.py) (åpningen) og [`blender/telefon_reveal.py`](blender/telefon_reveal.py) (telefonen) bygger hele scenene med kode: modellene, materialene, lyset, kamerabanen og tidslinjen. De er reproduserbare, og har de samme stegene (`bygg`, `test`, `render`, `film`). Åpningens bordsettinger, servitørens rute og klokkeslettene står øverst i skriptet; tidspunktene presentasjonen trenger skrives til `src/lib/apning.json`.
 
 ```bash
 blender --background --factory-startup --python blender/telefon_reveal.py -- bygg    # lager telefon.blend

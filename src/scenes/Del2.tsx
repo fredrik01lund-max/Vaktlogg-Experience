@@ -96,9 +96,9 @@ export function Persona({ takt }: SceneProps) {
         <svg className="reise-kurve" viewBox="0 0 1040 300" aria-hidden="true">
           <defs>
             <linearGradient id="reiseG" x1="0" x2="1">
-              <stop offset="0" stopColor="#FFC896" />
-              <stop offset="0.5" stopColor="#FDB8B4" />
-              <stop offset="1" stopColor="#F6A2C8" />
+              <stop offset="0" stopColor="#F5B46E" />
+              <stop offset="0.5" stopColor="#F3A08F" />
+              <stop offset="1" stopColor="#F08FB0" />
             </linearGradient>
           </defs>
           <motion.path
@@ -112,7 +112,7 @@ export function Persona({ takt }: SceneProps) {
             transition={{ duration: 3, ease: FILM }}
           />
           {[260, 520, 780].map((x) => (
-            <motion.line key={x} x1={x} x2={x} y1="10" y2="290" stroke="rgba(244,237,228,0.14)" strokeDasharray="4 6" initial={{ opacity: 0 }} animate={{ opacity: takt >= 1 ? 1 : 0 }} />
+            <motion.line key={x} x1={x} x2={x} y1="10" y2="290" stroke="var(--linje)" strokeDasharray="4 6" initial={{ opacity: 0 }} animate={{ opacity: takt >= 1 ? 1 : 0 }} />
           ))}
         </svg>
         <motion.div className="mulighet-glod" initial={{ opacity: 0 }} animate={{ opacity: takt >= 2 ? 1 : 0 }} transition={{ duration: 1.4 }} />
@@ -248,7 +248,7 @@ export function ToInnsikter({ takt }: SceneProps) {
             key={i}
             rx={9}
             ry={15}
-            fill="#8FD9C0"
+            fill="#F08FB0"
             initial={{ cx: p.x - 300, cy: p.y, opacity: 0, rotate: p.rot }}
             animate={
               fase === 0
@@ -264,7 +264,7 @@ export function ToInnsikter({ takt }: SceneProps) {
         <motion.path
           d={`M${cx + 137.6 * s} ${cy + 96.4 * s}A${R * s} ${R * s} 0 1 1 ${cx + 118.8 * s} ${cy - 118.8 * s}`}
           fill="none"
-          stroke={fase >= 3 ? '#fff' : '#8FD9C0'}
+          stroke={fase >= 3 ? '#fff' : '#F08FB0'}
           strokeWidth={40 * s}
           strokeLinecap="round"
           initial={{ pathLength: 0, opacity: 0 }}
@@ -284,7 +284,7 @@ export function ToInnsikter({ takt }: SceneProps) {
               key={i}
               width={38}
               rx={8}
-              fill="#FFC896"
+              fill="#F5B46E"
               initial={{ x: bx + 300, y: 760, height: 0, opacity: 0 }}
               animate={
                 fase === 0
@@ -300,7 +300,7 @@ export function ToInnsikter({ takt }: SceneProps) {
         <motion.path
           d={`M${cx - 70 * s} ${cy - 56 * s}L${cx} ${cy + 70 * s}L${cx + 70 * s} ${cy - 56 * s}`}
           fill="none"
-          stroke={fase >= 3 ? 'url(#tiV)' : '#FFC896'}
+          stroke={fase >= 3 ? 'url(#tiV)' : '#F5B46E'}
           strokeWidth={56 * s}
           strokeLinecap="round"
           strokeLinejoin="round"

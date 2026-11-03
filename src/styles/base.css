@@ -80,8 +80,8 @@ button {
   height: 1080px;
   transform-origin: 0 0;
   overflow: hidden;
-  background: var(--svart);
   isolation: isolate;
+  color: var(--papir);
 }
 .scene {
   position: absolute;
@@ -163,15 +163,15 @@ button {
 }
 .merket.illustrasjon {
   color: var(--gull);
-  border-color: rgba(233, 194, 122, 0.4);
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
 }
 .merket.observert {
   color: var(--mint);
-  border-color: rgba(143, 217, 192, 0.4);
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
 }
 .merket.fiktiv {
   color: var(--rosa);
-  border-color: rgba(246, 162, 200, 0.4);
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
 }
 
 /* ── Hovedskjermens ramme: Design Thinking-fasene, navnelinjen og fremdriften ── */
@@ -186,7 +186,7 @@ button {
   font-size: 18px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(244, 237, 228, 0.34);
+  color: var(--svak);
   pointer-events: none;
 }
 .faser.hoyre {
@@ -361,4 +361,73 @@ button {
 .hjelp dd {
   margin: 0;
   color: var(--dempet);
+}
+
+/* ══ Fargetema ════════════════════════════════════════════════════════════════════
+   Hovedtemaet er prototypens: lys bakgrunn (#f3f6f2), hvite kort, mørk grønnsvart tekst og
+   pastellfargene med samme betydning som i appen: Helse/aktivitet = rosa, Salg = oransje,
+   Konkurranse/anerkjennelse = gul, Gjester/laget = grønn, plommefarget blekk.
+   Mørkt brukes bare der det har en hensikt (åpningen – natten og vakten). Hver scene velger
+   tema i manus.ts (tema: 'mork'); standard er lyst. */
+.lerret {
+  --aktivitet: #f6a2c8;
+  --salg: #ffc896;
+  --anerkjennelse: #f0cc5c;
+  --kort: rgba(255, 255, 255, 0.03);
+  --kort-sterk: rgba(20, 18, 18, 0.92);
+  --panel: rgba(11, 10, 10, 0.9);
+  --kort-skygge: none;
+  --merke-tekst: var(--merke);
+  --skygge: rgba(0, 0, 0, 0.55);
+  --kald: #b9c2cf;
+  --rod: #ff9a8a;
+  --foto-tom: radial-gradient(ellipse at 30% 30%, #2a1f1c, #120f0e 70%);
+  --foto-tone: radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(11, 10, 10, 0.55) 100%), linear-gradient(180deg, rgba(11, 10, 10, 0.15), rgba(11, 10, 10, 0.4));
+  --rosa-flate: #f9cadb;
+  --fersken-flate: #ffd9b3;
+  --gronn-flate: #bfe9d3;
+  --gul-flate: #fbe6a2;
+  background: var(--svart);
+  transition: background-color 1.2s var(--film);
+}
+.lerret.tema-lys {
+  --svart: #f3f6f2;
+  --svart-2: #ffffff;
+  --svart-3: #e8ede9;
+  --papir: #17231f;
+  --papir-2: #2b3832;
+  --dempet: rgba(23, 35, 31, 0.7);
+  --svak: rgba(23, 35, 31, 0.48);
+  --linje: rgba(23, 35, 31, 0.12);
+  --linje-2: rgba(23, 35, 31, 0.2);
+  /* Tekststerke varianter av pastellfargene (lesbare på lys bakgrunn) */
+  --fersken: #c0661a;
+  --korall: #d9694c;
+  --rosa: #c2447a;
+  --mint: #2a8a5f;
+  --gull: #94700c;
+  --vin: #94284c;
+  --plomme: #6e2a3c;
+  --aktivitet: #c2447a;
+  --salg: #c0661a;
+  --anerkjennelse: #94700c;
+  --kort: #ffffff;
+  --kort-sterk: #ffffff;
+  --panel: rgba(255, 255, 255, 0.94);
+  --kort-skygge: 0 1px 2px rgba(23, 35, 31, 0.05), 0 16px 36px -20px rgba(23, 35, 31, 0.3);
+  --merke-tekst: linear-gradient(120deg, #ec8a3e 0%, #e2658f 55%, #a83c66 100%);
+  --skygge: rgba(80, 50, 40, 0.22);
+  --kald: #5e6f80;
+  --rod: #cf4f3f;
+  --foto-tom: radial-gradient(ellipse at 30% 30%, #fff4ea, #ebe4dc 75%);
+  --foto-tone: radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(23, 35, 31, 0.22) 100%);
+}
+.lerret.tema-lys .vignett {
+  opacity: 0;
+}
+.lerret.tema-lys .korn {
+  opacity: 0.035;
+}
+.vignett {
+  transition: opacity 1.2s var(--film);
 }

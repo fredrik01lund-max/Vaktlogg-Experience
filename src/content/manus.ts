@@ -13,24 +13,25 @@ import type { Scene } from './types.ts'
 export const manus: Scene[] = [
   {
     id: 'apning',
-    tittel: 'Restaurantåpningen',
+    tittel: 'Vakten ovenfra',
     del: 'Åpning',
+    tema: 'mork',
     varighet: 22,
     takter: [
       {
         hvem: 'stille',
         anim: 22,
-        auto: 22,
-        regi: 'Ingen snakker. Bongene ruller inn på skinnen, klokka går fra 16:00 til 23:30, tempoet øker – så blir det stille. Ender på tittelen. A går frem mens tittelen kommer.',
+        regi: 'Ingen snakker. «Vakten ovenfra»: over skulderen på servitøren med brettet, så løfter kameraet seg over restauranten mens kvelden går fra 16:00 til 23:30 – gjester, bonger, bord som skifter farge, og sporet der hun går. Lysene slukkes, sporet lyser igjen. Tittelen kommer. A går frem.',
       },
     ],
-    overgang: 'Går av seg selv til tittelen etter 22 sekunder. A begynner å snakke når tittelen står.',
+    overgang: 'Går av seg selv til tittelen når filmen er ferdig. A begynner å snakke når tittelen står.',
     kilder: [],
   },
   {
     id: 'tittel',
     tittel: 'Behind the shift',
     del: 'Problem og innsikt',
+    tema: 'mork',
     varighet: 33,
     takter: [
       {
@@ -78,6 +79,7 @@ export const manus: Scene[] = [
     id: 'portrett',
     tittel: 'Portrett og sitat',
     del: 'Problem og innsikt',
+    tema: 'mork',
     fase: 'empathize',
     varighet: 30,
     takter: [
