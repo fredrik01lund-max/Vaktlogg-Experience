@@ -429,7 +429,7 @@ def film():
     sc.render.fps = FPS
     filer = sorted(f for f in os.listdir(FRAMES) if f.endswith(".png"))
     se = sc.sequence_editor_create()
-    stripes = getattr(se, "strips", None) or se.sequences
+    stripes = se.strips if hasattr(se, "strips") else se.sequences
     st = stripes.new_image("Bilder", os.path.join(FRAMES, filer[0]), 1, 1)
     for f in filer[1:]:
         st.elements.append(f)
@@ -457,7 +457,7 @@ def film():
         if os.path.exists(mal):
             os.remove(mal)
         os.replace(os.path.join(FILM, laget[0]), mal)
-    shutil.copy(os.path.join(FRAMES, filer[-1]), os.path.join(FILM, "telefon-slutt.png"))
+    shutil.copy(os.path.join(FRAMES, filer[-1]), os.path.join(HER, "telefon-slutt.png"))
     print("film ferdig", laget)
 
 

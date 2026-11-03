@@ -286,8 +286,7 @@ export const manus: Scene[] = [
       {
         hvem: 'stille',
         anim: 10,
-        auto: 10.5,
-        regi: 'Ingen snakker. Telefonen kommer frem, snur seg og kameraet kjører inn. Filmen går over i den ekte prototypen. C tar over når appen er live.',
+        regi: 'Ingen snakker – demoen starter av seg selv når filmen er ferdig. Telefonen kommer frem, snur seg og kameraet kjører inn. Filmen går over i den ekte prototypen. C tar over når appen er live.',
       },
       {
         hvem: 'C',

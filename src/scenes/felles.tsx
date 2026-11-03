@@ -31,7 +31,7 @@ export function Inn({
       className={className}
       style={style}
       initial={{ opacity: 0, y, x, filter: 'blur(10px)' }}
-      animate={vis ? { opacity: 1, y: 0, x: 0, filter: 'blur(0px)' } : { opacity: 0, y: -y * 0.4, x: 0, filter: 'blur(10px)' }}
+      animate={vis ? { opacity: 1, y: 0, x: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } } : { opacity: 0, y: -y * 0.4, x: 0, filter: 'blur(10px)' }}
       transition={{ duration: vis ? tid : 0.6, delay: vis ? d : 0, ease: MYK }}
     >
       {children}

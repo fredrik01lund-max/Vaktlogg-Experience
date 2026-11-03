@@ -179,7 +179,7 @@ export function Metode({ takt }: SceneProps) {
             className="mosaikk-bit"
             style={{ left: m.x, top: m.y, width: m.w, height: m.h }}
             initial={{ opacity: 0, scale: 1.5 + m.z * 0.4, z: 400, filter: 'blur(14px)' }}
-            animate={{ opacity: 1, scale: 1, z: 0, filter: 'blur(0px)', y: [0, -8 - m.z * 6, 0] }}
+            animate={{ opacity: 1, scale: 1, z: 0, filter: 'blur(0px)', y: [0, -8 - m.z * 6, 0], transitionEnd: { filter: 'none' } }}
             transition={{ duration: 1.6, delay: 0.15 + i * 0.16, ease: MYK, y: { duration: 9 + m.z * 3, repeat: Infinity, ease: 'easeInOut', delay: 2 } }}
           >
             <Foto id={m.id} kamera="drift" tid={16 + i} />

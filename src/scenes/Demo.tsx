@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import meta from '../lib/telefon.json'
-import { filmUrl } from '../lib/film.ts'
-import { forrige, neste, sendStatus } from '../lib/sync.ts'
+import { filmTilstand, filmUrl } from '../lib/film.ts'
+import { manus } from '../content/manus.ts'
+import { forrige, hent, neste, sendStatus } from '../lib/sync.ts'
 import { FILM, MYK, useLys, type SceneProps } from './felles.tsx'
 
 /* ══ 12. Prototype reveal + live demo ════════════════════════════════════════════
@@ -63,19 +64,25 @@ export function klargjorPrototype() {
 
 type Visning = 'skjult' | 'film' | 'demo'
 
-/** Telefonen med den ekte prototypen. Ligger alltid i salen (lastes én gang), og vises bare i demoen. */
-export function DemoTelefon({ visning, demoNr }: { visning: Visning; demoNr: number }) {
+/** Telefonen med den ekte prototypen. Lastes rett før demoen (last) og tegnes ikke mens den er skjult –
+ *  Sir Domeo i 3D koster mye, og skal ikke stjele tid fra filmen og animasjonene ellers. */
+export function DemoTelefon({ visning, demoNr, last }: { visning: Visning; demoNr: number; last: boolean }) {
   const ref = useRef<HTMLIFrameElement>(null)
   const [forklaring, setForklaring] = useState<Forklaring>(FORKLARINGER.start)
   const [sett, setSett] = useState<string[]>([])
 
-  // Ny demo: rene data og last på nytt
+  // Ny demo: rene data og last på nytt. Utenfor demoen er prototypen ikke lastet i det hele tatt.
   useEffect(() => {
+    const f = ref.current
+    if (!f) return
+    if (!last) {
+      f.src = 'about:blank'
+      return
+    }
     klargjorPrototype()
     setSett([])
-    const f = ref.current
-    if (f) f.src = `demo/vaktlogg.html?n=${demoNr}`
-  }, [demoNr])
+    f.src = `demo/vaktlogg.html?n=${demoNr}`
+  }, [demoNr, last])
 
   // Følg med på hvor C er i prototypen, og send det til presentatørvinduet
   useEffect(() => {
@@ -89,7 +96,7 @@ export function DemoTelefon({ visning, demoNr }: { visning: Visning; demoNr: num
   }, [visning])
 
   useEffect(() => {
-    sendStatus({ film: 'klar', demo: forklaring.tittel })
+    sendStatus({ film: filmTilstand(), demo: forklaring.tittel })
   }, [forklaring])
 
   // Klikkeren virker også mens fokus er inne i prototypen (PageDown/PageUp)
@@ -122,7 +129,7 @@ export function DemoTelefon({ visning, demoNr }: { visning: Visning; demoNr: num
         className="demo-telefon"
         style={{ width: VW + KANT * 2, height: VH + KANT * 2, left: 960 - (VW + KANT * 2) / 2, top: 540 - (VH + KANT * 2) / 2, scale: SKALA }}
         initial={false}
-        animate={{ x: x - 960, opacity: visning === 'skjult' ? 0 : 1 }}
+        animate={visning === 'skjult' ? { x: x - 960, opacity: 0, transitionEnd: { display: 'none' } } : { x: x - 960, opacity: 1, display: 'block' }}
         transition={{ x: { duration: 1.6, ease: FILM }, opacity: { duration: visning === 'film' ? 0.5 : 0.4 } }}
         aria-hidden={visning === 'skjult'}
       >
@@ -160,6 +167,7 @@ export function Demo({ takt, onVisning }: SceneProps & { onVisning: (v: Visning)
   useLys(0)
   const video = useRef<HTMLVideoElement>(null)
   const [ferdig, setFerdig] = useState(takt > 0)
+  const [filmFeil, setFilmFeil] = useState(false)
 
   useEffect(() => {
     if (takt > 0) {
@@ -171,17 +179,36 @@ export function Demo({ takt, onVisning }: SceneProps & { onVisning: (v: Visning)
     onVisning('skjult')
     const v = video.current
     if (!v) return
+    const tidtakere: number[] = []
+    // Når filmen står stille på siste bilde, legges den ekte prototypen oppå – og så glir demoen i gang.
+    // Styres av filmen selv, ikke av klokka, så en treg start aldri kutter filmen.
+    const overta = () => {
+      onVisning('film')
+      tidtakere.push(
+        window.setTimeout(() => {
+          const t = hent()
+          if (manus[t.scene]?.id === 'demo' && t.takt === 0) neste()
+        }, 900),
+      )
+    }
+    if (filmFeil) {
+      setFerdig(true)
+      overta()
+      return () => tidtakere.forEach(clearTimeout)
+    }
     v.currentTime = 0
-    v.play().catch(() => setFerdig(true))
-    // Når filmen står stille på siste bilde, legges den ekte prototypen oppå
+    v.play().catch(() => setFilmFeil(true))
     const id = window.setInterval(() => {
       if (v.currentTime >= meta.stilleFra + 0.15 || v.ended) {
-        onVisning('film')
         clearInterval(id)
+        overta()
       }
     }, 50)
-    return () => clearInterval(id)
-  }, [takt, onVisning])
+    return () => {
+      clearInterval(id)
+      tidtakere.forEach(clearTimeout)
+    }
+  }, [takt, onVisning, filmFeil])
 
   useEffect(() => () => onVisning('skjult'), [onVisning])
 
@@ -194,10 +221,7 @@ export function Demo({ takt, onVisning }: SceneProps & { onVisning: (v: Visning)
         muted
         playsInline
         preload="auto"
-        onError={() => {
-          setFerdig(true)
-          onVisning('film')
-        }}
+        onError={() => setFilmFeil(true)}
         animate={{ opacity: takt > 0 ? 0 : 1 }}
         transition={{ duration: 1.2, ease: MYK }}
       />

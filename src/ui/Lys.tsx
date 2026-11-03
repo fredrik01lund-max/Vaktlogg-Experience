@@ -40,6 +40,10 @@ export function Lys({ styrke = 1, antall = 34, className = '', farger = VARME }:
       // Glir mykt mot ønsket styrke, så scenene kan dimme lyset uten hopp
       naaStyrke += (styrkeRef.current - naaStyrke) * 0.035
       const s = naaStyrke
+      if (s < 0.004) {
+        id = requestAnimationFrame(tegn)
+        return
+      }
       for (const l of lys) {
         const x = (l.x + l.vx * t + W) % W
         const a = l.a * s * (0.75 + 0.25 * Math.sin(t * l.flimmer + l.fase))

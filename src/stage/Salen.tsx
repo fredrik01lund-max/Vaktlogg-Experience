@@ -32,6 +32,9 @@ const SCENER: Record<string, ComponentType<SceneProps>> = {
   slutt: Slutt,
 }
 
+// Prototypen lastes fra designprinsippene (to scener før demoen) til scenen etter
+const DEMO_I = manus.findIndex((s) => s.id === 'demo')
+
 const FASER: { id: Fase; navn: string }[] = [
   { id: 'empathize', navn: 'Empathize' },
   { id: 'define', navn: 'Define' },
@@ -208,7 +211,7 @@ export function Salen() {
           </AnimatePresence>
         )}
 
-        <DemoTelefon visning={t.startet && scene.id === 'demo' ? demoVisning : 'skjult'} demoNr={t.demoNr} />
+        <DemoTelefon visning={t.startet && scene.id === 'demo' ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && t.scene >= DEMO_I - 2 && t.scene <= DEMO_I + 1} />
 
         {t.startet && scene.fase && (
           <div className={`faser ${scene.id === 'demo' ? 'hoyre' : ''}`} aria-hidden="true">
