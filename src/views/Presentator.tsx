@@ -33,8 +33,8 @@ export function Presentator() {
   const t = useTilstand()
   const status = useStatus()
   const naa = useNaa()
-  const scene = manus[t.scene]
-  const takt = scene.takter[t.takt]
+  const scene = manus[t.scene] ?? manus[0]
+  const takt = scene.takter[t.takt] ?? scene.takter[0]
   const starter = sceneStart(manus)
   const plan = taktPlan(scene)
 

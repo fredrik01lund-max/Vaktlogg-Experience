@@ -68,7 +68,7 @@ type Visning = 'skjult' | 'film' | 'demo'
 // på mobilen (?speil=vis). Ellers (GitHub Pages, fil) går omvisningen her, og sensor eller C trykker på storskjermen.
 let speil: Promise<boolean> | null = null
 function harSpeil() {
-  speil ??= window.location.protocol.startsWith('http')
+  speil ??= window.location.protocol.startsWith('http') && !window.location.hostname.endsWith('github.io')
     ? fetch('speil-status', { cache: 'no-store' })
         .then((r) => (r.ok ? r.json() : null))
         .then((j) => j?.speil === true)

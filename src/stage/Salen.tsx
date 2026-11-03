@@ -69,8 +69,8 @@ export function Salen() {
   const t = useTilstand()
   const skala = useSkala()
   const lys = useLysNivaa()
-  const scene = manus[t.scene]
-  const takt = scene.takter[t.takt]
+  const scene = manus[t.scene] ?? manus[0]
+  const takt = scene.takter[t.takt] ?? scene.takter[0]
   const [demoVisning, setDemoVisning] = useState<'skjult' | 'film' | 'demo'>('skjult')
   const [oversikt, setOversikt] = useState(false)
   const [hjelp, setHjelp] = useState(false)

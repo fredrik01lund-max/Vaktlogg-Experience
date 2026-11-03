@@ -31,15 +31,24 @@ type Melding =
   | { type: 'status'; s: Omit<Status, 'sist'>; fra: string }
 
 const ID = Math.random().toString(36).slice(2)
-const LAGRET = 'vaktlogg-experience:tilstand'
+// Lagret tilstand hører til én bestemt scenerekkefølge: endres manus (scener eller antall takter),
+// blir en gammel posisjon forkastet i stedet for å peke på en takt som ikke finnes – det ga svart side.
+const SIGNATUR = manus.map((s) => `${s.id}:${s.takter.length}`).join(',')
+const LAGRET = `vaktlogg-experience:tilstand:${[...SIGNATUR].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7).toString(36)}`
 
 const ny = (): Tilstand => ({ v: 0, startet: false, start: null, scene: 0, takt: 0, taktFra: Date.now(), sceneFra: Date.now(), valg: null, svart: false, demoNr: 0 })
 
+/** Peker tilstanden på en scene og takt som finnes i dette manuset? */
+const gyldig = (t: Tilstand | null): t is Tilstand =>
+  !!t && Number.isInteger(t.scene) && Number.isInteger(t.takt) && t.scene >= 0 && t.scene < manus.length && t.takt >= 0 && t.takt < manus[t.scene].takter.length
+
 function lesLagret(): Tilstand {
   try {
+    // Rydd bort posisjoner lagret av eldre versjoner av presentasjonen
+    for (const k of Object.keys(localStorage)) if (k.startsWith('vaktlogg-experience:tilstand') && k !== LAGRET) localStorage.removeItem(k)
     const t = JSON.parse(localStorage.getItem(LAGRET) || 'null') as Tilstand | null
-    // Gjenopprett bare en pågående fremføring fra de siste tre timene
-    if (t && typeof t.scene === 'number' && t.scene < manus.length && t.start && Date.now() - t.start < 3 * 3600_000) return t
+    // Gjenopprett bare en pågående fremføring fra de siste tre timene – og aldri med svart skjerm
+    if (gyldig(t) && t.start && Date.now() - t.start < 3 * 3600_000) return { ...t, svart: false }
   } catch {
     /* ingen lagring tilgjengelig */
   }
@@ -74,7 +83,8 @@ function send(m: Melding) {
 
 function motta(m: Melding) {
   if (!m || m.fra === ID) return
-  if (m.type === 'tilstand' && m.t.v > tilstand.v) {
+  // Et vindu med en eldre versjon av presentasjonen kan sende en posisjon som ikke finnes her – den hoppes over
+  if (m.type === 'tilstand' && m.t.v > tilstand.v && gyldig(m.t)) {
     tilstand = m.t
     lagre()
     varsle()
