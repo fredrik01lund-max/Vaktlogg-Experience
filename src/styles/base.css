@@ -366,6 +366,28 @@ button {
   margin: 48px 0 0 330px;
   font-size: 24px;
 }
+.hjelp-mobil b {
+  color: var(--papir);
+}
+/* Startskjermen: hvor sensors mobil kobler seg til (forsvinner når presentasjonen starter) */
+.venter .venter-mobil {
+  margin: 56px 0 0;
+  font-size: 22px;
+  letter-spacing: 0;
+  color: var(--dempet);
+}
+.venter .venter-mobil b {
+  color: var(--papir);
+  font-weight: 600;
+}
+.venter .venter-mobil .mobil-kode {
+  font-family: var(--mono);
+  font-size: 30px;
+  letter-spacing: 0.1em;
+}
+.venter .venter-mobil.ok {
+  color: var(--mint);
+}
 
 /* ══ Fargetema ════════════════════════════════════════════════════════════════════
    Hovedtemaet er prototypens: lys bakgrunn (#f3f6f2), hvite kort, mørk grønnsvart tekst og

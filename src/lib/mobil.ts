@@ -4,6 +4,7 @@
 //    uten internett. Mobilen åpner http://<IP>:8080/s.
 //  - Ellers (GitHub Pages, fil, vite): reléet over internett (rele.ts). Mobilen åpner presentasjonens /s/ og
 //    skriver inn romkoden fra presentatørvisningen. Koden lages én gang per PC og huskes, også av mobilen.
+import { useSyncExternalStore } from 'react'
 import { kobleRele, lagKode, vaskKode } from './rele.ts'
 import { sendStatus } from './sync.ts'
 
@@ -46,6 +47,20 @@ export function mobilAdresse(): string {
   return base.replace(/^https?:\/\//, '') + 's'
 }
 
+/** Det hovedskjermen vet om sensors mobil – vises på startskjermen og under H. */
+export type MobilInfo = { modus: Speilmodus | null; kode: string | null; adresse: string; mobil: number; rele: boolean | null }
+let info: MobilInfo = { modus: null, kode: null, adresse: '', mobil: 0, rele: null }
+const infoLyttere = new Set<() => void>()
+const settInfo = (ny: Partial<MobilInfo>) => {
+  info = { ...info, ...ny }
+  infoLyttere.forEach((f) => f())
+}
+export const useMobilInfo = () =>
+  useSyncExternalStore(
+    (f) => (infoLyttere.add(f), () => infoLyttere.delete(f)),
+    () => info,
+  )
+
 /** Hovedskjermen følger med på mobilen hele tiden, så presentatørvisningen viser det før presentasjonen starter. */
 let startet = false
 export function startMobilvakt() {
@@ -53,10 +68,15 @@ export function startMobilvakt() {
   startet = true
   speilmodus().then((m) => {
     if (m === 'lokal') {
+      settInfo({ modus: 'lokal' })
       const sjekk = () =>
         fetch('speil-status', { cache: 'no-store' })
           .then((r) => r.json())
-          .then((j) => sendStatus({ mobil: Number(j?.mobiler ?? 0), mobilKode: null, rele: null }))
+          .then((j) => {
+            const mobil = Number(j?.mobiler ?? 0)
+            sendStatus({ mobil, mobilKode: null, rele: null })
+            if (mobil !== info.mobil) settInfo({ mobil })
+          })
           .catch(() => sendStatus({ mobil: 0, mobilKode: null, rele: null }))
       sjekk()
       window.setInterval(sjekk, 2000)
@@ -74,6 +94,7 @@ export function startMobilvakt() {
       if (json === forrige) return
       forrige = json
       sendStatus(s)
+      settInfo({ modus: 'rele', kode: k, adresse: s.mobilAdresse, mobil: s.mobil, rele: s.rele })
     }
     meld()
     window.setInterval(meld, 1000)

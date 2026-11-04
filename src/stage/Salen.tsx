@@ -4,7 +4,7 @@ import { lagtTilSide } from '../content/arkiv.ts'
 import { manus } from '../content/manus.ts'
 import type { Fase, Hvem } from '../content/types.ts'
 import { filmTilstand } from '../lib/film.ts'
-import { mobilAdresse, romkode, speilmodus, startMobilvakt } from '../lib/mobil.ts'
+import { startMobilvakt, useMobilInfo } from '../lib/mobil.ts'
 import { FARGE, oppsett } from '../lib/oppsett.ts'
 import { apneVindu, forrige, gaTil, hent, neste, nyDemo, paLydtest, sendStatus, start, svart, useTilstand } from '../lib/sync.ts'
 import { Innsikter, Metode, Portrett, TittelScene } from '../scenes/Del1.tsx'
@@ -167,14 +167,24 @@ export function Salen() {
   }, [t.startet, t.scene, t.takt, t.taktFra, takt.auto])
 
   // ── Status til presentatørvinduet (er filmen lastet, er hovedskjermen her, er sensors mobil koblet til) ──
-  const [mobilInfo, setMobilInfo] = useState('')
+  const mobil = useMobilInfo()
   useEffect(() => {
     const id = window.setInterval(() => sendStatus({ film: filmTilstand() }), 2000)
     sendStatus({ film: filmTilstand() })
     startMobilvakt()
-    speilmodus().then((m) => setMobilInfo(m === 'rele' ? `${mobilAdresse()} og skriv koden ${romkode()}` : 'http://<IP>:8080/s (adressen står i terminalen)'))
     return () => clearInterval(id)
   }, [])
+  // Hvor sensors mobil kobler seg til: på startskjermen og under H (aldri under selve fremføringen)
+  const mobilLinje =
+    mobil.modus === 'rele' ? (
+      mobil.mobil > 0 ? (
+        <>Sensors mobil er koblet til (kode {mobil.kode}).</>
+      ) : (
+        <>Sensors mobil: åpne <b>{mobil.adresse}</b> og skriv koden <b className="mobil-kode">{mobil.kode}</b></>
+      )
+    ) : mobil.modus === 'lokal' ? (
+      mobil.mobil > 0 ? <>Sensors mobil er koblet til.</> : <>Sensors mobil: åpne <b>http://&lt;IP&gt;:8080/s</b> (adressen står i terminalen)</>
+    ) : null
 
   // ── «Test lyd» fra presentatørvisningen: hovedskjermen spiller Sir Domeos første replikk ──
   useEffect(
@@ -263,6 +273,7 @@ export function Salen() {
               <button className="venter-start" onClick={start}>
                 Start
               </button>
+              {mobilLinje && <p className={`venter-mobil ${mobil.mobil > 0 ? 'ok' : ''}`}>{mobilLinje}</p>}
             </div>
           </div>
         ) : (
@@ -382,7 +393,7 @@ export function Salen() {
               <dt><kbd>L</kbd></dt>
               <dd>Skjul/vis teksten på fotoplassholdere</dd>
             </dl>
-            {mobilInfo && <p className="hjelp-mobil">Sensors mobil: åpne {mobilInfo}</p>}
+            {mobilLinje && <p className="hjelp-mobil">{mobilLinje}</p>}
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@ import { kilder } from '../content/kilder.ts'
 import { manus, PLAN_TOTAL } from '../content/manus.ts'
 import { mmss, planTid, sceneStart, taktPlan } from '../content/tid.ts'
 import type { Ordet } from '../content/types.ts'
+import { mobilAdresse, romkode, speilmodus } from '../lib/mobil.ts'
 import { FARGE, medNavn, navnMangler, oppsett } from '../lib/oppsett.ts'
 import { apneVindu, forrige, gaTil, lydtest, neste, nullstill, nyDemo, start, svart, useStatus, useTilstand, velg } from '../lib/sync.ts'
 import { VALG } from '../scenes/Del2.tsx'
@@ -45,6 +46,12 @@ export function Presentator() {
   const iScene = (naa - t.sceneFra) / 1000
   const animIgjen = takt.anim ? Math.max(0, takt.anim - iTakt) : 0
   const hovedTilkoblet = naa - status.sist < 5000
+  // Koden til sensors mobil vises her også når hovedskjermen ikke er åpnet ennå (samme lager, samme kode)
+  const [egenMobil, setEgenMobil] = useState<{ kode: string; adresse: string } | null>(null)
+  useEffect(() => {
+    speilmodus().then((m) => m === 'rele' && setEgenMobil({ kode: romkode(), adresse: mobilAdresse() }))
+  }, [])
+  const mobilKode = status.mobilKode ?? egenMobil?.kode ?? null
 
   // Neste takt/scene
   const sisteTakt = t.takt >= scene.takter.length - 1
@@ -95,13 +102,13 @@ export function Presentator() {
       </header>
 
       {navnMangler && <div className="pv-varsel">Navnene er fortsatt «Presentatør A/B/C» – skriv dem inn i oppsett.js.</div>}
-      {status.mobilKode && (
-        <div className={`pv-mobil ${status.mobil ? 'ok' : ''}`}>
-          {status.rele === false
+      {mobilKode && (
+        <div className={`pv-mobil ${status.mobil && hovedTilkoblet ? 'ok' : ''}`}>
+          {status.rele === false && hovedTilkoblet
             ? 'Får ikke kontakt med mobilreléet. Sjekk at PC-en har internett.'
-            : status.mobil
-              ? `Sensors mobil er koblet til (kode ${status.mobilKode}).`
-              : <>Sensors mobil: åpne <b>{status.mobilAdresse}</b> og skriv koden <b className="pv-kode">{status.mobilKode}</b>. Mobilen husker koden til neste gang.</>}
+            : status.mobil && hovedTilkoblet
+              ? `Sensors mobil er koblet til (kode ${mobilKode}).`
+              : <>Sensors mobil: åpne <b>{status.mobilAdresse || egenMobil?.adresse}</b> og skriv koden <b className="pv-kode">{mobilKode}</b>. Mobilen husker koden til neste gang.</>}
         </div>
       )}
 
