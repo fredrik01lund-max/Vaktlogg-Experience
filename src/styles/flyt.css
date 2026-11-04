@@ -127,6 +127,12 @@
 .scene.funn {
   background: #0e0c0b;
 }
+.funn-skygge {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #0d0b0a 0 170px, rgba(13, 11, 10, 0) 560px);
+  pointer-events: none;
+}
 .funn-bilde {
   position: absolute;
   inset: 0;

@@ -226,7 +226,6 @@ export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { v
       <motion.div className="demo-hjorne" initial={false} animate={{ opacity: visning === 'demo' ? 1 : 0 }} transition={{ duration: 1, delay: visning === 'demo' ? 1.2 : 0 }}>
         <span className="merket fiktiv">Fiktiv restaurant</span>
         <span className="merket illustrasjon">Simulerte tall</span>
-        <span className={`demo-styrer ${sensor ? 'na' : ''}`}>{speiles ? 'Sensor styrer fra mobilen' : 'Styres herfra'}</span>
       </motion.div>
     </>
   )

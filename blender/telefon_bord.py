@@ -159,7 +159,7 @@ def vaktliste(plass, rot_z):
     kroll = o.modifiers.new("Krøll", "SIMPLE_DEFORM")
     kroll.deform_method = "BEND"
     kroll.deform_axis = "X"
-    kroll.angle = math.radians(38)
+    kroll.angle = math.radians(20)  # svak krøll; mer ga en grå kile av undersiden i sluttbildet
     kroll.limits = (0.0, 0.3)  # bare den nederste enden løfter seg
     tykk = o.modifiers.new("Tykkelse", "SOLIDIFY")
     tykk.thickness = 0.0015
@@ -181,8 +181,9 @@ def vaktliste(plass, rot_z):
         to = bpy.data.objects.new(f"Vaktliste linje {i}", tc)
         bpy.context.scene.collection.objects.link(to)
         to.parent = o
-        to.location = (-bredde / 2 + 0.05, lengde / 2 - 0.13 - i * 0.1, 0.0025)
+        to.location = (-bredde / 2 + 0.05, lengde / 2 - 0.13 - i * 0.1, 0.0016)  # trykket på papiret, ikke svevende
         to.data.materials.append(blekk)
+        to.visible_shadow = False  # ellers kaster bokstavene skygge i det lave sollyset, og teksten ser dobbelttrykt ut
     return o
 
 

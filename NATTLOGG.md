@@ -214,9 +214,64 @@ Alle filmene bygges på `studio.py` og får samme lys og materialer.
 - **.gitignore** fanget ikke nye rendermapper (frames_telefon, test_hopark). Nå ignoreres alle `blender/frames*` og `blender/test*`. Ingenting var committet.
 - **Hopping:** fullrendring pågår (360 bilder).
 
-## Gjenstår
+### Filmene ferdige (pushet)
 
-- Runde 3: filmene, i rekkefølgen telefon (ny, i restauranten), hopping (ny), åpning (kortere og bedre).
-- Runde 4: detaljer, presentatørvisningen og README.
-- Fase 4: et nytt, friskt panel.
-- Morgenrapport.
+- Hopping: 7ff112a og e7b2f7a (rendret på nytt etter art director).
+- Telefon: f03bf94. Rendres på nytt nå, fordi vaktlista så dobbelttrykt ut (bokstavene kastet skygge).
+- Åpning: c7bcd4d. Planlagt tid er 9:34 etter at åpningen er kortet til 18 s.
+- Bokeh, korn og vignett er slått av overalt, også i de mørke scenene.
+
+### Fase 4 – panel 2 (seks nye reviewere, uten tidligere vurderinger)
+
+Panelet fant innholdsfeil som jeg har sjekket mot transkripsjonene selv:
+
+- **Vinhistorien:** «5 000 kr», «premie», «lære opp» og «verdt det» står i hakeparentes i den bearbeidede versjonen. Det er tolkninger, ikke ordrett. I opptaket sier hun «500, 5000, fem 105 000». Nå står det «En dyr vin», «sjefen lovet henne noe» og «Hun gikk hjem i godt humør» (det var spørsmålet hun svarte på), merket «Gjenfortalt, ikke ordrett».
+- **Spørsmål 10:** svarene handlet om nok folk, en god plan og arbeidsmiljøet. Sitatet er svaret på spørsmål 28. Skjermen og A sier nå det.
+- **«Etter vakten skjedde det nesten ingenting»:** sto som funn uten merking og motsa funn 2. Nå står det som «Vår tolkning».
+- **Problemstillingen:** «Noen koblet lav motivasjon til fravær» og «det var dit folk pekte» er ikke dekket. Svarene på spørsmål 35 er lønn, lange dager, tunge løft og at folk føler seg brukt. Det står nå. I tillegg: «At mer motivasjon gir mindre fravær, har vi ikke vist.»
+- **Samme informant:** sitatet, sykdomseksempelet og vinhistorien kommer fra intervju 2, og manus sier nå «den samme servitøren».
+- **Testleddet:** C sier rett ut at ingen test ennå har svart på om Vaktlogg motiverer. «Flere servitører ville ha oversikt over gjester» er dekket av Dok. A §6 og står.
+- **Demoen:** C ber sensor se etter hva Emma sitter igjen med, og knytter etterpå sluttrapporten og duellen til valgene.
+- **Teststedene:** Frenchie, Olivia og The Thief kommer fra Dok. A §6 og er nå ført inn i kildelista (A6).
+- **Manus:** 9:47, A 304, B 266 og C 294 ord, innenfor ±12 %. sjekk er grønn.
+
+Layout:
+- lederlinjen og merkingen overlappet; merkingen står nå over telefonen
+- fasene leses over filmene og er borte mens filmen går
+- Courier på sluttbongen; sluttbongen sier «SE HVA DU FIKK TIL» i stedet for «DU BLE SETT»
+- de brukne pilene i den første ideen er fjernet
+- stempelet «Observert» dekker bare det som ble observert
+- de tre ideerubrikkene: «Det vi vet / tror / må teste»
+- en mørk overgang dekker sømmen i Nøkkelfunn
+- «Styres herfra» er fjernet fra salen
+- stemplene i problemstillingen dupper ikke lenger
+
+Eksamensdagen:
+- tjeneren bruker den frosne kopien først og sier fra hvis noe mangler
+- en opptatt port blir sagt tydelig
+- kort adresse til sensor: /s
+- mobilen synkes straks etter dvale
+- skjermen holdes våken (wake lock)
+- Enter blir neste i presentatørvisningen
+- «Klar til start» spør hvis presentasjonen er i gang
+- README har én rutine, med plan B for Dupliser
+
+Ikke gjort (står i morgenrapporten): se under.
+
+## Gjenstår (trenger brukeren, eller ikke rukket i natt)
+
+- **Sir Domeo, replikk 2:** lydfilen sier fortsatt «ingen lapp i søpla i kveld». Det står ingen steder i kildene. Logg inn i ElevenLabs (Terje) og lag den på nytt med den rettede teksten. Teksten står i morgenrapporten.
+- **Lydopptaket:** lytt på vinhistorien (intervju 2, Voice 261006_192449, 16:07–16:55). Dersom pris og «verdt det» er tydelige der, kan de stå igjen som sitat.
+- **Navnene i oppsett.js:** står fortsatt som «Presentatør A/B/C».
+- **Prototypen:** «Flasker over 1 500 kr» vises fortsatt på Salg-skjermen og i rekordlisten. B sier at det ikke er konkurranser om alkohol. Det bør fjernes i prototypen.
+- **Panelforslag som ikke er gjort:**
+  - tittelen dupper ved overgangen fra film til tittel
+  - klokka og bildeteksten i åpningen kan flyttes ned i den svarte stripen
+  - mobilstatusen vises først i scene 6
+  - lydfeil bør meldes til presentatørvisningen
+  - et ekstra hovedvindu kan nullstille omvisningen
+  - stempelet brukes fortsatt til mer enn forbehold
+- **Filmene:**
+  - figurene er fortsatt leketøy
+  - sporet leses fortsatt delvis som en plantegning
+  - vinduene er utbrente

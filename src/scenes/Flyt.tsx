@@ -112,6 +112,7 @@ export function Funn({ takt }: SceneProps) {
     <div className="scene funn">
       <motion.img className="funn-bilde" src={frys.bilde} alt="" style={{ x: FORSKYV }} animate={{ opacity: takt === 2 ? 0 : 1 }} transition={{ duration: 1.2 }} />
       <motion.img className="funn-bilde" src="film/apning-slutt.png" alt="" style={{ x: FORSKYV }} initial={{ opacity: 0 }} animate={{ opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 1.6 }} />
+      <div className="funn-skygge" />
 
       {FUNN.map((f, i) => {
         const [px, py] = p[f.punkt]
