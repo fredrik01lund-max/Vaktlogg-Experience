@@ -23,8 +23,10 @@ export type Tilstand = {
   demoNr: number
 }
 
-/** mobil: antall mobiler koblet til eksamenstjeneren (null = ingen tjener, f.eks. GitHub Pages eller fil). */
-export type Status = { film: 'laster' | 'klar' | 'feil'; demo: string; mobil: number | null; sist: number }
+/** mobil: antall mobiler koblet til (null = ukjent ennå). mobilKode og mobilAdresse: romkoden og adressen
+ *  sensors mobil åpner når speilingen går via reléet over internett (null = eksamenstjeneren). rele: om
+ *  hovedskjermen når reléet (null = brukes ikke). */
+export type Status = { film: 'laster' | 'klar' | 'feil'; demo: string; mobil: number | null; mobilKode?: string | null; mobilAdresse?: string; rele?: boolean | null; sist: number }
 
 type Melding =
   | { type: 'tilstand'; t: Tilstand; fra: string }

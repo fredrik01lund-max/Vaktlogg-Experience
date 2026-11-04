@@ -98,6 +98,25 @@ body.vis-foto {
   color: var(--gull);
   font-size: 14px;
 }
+/* Sensors mobil via reléet: adressen og koden, til mobilen er koblet til */
+.pv-mobil {
+  padding: 8px 22px;
+  background: rgba(255, 138, 122, 0.1);
+  color: #ffc2b8;
+  font-size: 14px;
+}
+.pv-mobil.ok {
+  background: rgba(143, 217, 192, 0.08);
+  color: var(--mint);
+}
+.pv-mobil b {
+  color: #fff;
+  font-weight: 600;
+}
+.pv-mobil .pv-kode {
+  font-size: 18px;
+  letter-spacing: 0.08em;
+}
 .pv-midt {
   flex: 1;
   display: grid;

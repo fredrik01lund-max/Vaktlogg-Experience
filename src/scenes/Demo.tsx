@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import meta from '../lib/telefon.json'
 import { filmUrl } from '../lib/film.ts'
 import { manus } from '../content/manus.ts'
+import { romkode, speilmodus } from '../lib/mobil.ts'
 import { forrige, hent, neste, sendStatus } from '../lib/sync.ts'
 import { MYK, useLys, type SceneProps } from './felles.tsx'
 
@@ -64,18 +65,9 @@ export function klargjorPrototype() {
 
 type Visning = 'skjult' | 'film' | 'demo'
 
-// Eksamenstjeneren (npm run eksamen) videresender sensors mobil. Finnes den, viser prototypen her det som skjer
-// på mobilen (?speil=vis). Ellers (GitHub Pages, fil) går omvisningen her, og sensor eller C trykker på storskjermen.
-let speil: Promise<boolean> | null = null
-function harSpeil() {
-  speil ??= window.location.protocol.startsWith('http') && !window.location.hostname.endsWith('github.io')
-    ? fetch('speil-status', { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((j) => j?.speil === true)
-        .catch(() => false)
-    : Promise.resolve(false)
-  return speil
-}
+// Prototypen her viser alltid det som skjer på sensors mobil (?speil=vis): via eksamenstjeneren (npm run eksamen)
+// eller via reléet over internett med romkoden (GitHub Pages, fil). Er ingen mobil koblet til, virker prototypen
+// som vanlig, og sensor eller C trykker på storskjermen.
 
 /** Telefonen med den ekte prototypen. Lastes rett før demoen (last) og tegnes ikke mens den er skjult –
  *  Sir Domeo i 3D koster mye, og skal ikke stjele tid fra filmen og animasjonene ellers.
@@ -85,7 +77,6 @@ function harSpeil() {
 export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { visning: Visning; demoNr: number; last: boolean; sensor: boolean; overlevering: boolean }) {
   const ref = useRef<HTMLIFrameElement>(null)
   const [forklaring, setForklaring] = useState<Forklaring>(FORKLARINGER.start)
-  const [speiles, setSpeiles] = useState(false)
   const forrigeNr = useRef<number | null>(null)
 
   // Ny demo: rene data og last på nytt. Utenfor demoen er prototypen ikke lastet i det hele tatt.
@@ -104,10 +95,9 @@ export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { v
     forrigeNr.current = demoNr
     klargjorPrototype()
     let aktiv = true
-    harSpeil().then((s) => {
+    speilmodus().then((m) => {
       if (!aktiv) return
-      setSpeiles(s)
-      f.src = `demo/vaktlogg.html?sensor${s ? '&speil=vis' : ''}${s && nullstill ? `&nullstill=${demoNr}` : ''}&n=${demoNr}`
+      f.src = `demo/vaktlogg.html?sensor&speil=vis${m === 'rele' ? `&rom=${romkode()}` : ''}${nullstill ? `&nullstill=${demoNr}` : ''}&n=${demoNr}`
     })
     return () => {
       aktiv = false
@@ -127,22 +117,6 @@ export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { v
   useEffect(() => {
     sendStatus({ demo: forklaring.tittel })
   }, [forklaring])
-
-  // Er sensors mobil koblet til? Vises i presentatørvinduet, så dere ser det før mobilen gis til sensor.
-  useEffect(() => {
-    if (!speiles) {
-      sendStatus({ mobil: null })
-      return
-    }
-    const sjekk = () =>
-      fetch('speil-status', { cache: 'no-store' })
-        .then((r) => r.json())
-        .then((j) => sendStatus({ mobil: Number(j?.mobiler ?? 0) }))
-        .catch(() => sendStatus({ mobil: 0 }))
-    sjekk()
-    const id = window.setInterval(sjekk, 2000)
-    return () => clearInterval(id)
-  }, [speiles])
 
   // ── Sir Domeos stemme: prototypen sier fra (postMessage) hver gang han begynner på en replikk ──
   const lyd = useRef<HTMLAudioElement | null>(null)

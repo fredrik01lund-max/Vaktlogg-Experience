@@ -95,6 +95,15 @@ export function Presentator() {
       </header>
 
       {navnMangler && <div className="pv-varsel">Navnene er fortsatt «Presentatør A/B/C» – skriv dem inn i oppsett.js.</div>}
+      {status.mobilKode && (
+        <div className={`pv-mobil ${status.mobil ? 'ok' : ''}`}>
+          {status.rele === false
+            ? 'Får ikke kontakt med mobilreléet. Sjekk at PC-en har internett.'
+            : status.mobil
+              ? `Sensors mobil er koblet til (kode ${status.mobilKode}).`
+              : <>Sensors mobil: åpne <b>{status.mobilAdresse}</b> og skriv koden <b className="pv-kode">{status.mobilKode}</b>. Mobilen husker koden til neste gang.</>}
+        </div>
+      )}
 
       <main className="pv-midt">
         <section className="pv-na">

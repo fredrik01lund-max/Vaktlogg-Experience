@@ -362,6 +362,10 @@ button {
   margin: 0;
   color: var(--dempet);
 }
+.hjelp-mobil {
+  margin: 48px 0 0 330px;
+  font-size: 24px;
+}
 
 /* ══ Fargetema ════════════════════════════════════════════════════════════════════
    Hovedtemaet er prototypens: lys bakgrunn (#f3f6f2), hvite kort, mørk grønnsvart tekst og

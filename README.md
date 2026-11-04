@@ -31,7 +31,7 @@ Publikum følger reisen fra et bredt problem (sykefravær) til et innsiktsbasert
 | 9 | Hva vi vet, og hva nå | C | Sett / tror / må teste, svakhetene i materialet, og spørsmålene en pilot skal svare på. |
 | 10 | Avslutning | A, B, C | Bongskinnen kommer tilbake. Siste bong: «Vakt ferdig». |
 
-Tid (fra `npm run sjekk`): **planlagt 9:34**, med margin til 10:00 og 2:26 til den harde grensen på 12:00. A, B og C har omtrent like mye å si (cirka 260 ord hver), filmene og animasjonene tar cirka 0:54, og sensor får 2:10 i prototypen.
+Tid (fra `npm run sjekk`): **planlagt 9:47**, med margin til 10:00 og 2:13 til den harde grensen på 12:00. A, B og C har omtrent like mye å si (304, 266 og 294 ord), filmene og animasjonene tar cirka 0:54, og sensor får 2:10 i prototypen.
 
 Scenene som er tatt ut eller slått sammen, er **lagt til side** (ikke slettet) – se under.
 
@@ -42,9 +42,11 @@ Hver animasjon skal forklare noe. Flippbrettet viser omdefineringen, frysbildet 
 ## Slik fremfører dere
 
 0. **Kvelden før (én gang):** `npm run build:eksamen`, slett `dist-eksamen-trygg` og kopier `dist-eksamen` dit. Kjør hele presentasjonen gjennom én gang mot den kopien. Ikke bygg på eksamensdagen.
-1. **På eksamensdagen:** koble PC-en og mobilen dere gir sensor til samme nett (en mobil-hotspot holder, internett trengs ikke). Kjør `npm run eksamen`. Tjeneren bruker den frosne kopien `dist-eksamen-trygg`, skriver når den ble bygget, og sier fra hvis en film eller lydfil mangler. Sensors adresse er kort: `http://<IP>:8080/s`.
+1. **På eksamensdagen:** velg én av to måter (se «Sensors mobil» under).
+   - **Med internett:** åpne https://fredrik01lund-max.github.io/Vaktlogg-Experience/ på PC-en. Sensors mobil åpner `fredrik01lund-max.github.io/Vaktlogg-Experience/s` og skriver koden som står i presentatørvisningen. Mobilen husker koden.
+   - **Uten internett (reserve):** koble PC-en og mobilen til samme nett (en mobil-hotspot holder). Kjør `npm run eksamen`. Tjeneren bruker den frosne kopien `dist-eksamen-trygg`, skriver når den ble bygget, og sier fra hvis en film eller lydfil mangler. Sensors adresse er kort: `http://<IP>:8080/s`.
 2. Win+P → «Utvid». Åpne storskjerm-adressen, trykk **P** (presentatørvisning) og dra presentatørvinduet til den bærbare skjermen. Klikk så på hovedvinduet på projektoren og trykk **F** (fullskjerm), og klikk til slutt på presentatørvinduet så klikkeren styrer derfra. Virker ikke «Utvid» (bare «Dupliser»): kjør bare hovedvinduet i fullskjerm og ha manuset på papir (`?vis=manus`).
-3. Åpne den korte adressen på sensors mobil. På mobilen: automatisk lås av, Ikke forstyrr på, fullt batteri. PC-en: lader i. Presentatørvisningen skal vise **«Hovedskjerm tilkoblet»** og **«Film lastet»**.
+3. Åpne adressen på sensors mobil. På mobilen: automatisk lås av, Ikke forstyrr på, fullt batteri. PC-en: lader i. Presentatørvisningen skal vise **«Hovedskjerm tilkoblet»**, **«Film lastet»** og **«Sensors mobil tilkoblet»** (vises fra start).
 4. Koble til høyttaler og velg den som lydenhet i Windows etter at projektoren er koblet til – Sir Domeos stemme kommer fra PC-en. Trykk **Test lyd** i presentatørvisningen, og igjen etter enhver omlasting. Til slutt **Klar til start** (venteskjermen, klokka på 0:00). Er presentasjonen allerede i gang, spør knappen før den nullstiller.
 5. Start med klikkeren (→ / PageDown). Filmene går videre av seg selv når de er ferdige. Overalt ellers er det ett klikk per takt.
 
@@ -83,13 +85,24 @@ Lager `dist-eksamen/`. Det er én `index.html` med all kode og alle fonter, plus
 
 > Fra fil (`file://`) virker presentatørvinduet via `postMessage` når det åpnes med **P**, og omvisningen med Sir Domeo går på storskjermen (sensor eller C trykker på den). Sensors mobil krever eksamenstjeneren under.
 
-### Sensors mobil: eksamenstjeneren
+### Sensors mobil
+
+Sensor trykker på en mobil, og prototypen i presentasjonen (`?sensor&speil=vis`) viser det samme: side, tilstand, klokke, rulling og Sir Domeos bobler. Stemmen spilles av storskjermen. Mister mobilen forbindelsen, kobler den seg på igjen av seg selv. Er ingen mobil koblet til, går omvisningen på storskjermen, og sensor eller C trykker der.
+
+**Med internett (GitHub Pages, eller fil og `npm run dev`):** mobilen og storskjermen møtes via et relé over internett, i et «rom» med en kort kode.
+
+- Koden lages første gang presentasjonen åpnes på en PC, og huskes der. Den står i presentatørvisningen og under H. `?rom=<kode>` på hovedskjermen setter en bestemt kode.
+- Mobilen åpner `fredrik01lund-max.github.io/Vaktlogg-Experience/s` og skriver inn koden én gang. Deretter husker den koden, så `/s` holder. `/s/?ny` viser skjemaet igjen, og `/s/#<kode>` hopper over det.
+- Reléet er offentlige MQTT-meglere (HiveMQ og EMQX) over WebSocket med TLS. Det trengs ingen konto. Begge brukes samtidig, så det holder at én svarer. Meldingene er demotilstanden til den fiktive restauranten, og emnet er en hash av koden. Koden ligger i [`src/lib/rele.ts`](src/lib/rele.ts) og [`src/lib/mobil.ts`](src/lib/mobil.ts).
+- Krever internett på både PC-en og mobilen. De trenger ikke være på samme nett.
+
+**Uten internett: eksamenstjeneren**
 
 ```bash
 npm run eksamen
 ```
 
-[`server/eksamen.mjs`](server/eksamen.mjs) serverer `dist-eksamen/` (eller `dist/`) på port 8080 og videresender sensors mobil til storskjermen over WebSocket (`/speil`). Mobilen åpner `demo/vaktlogg.html?sensor&speil=send`, og prototypen i presentasjonen (`?sensor&speil=vis`) viser det samme: side, tilstand, klokke, rulling og Sir Domeos bobler. Stemmen spilles av storskjermen. Mister mobilen forbindelsen, kobler den seg på igjen av seg selv. Uten tjener (GitHub Pages, fil) går omvisningen på storskjermen i stedet.
+[`server/eksamen.mjs`](server/eksamen.mjs) serverer `dist-eksamen-trygg/` (ellers `dist-eksamen/` eller `dist/`) på port 8080 og videresender sensors mobil til storskjermen over WebSocket (`/speil`). PC-en og mobilen må være på samme nett. Mobilen åpner `http://<IP>:8080/s`, som sender den til `demo/vaktlogg.html?sensor&speil=send`.
 
 ---
 

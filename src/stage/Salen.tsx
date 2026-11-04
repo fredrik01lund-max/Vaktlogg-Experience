@@ -4,6 +4,7 @@ import { lagtTilSide } from '../content/arkiv.ts'
 import { manus } from '../content/manus.ts'
 import type { Fase, Hvem } from '../content/types.ts'
 import { filmTilstand } from '../lib/film.ts'
+import { mobilAdresse, romkode, speilmodus, startMobilvakt } from '../lib/mobil.ts'
 import { FARGE, oppsett } from '../lib/oppsett.ts'
 import { apneVindu, forrige, gaTil, hent, neste, nyDemo, paLydtest, sendStatus, start, svart, useTilstand } from '../lib/sync.ts'
 import { Innsikter, Metode, Portrett, TittelScene } from '../scenes/Del1.tsx'
@@ -165,10 +166,13 @@ export function Salen() {
     return () => clearTimeout(id)
   }, [t.startet, t.scene, t.takt, t.taktFra, takt.auto])
 
-  // ── Status til presentatørvinduet (er filmen lastet, er hovedskjermen her) ──
+  // ── Status til presentatørvinduet (er filmen lastet, er hovedskjermen her, er sensors mobil koblet til) ──
+  const [mobilInfo, setMobilInfo] = useState('')
   useEffect(() => {
     const id = window.setInterval(() => sendStatus({ film: filmTilstand() }), 2000)
     sendStatus({ film: filmTilstand() })
+    startMobilvakt()
+    speilmodus().then((m) => setMobilInfo(m === 'rele' ? `${mobilAdresse()} og skriv koden ${romkode()}` : 'http://<IP>:8080/s (adressen står i terminalen)'))
     return () => clearInterval(id)
   }, [])
 
@@ -378,6 +382,7 @@ export function Salen() {
               <dt><kbd>L</kbd></dt>
               <dd>Skjul/vis teksten på fotoplassholdere</dd>
             </dl>
+            {mobilInfo && <p className="hjelp-mobil">Sensors mobil: åpne {mobilInfo}</p>}
           </div>
         )}
       </div>
