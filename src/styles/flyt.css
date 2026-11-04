@@ -215,10 +215,10 @@
   color: rgba(30, 26, 23, 0.75);
 }
 .funn-tomt {
-  margin: 40px 0 0;
+  margin: 32px 0 0;
   font-family: var(--serif);
   font-weight: 600;
-  font-size: 52px;
+  font-size: var(--t-ingress); /* en tolkning, ikke et funn: ingressnivå, ikke overskrift */
   line-height: 1.08;
 }
 .funn-tre {
@@ -465,6 +465,25 @@
 .hopping-banenavn.prototype {
   color: #9a4d12;
 }
+/* Bongen i avslutningen er en ekte bong: Courier, så prikklederne står på linje */
+.lerret .bong,
+.lerret .bong-merk {
+  font-family: var(--bong);
+}
+/* Spørsmålet i scene 2: svarene kort under, og luft mellom sitatets kilde og oppfølgingen */
+.lerret .folk-svar {
+  margin-top: 28px;
+  max-width: 900px;
+}
+.lerret .folk-gjester {
+  margin-top: 72px;
+}
+.lerret .prioritert-leder {
+  margin-top: 24px;
+}
+.lerret .funn-kort .stempel-rad {
+  margin: 16px 0 20px;
+}
 .hopping-motsatt {
   position: absolute;
   left: var(--k1);
@@ -630,4 +649,18 @@
   font-size: 28px;
   letter-spacing: 0;
   text-transform: none;
+}
+
+/* Pilene mellom kortene i den første ideen sto i gamle koordinater (gjennom kortene); tre kort på rad leses som en rekkefølge */
+.lerret .ide-piler {
+  display: none;
+}
+
+/* Scene 6: merkingen står over telefonen (navnelinjen har hjørnet nede til høyre) */
+.lerret .prioritert-kilde {
+  left: 1100px;
+  width: 800px;
+  bottom: auto;
+  top: 30px;
+  text-align: center;
 }

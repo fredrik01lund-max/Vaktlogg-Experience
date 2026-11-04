@@ -41,16 +41,16 @@ Hver animasjon skal forklare noe. Flippbrettet viser omdefineringen, frysbildet 
 
 ## Slik fremfører dere
 
-0. Kvelden før: bygg, kjør gjennom og frys en versjon dere vet virker (`npm run build:eksamen`, så kopier `dist-eksamen` til `dist-eksamen-trygg`). Ikke bygg på eksamensdagen – start med `node server/eksamen.mjs dist-eksamen-trygg`.
-1. Koble PC-en og mobilen dere gir sensor til samme nett – en mobil-hotspot holder, internett trengs ikke. Kjør `npm run build:eksamen` og så `npm run eksamen`. Tjeneren skriver ut to adresser.
-2. Win+P → «Utvid». Åpne storskjerm-adressen, trykk **P** (presentatørvisning) og dra presentatørvinduet til den bærbare skjermen. Klikk så på hovedvinduet på projektoren og trykk **F** (fullskjerm), og klikk til slutt på presentatørvinduet så klikkeren styrer derfra.
-3. Åpne mobiladressen på sensors mobil og sett mobilen til å ikke låse seg. Presentatørvisningen skal vise **«Hovedskjerm tilkoblet»** og **«Film lastet»**.
-4. Koble til høyttaler – Sir Domeos stemme kommer fra PC-en. Trykk **Test lyd** i presentatørvisningen. Til slutt **Klar til start** (venteskjermen, klokka på 0:00). Presentatørvisningen skal vise «Sensors mobil tilkoblet».
+0. **Kvelden før (én gang):** `npm run build:eksamen`, slett `dist-eksamen-trygg` og kopier `dist-eksamen` dit. Kjør hele presentasjonen gjennom én gang mot den kopien. Ikke bygg på eksamensdagen.
+1. **På eksamensdagen:** koble PC-en og mobilen dere gir sensor til samme nett (en mobil-hotspot holder, internett trengs ikke). Kjør `npm run eksamen`. Tjeneren bruker den frosne kopien `dist-eksamen-trygg`, skriver når den ble bygget, og sier fra hvis en film eller lydfil mangler. Sensors adresse er kort: `http://<IP>:8080/s`.
+2. Win+P → «Utvid». Åpne storskjerm-adressen, trykk **P** (presentatørvisning) og dra presentatørvinduet til den bærbare skjermen. Klikk så på hovedvinduet på projektoren og trykk **F** (fullskjerm), og klikk til slutt på presentatørvinduet så klikkeren styrer derfra. Virker ikke «Utvid» (bare «Dupliser»): kjør bare hovedvinduet i fullskjerm og ha manuset på papir (`?vis=manus`).
+3. Åpne den korte adressen på sensors mobil. På mobilen: automatisk lås av, Ikke forstyrr på, fullt batteri. PC-en: lader i. Presentatørvisningen skal vise **«Hovedskjerm tilkoblet»** og **«Film lastet»**.
+4. Koble til høyttaler og velg den som lydenhet i Windows etter at projektoren er koblet til – Sir Domeos stemme kommer fra PC-en. Trykk **Test lyd** i presentatørvisningen, og igjen etter enhver omlasting. Til slutt **Klar til start** (venteskjermen, klokka på 0:00). Er presentasjonen allerede i gang, spør knappen før den nullstiller.
 5. Start med klikkeren (→ / PageDown). Filmene går videre av seg selv når de er ferdige. Overalt ellers er det ett klikk per takt.
 
 | Tast | Hva |
 |---|---|
-| → mellomrom PageDown | Neste. Virker også mens fokus er inne i prototypen. |
+| → mellomrom PageDown Enter | Neste. Virker også mens fokus er inne i prototypen. |
 | ← PageUp | Forrige |
 | B eller . | Svart skjerm |
 | O | Oversikt: hopp til en scene. Under «Lagt til side» ligger scenene som er tatt ut – Esc lukker |

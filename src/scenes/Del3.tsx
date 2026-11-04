@@ -263,7 +263,7 @@ export function Slutt({ takt }: SceneProps) {
       )}
       <motion.div className="skinne slutt-skinne" initial={{ scaleX: 0 }} animate={{ scaleX: takt < 3 ? 1 : 0, opacity: takt < 3 ? 1 : 0 }} transition={{ duration: 1.4, ease: FILM }} />
       <motion.div className="slutt-bong" initial={{ y: -520, opacity: 0 }} animate={{ y: takt === 2 ? 0 : -520, opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 2.6, ease: [0.3, 0, 0.2, 1], delay: takt === 2 ? 1 : 0 }}>
-        <Bong b={{ bord: 'VAKT FERDIG', tid: '23:30', linjer: ['SKRITT ............ ✓', 'SALG .............. ✓', 'KUDOS ............. ✓', 'TAKKEKORT ......... ✓'], merk: 'DU BLE SETT' }} className="stor" />
+        <Bong b={{ bord: 'VAKT FERDIG', tid: '23:30', linjer: ['SKRITT ............ ✓', 'SALG .............. ✓', 'KUDOS ............. ✓', 'TAKKEKORT ......... ✓'], merk: 'SE HVA DU FIKK TIL' }} className="stor" />
       </motion.div>
 
       <div className="slutt-linjer">
@@ -361,7 +361,7 @@ export function Hopping({ takt }: SceneProps) {
       </motion.div>
 
       <Inn vis={takt >= 2} className="hopping-motsatt">
-        <p className="ingress">Ønsket om oversikt over egne gjester og bord var ikke en del av motivasjonsideen. Vi prøvde det, og lærte at vi må prioritere.</p>
+        <p className="ingress">Flere servitører ville også ha oversikt over egne gjester og bord. Det hørte ikke til motivasjonsideen, så det er med, men utenfor kjernen.</p>
         <p className="tekst">
           Personer med tilknytning til blant annet {oppsett.innsikt.testmiljoer.join(', ').replace(/, ([^,]*)$/, ' og $1')} har prøvd prototypen, noen sammen med oss og noen alene via lenken.
         </p>

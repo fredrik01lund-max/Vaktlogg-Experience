@@ -11,10 +11,10 @@ import { FILM, Inn, MYK, useLys, useSek, type SceneProps } from './felles.tsx'
    Begge ordene har ti bokstaver – flippbokstavene viser omdefineringen bokstavelig. */
 
 const PEKTE_PA = [
-  { t: 'Lav lønn', x: -620, y: -250 },
+  { t: 'Lønn', x: -620, y: -250 },
   { t: 'Lange dager', x: 560, y: -270 },
-  { t: 'Fysisk belastning', x: -700, y: 210 },
-  { t: 'Begrenset anerkjennelse', x: 560, y: 230 },
+  { t: 'Tunge løft', x: -700, y: 210 },
+  { t: 'Føler seg brukt', x: 560, y: 230 },
 ]
 
 export function Snu({ takt }: SceneProps) {
@@ -22,7 +22,7 @@ export function Snu({ takt }: SceneProps) {
   return (
     <div className="scene snu">
       <Inn vis={takt === 0} className="overtittel snu-over">
-        Det informantene pekte på
+        Det de svarte om fravær
       </Inn>
       <div className="snu-midt">
         {PEKTE_PA.map((p, i) => (
@@ -30,14 +30,14 @@ export function Snu({ takt }: SceneProps) {
             key={p.t}
             className="merket snu-brikke"
             initial={{ opacity: 0, x: p.x * 0.7, y: p.y * 0.7 }}
-            animate={takt === 0 ? { opacity: 1, x: p.x, y: [p.y, p.y - 12, p.y] } : { opacity: 0, x: 0, y: 0, scale: 0.6 }}
-            transition={takt === 0 ? { duration: 1.2, delay: 0.3 + i * 0.25, ease: MYK, y: { duration: 6, repeat: Infinity, ease: 'easeInOut' } } : { duration: 0.9, ease: MYK }}
+            animate={takt === 0 ? { opacity: 1, x: p.x, y: p.y } : { opacity: 0, x: 0, y: 0, scale: 0.6 }}
+            transition={takt === 0 ? { duration: 1.2, delay: 0.3 + i * 0.25, ease: MYK } : { duration: 0.9, ease: MYK }}
           >
             {p.t}
           </motion.span>
         ))}
         <motion.div className="snu-motsatt" initial={{ opacity: 0, y: 30 }} animate={{ opacity: takt === 0 ? 1 : 0, y: takt === 0 ? 0 : 30 }} transition={{ duration: 1.2, delay: takt === 0 ? 2.6 : 0, ease: MYK }}>
-          En servitør gikk på jobb syk fordi de alltid mangler folk.
+          En servitør gikk på jobb selv om hun burde vært hjemme, fordi de alltid mangler folk.
         </motion.div>
 
         <motion.div animate={{ y: takt >= 1 ? -90 : 0, scale: takt >= 2 ? 0.72 : 1 }} transition={{ duration: 1.4, delay: takt === 1 ? 4.6 : 0, ease: MYK }}>
@@ -180,22 +180,22 @@ export function Ide({ takt }: SceneProps) {
 
       <div className="historie">
         <Inn vis={takt >= 1} d={0.3} className="historie-tall" style={{ color: 'var(--salg)' }}>
-          <b>Vin til 5 000 kr</b>
-          <span>sjefen hadde lovet en premie til den som solgte den</span>
+          <b>En dyr vin</b>
+          <span>sjefen lovet henne noe hvis hun solgte den</span>
         </Inn>
         <Inn vis={takt >= 1} d={0.9} className="historie-tall" style={{ color: 'var(--aktivitet)' }}>
           <b>«Gikk veldig mye»</b>
-          <span>hun lærte opp en ny servitør samtidig</span>
+          <span>den samme kvelden</span>
         </Inn>
         <Inn vis={takt >= 1} d={1.5} className="historie-tall" style={{ color: 'var(--salg)' }}>
           <b>3 flasker</b>
           <span>solgt samme kveld</span>
         </Inn>
         <Inn vis={takt >= 1} d={2.1} className="historie-sitat stor-serif">
-          «Det var verdt det.»
+          Hun gikk hjem i godt humør.
         </Inn>
         <Inn vis={takt >= 1} d={2.4} className="historie-merk">
-          <span className="merket illustrasjon">Fortalt i ett intervju</span>
+          <span className="merket illustrasjon">Gjenfortalt, ikke ordrett</span>
         </Inn>
       </div>
     </div>

@@ -5,7 +5,7 @@
      på bonger og på stemplene som merker forbehold (selvrapportert, observert, illustrasjon …).
    - Seks skriftstørrelser, ingenting under 24 px (lesbart bakerst i rommet på en blek projektor).
    - Et 12-kolonners rutenett: 96 px marg, kolonner på 100 px, 48 px renner. Overskrifter henger fra y = 216.
-   - Ingen effektlag på lyse scener: ingen korn, ingen bokeh, ingen glød, ingen gradienttekst.
+   - Ingen effektlag: ingen korn, ingen bokeh, ingen vignett, ingen glød, ingen gradienttekst.
    Prototypens farger er beholdt som grunnfarger, men brukes flatt og med fast betydning. */
 
 :root {
@@ -116,14 +116,11 @@
   color: #f6a2c8;
 }
 
-/* Effektlaget: bare i mørke scener (åpningen er natt i en restaurant – der hører lysene hjemme) */
-.lerret.tema-lys .korn,
-.lerret.tema-lys .vignett,
-.lerret.tema-lys .lys-lerret {
+/* Ingen effektlag noe sted: ikke bokeh, korn eller vignett. Lyset i de mørke scenene kommer fra filmene. */
+.lerret .korn,
+.lerret .vignett,
+.lerret .lys-lerret {
   display: none;
-}
-.lerret.tema-mork .korn {
-  opacity: 0.04;
 }
 
 /* Ingen gradienttekst – ensfarget blekk */
@@ -149,6 +146,24 @@
   text-transform: none;
   color: var(--svak);
 }
+/* Over filmbilder: lyst blekk med en svak skygge; mens filmen går, er fasene borte */
+.lerret .faser.pa-film span {
+  color: rgba(255, 253, 248, 0.62);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+}
+.lerret .faser.pa-film span.na {
+  color: #fffdf8;
+}
+.lerret .faser.hoyre {
+  left: auto;
+  right: var(--marg);
+}
+.lerret .faser {
+  transition: opacity 0.6s;
+}
+.lerret .faser.under-film {
+  opacity: 0;
+}
 .lerret .faser span.na {
   color: var(--papir);
 }
@@ -165,7 +180,7 @@
   font-weight: 600;
 }
 /* Navnet kan havne over lyse partier i filmbildene (vaktlista i demoen) */
-.lerret .navnelinje {
+.lerret.tema-mork .navnelinje {
   text-shadow: 0 1px 14px rgba(18, 12, 10, 0.7);
 }
 .lerret .navnelinje small {

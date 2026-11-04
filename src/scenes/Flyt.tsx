@@ -58,21 +58,22 @@ export function Folk({ takt }: SceneProps) {
               ))}
             </tbody>
           </table>
-          <p className="liten folk-briller">Bakgrunnen vår åpnet dører, men gjør også at vi lett ser det vi kjenner fra før.</p>
+          <p className="liten folk-briller">Bakgrunnen vår gjorde det lettere å komme inn, men vi ser også lett det vi kjenner fra før.</p>
         </Inn>
 
         <Inn vis={takt === 1} className="folk-sporsmal">
           <p className="liten">Spørsmål 10 i intervjuguiden</p>
           <p className="folk-sporsmal-tekst">Hva skal til for at en travel vakt blir en god vakt i stedet for en jævlig en?</p>
+          <p className="tekst folk-svar">Svarene handlet mest om nok folk på jobb, en god plan og arbeidsmiljøet.</p>
         </Inn>
 
         <Inn vis={takt === 2} className="folk-sitat">
           <blockquote>«Jeg jobber veldig mye og får veldig lite tilbake, og da mister jeg motivasjonen.»</blockquote>
           <div className="stempel-rad folk-hvem">
-            <span>Servitør, intervju</span>
+            <span>Servitør, svar på spørsmål 28</span>
             <span className="merket">Språklig bearbeidet</span>
           </div>
-          <p className="ingress folk-gjester">Det som holdt henne gående, var tilbakemeldinger fra gjestene.</p>
+          <p className="ingress folk-gjester">I den siste jobben var det bare gjestene som motiverte henne.</p>
         </Inn>
       </div>
 
@@ -155,14 +156,19 @@ export function Funn({ takt }: SceneProps) {
               <div className="stempel-rad">
                 <span className="merket observert">Observert</span>
               </div>
-              <p className="tekst funn-etter">Dagen etter var den vanskelig å finne igjen.</p>
             </motion.div>
           )}
           {takt >= 2 && (
             <motion.div key="2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
               <h2 className="h2">Anerkjennelse</h2>
               <p className="tekst">Fra gjester, kolleger og ledere.</p>
-              <p className="funn-tomt">Etter vakten skjedde det nesten ingenting.</p>
+              <div className="stempel-rad">
+                <span className="merket">Fortalt</span>
+              </div>
+              <p className="funn-tomt">Etter vakten blir lite av innsatsen synlig. Kassarapporten er nesten det eneste.</p>
+              <div className="stempel-rad">
+                <span className="merket illustrasjon">Vår tolkning</span>
+              </div>
               <ul className="funn-tre">
                 <li style={{ color: 'var(--aktivitet)' }}>Bevegelse</li>
                 <li style={{ color: 'var(--salg)' }}>Salg</li>
@@ -225,7 +231,7 @@ const PAR = [
   { fra: 'Kassarapporten etter vakten', merke: 'Observert', til: 'Salg, mens du jobber', skjerm: 'salg' },
   { fra: 'Skrittene de fortalte om', merke: 'Selvrapportert', til: 'Helse, bare for deg', skjerm: 'helse' },
   { fra: 'Hjelpen til kolleger, som ikke synes i kassen', merke: 'Fortalt', til: 'Kudos og takkekort', skjerm: 'live' },
-  { fra: 'Rommet etter vakten', merke: 'Vår tolkning', til: 'Sluttrapporten', skjerm: 'rapport' },
+  { fra: 'Tiden etter vakten', merke: 'Vår tolkning', til: 'Sluttrapporten', skjerm: 'rapport' },
 ]
 
 export function Prioritert({ takt }: SceneProps) {
@@ -249,7 +255,7 @@ export function Prioritert({ takt }: SceneProps) {
           ))}
         </ol>
         <Inn vis={takt >= 1} className="prioritert-ogsa">
-          <p className="tekst">Med, men ikke kjernen: oversikten over gjester og bord som testerne ba om, mål og premier, personalmenyen.</p>
+          <p className="tekst">Med som tillegg: mål og premier, personalmenyen og oversikten over gjester og bord.</p>
           <p className="ingress prioritert-leder">Lederen ser bare laget, aldri tall per person.</p>
         </Inn>
       </div>
@@ -258,19 +264,20 @@ export function Prioritert({ takt }: SceneProps) {
           <motion.img key={skjerm} src={`skjerm/${skjerm}.png`} alt="" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45 }} />
         </AnimatePresence>
       </div>
-      <p className="kilde-linje">Ekte skjermbilder fra prototypen. Fiktiv restaurant, simulerte tall.</p>
+      {/* Bildetekst under telefonen (den gjelder skjermbildene), så den ikke kolliderer med lederlinjen */}
+      <p className="kilde-linje prioritert-kilde">Ekte skjermbilder fra prototypen. Fiktiv restaurant, simulerte tall.</p>
     </div>
   )
 }
 
 /* ── 9. Hva vi vet, og hva nå ── */
 const KOLONNER = [
-  { over: 'Det vi har sett', linjer: ['Ansatte som sjekker kassarapporten etter vakten', 'Interesse for skritt og egne salgstall'] },
-  { over: 'Det vi tror', linjer: ['Synlig innsats og anerkjennelse kan gi mer motivasjon', 'Konkurranser motiverer noen, ikke alle'] },
+  { over: 'Det vi vet', linjer: ['Ansatte som sjekker kassarapporten etter vakten', 'Ansatte som forteller om skrittene sine'] },
+  { over: 'Det vi tror', linjer: ['Å se sin egen innsats, og bli sett for den, kan gi mer motivasjon', 'Konkurranser motiverer noen, ikke alle'] },
   { over: 'Det vi må teste', linjer: ['Åpner noen appen etter vakten, med sine egne tall?', 'Opplever de mer motivasjon over tid?'] },
 ]
-const SVAKHETER = ['Noen spørsmål var ledende', 'Flere av de sterkeste eksemplene kommer fra samme intervju', 'Positive tilbakemeldinger kan være høflighet', 'Tallene i prototypen er simulert']
-const SPORSMAL = ['Hvordan blir det rettferdig på tvers av stasjoner?', 'Hvordan unngår vi at det blir et kontrollsystem?', 'Hvem skal betale?', 'Får vi data fra kassasystemene?']
+const SVAKHETER = ['Bevegelse var et kjernetema i guiden, så skrittene er delvis noe vi spurte etter', 'Sitatet, vinhistorien og sykdomseksempelet kommer fra samme intervju', 'Positive tilbakemeldinger kan være høflighet', 'Noen spørsmål var ledende']
+const SPORSMAL = ['Oppleves det rettferdig å måles mot sin egen vanlige kveld?', 'Oppleves det som kontroll, selv om lederen bare ser laget?', 'Får vi data fra kassasystemet?', 'Hvem skal betale?']
 
 export function Vet({ takt }: SceneProps) {
   useLys(0)
@@ -297,7 +304,7 @@ export function Vet({ takt }: SceneProps) {
         </ol>
       </Inn>
       <Inn vis={takt >= 2} className="vet-videre">
-        <h2 className="h2">Før vi lager mer, trenger vi svar</h2>
+        <h2 className="h2">Før vi bygger mer: det en pilot skal svare på</h2>
         <ol>
           {SPORSMAL.map((s) => (
             <li key={s} className="ingress">

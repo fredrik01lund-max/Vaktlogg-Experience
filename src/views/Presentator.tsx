@@ -55,14 +55,14 @@ export function Presentator() {
   useEffect(() => {
     const ned = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey) return
-      if (['ArrowRight', 'PageDown', ' ', 'ArrowDown'].includes(e.key)) {
+      if (['ArrowRight', 'PageDown', ' ', 'ArrowDown', 'Enter'].includes(e.key)) {
         e.preventDefault()
         neste()
       } else if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(e.key)) {
         e.preventDefault()
         forrige()
       } else if (e.key === 'F5' || e.key === 'Escape') e.preventDefault()
-      else if (e.key === 'b' || e.key === '.') svart()
+      else if (e.key === 'b' || e.key === 'B' || e.key === '.') svart()
       else if (/^[1-4]$/.test(e.key) && scene.id === 'sensor') velg(Number(e.key))
     }
     window.addEventListener('keydown', ned)
@@ -87,9 +87,9 @@ export function Presentator() {
         </div>
         <div className="pv-knapper">
           {!hovedTilkoblet && <button onClick={() => apneVindu('hoved')}>Åpne hovedskjerm</button>}
-          <button onClick={() => nullstill()} title="Tilbake til venteskjermen, klokka på 0:00 – uten å starte">Klar til start</button>
-          <button onClick={lydtest} title="Hovedskjermen spiller Sir Domeos første replikk">Test lyd</button>
-          <button onClick={nyDemo} title="Last prototypen på nytt med rene data (også på sensors mobil)">Nullstill demo</button>
+          <button onClick={(e) => { e.currentTarget.blur(); if (!t.startet || confirm('Presentasjonen er i gang. Tilbake til venteskjermen og klokka på 0:00?')) nullstill() }} title="Tilbake til venteskjermen, klokka på 0:00 – uten å starte">Klar til start</button>
+          <button onClick={(e) => { e.currentTarget.blur(); lydtest() }} title="Hovedskjermen spiller Sir Domeos første replikk">Test lyd</button>
+          <button onClick={(e) => { e.currentTarget.blur(); nyDemo() }} title="Last prototypen på nytt med rene data (også på sensors mobil)">Nullstill demo</button>
           <button onClick={() => (confirm('Starte hele presentasjonen på nytt og nullstille tiden?') ? (nullstill(), start()) : null)}>Start på nytt</button>
         </div>
       </header>

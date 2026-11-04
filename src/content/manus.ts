@@ -33,7 +33,7 @@ export const manus: Scene[] = [
       },
       {
         hvem: 'A',
-        sier: 'Vi startet med sykefravær i restaurantbransjen. Bemanningen er knapp, marginene er små og dagene er fysisk tunge. Så vi gikk ut og snakket med folk.',
+        sier: 'Vi startet med sykefravær i restaurantbransjen. Det er ofte for få på jobb, og dagene er lange og fysisk tunge. Så vi gikk ut og snakket med folk.',
         regi: 'SYKEFRAVÆR kommer frem med de tre kjennetegnene.',
       },
     ],
@@ -45,64 +45,64 @@ export const manus: Scene[] = [
     tittel: 'Hvem vi snakket med',
     del: 'Problem og innsikt',
     fase: 'empathize',
-    varighet: 48,
+    varighet: 52,
     takter: [
       {
         hvem: 'A',
-        sier: 'Vi har intervjuet og snakket med servitører, hovmestere og ledere, og observert folk i jobb, blant annet på Noode Sky og Park 29. Selv har vi jobbet som servitør, hovmester og daglig leder. Det åpnet dører, men gjør også at vi lett ser det vi kjenner fra før.',
+        sier: 'Vi har intervjuet servitører, hovmestere og ledere, og observert folk i jobb, blant annet på Noode Sky og Park 29. Selv har vi jobbet som servitør, hovmester og daglig leder. Det gjorde det lettere å komme inn, men vi ser også lett det vi kjenner fra før.',
         regi: 'Kildene står som en liste: intervjuer, samtaler, observasjoner, egen erfaring. Ikke si et samlet antall intervjuer.',
       },
       {
         hvem: 'A',
-        sier: 'Ett spørsmål ga mer enn de andre: Hva skal til for at en travel vakt blir en god vakt i stedet for en jævlig en?',
-        regi: 'Spørsmålet står stort, ordrett fra intervjuguiden.',
+        sier: 'Vi spurte blant annet: Hva skal til for at en travel vakt blir en god vakt i stedet for en jævlig en? Svarene handlet mest om nok folk på jobb.',
+        regi: 'Spørsmålet står stort, ordrett fra intervjuguiden, med svarene kort under.',
       },
       {
         hvem: 'A',
-        sier: 'En servitør sa det omtrent sånn: «Jeg jobber veldig mye og får veldig lite tilbake, og da mister jeg motivasjonen.» Det som holdt henne gående, var tilbakemeldinger fra gjestene.',
-        regi: 'Sitatet står alene. Merket «språklig bearbeidet» – hun snakker norsk som andrespråk.',
+        sier: 'Da vi spurte hva som tar motivasjonen, sa en servitør det omtrent sånn: «Jeg jobber veldig mye og får veldig lite tilbake, og da mister jeg motivasjonen.» I den siste jobben var det bare gjestene som motiverte henne.',
+        regi: 'Sitatet står alene, med spørsmålet det svarte på (28). Merket «språklig bearbeidet» – hun snakker norsk som andrespråk.',
       },
     ],
     overgang: 'A klikker videre til nøkkelfunnene.',
-    kilder: ['A2', 'A2-1', 'G', 'I2'],
+    kilder: ['A2', 'A2-1', 'G', 'I1', 'I2', 'I3'],
   },
   {
     id: 'funn',
     tittel: 'Nøkkelfunn',
     del: 'Problem og innsikt',
     fase: 'empathize',
-    varighet: 42,
+    varighet: 40,
     takter: [
       {
         hvem: 'A',
-        sier: 'Tre ting gikk igjen. Det første var bevegelse. Flere svarte i skritt da vi spurte hvor mye de var i farta. En hovmester teller hver dag, og kommer opp i 25 000 på en lang vakt. Farten var ofte positiv. Det som slet, var tunge løft.',
+        sier: 'Tre ting gikk igjen. Det første var bevegelse. Flere svarte i skritt da vi spurte hvor mye de var i farta. En hovmester teller skrittene sine hver dag, og kommer opp i 25 000 på en lang vakt. Farten var ofte positiv. Det som slet, var tunge løft.',
         regi: 'Et stillbilde fra filmen fryses, og «bevegelse» tegnes ved servitøren. Tallet er merket «selvrapportert».',
       },
       {
         hvem: 'A',
-        sier: 'Det andre var salget. Vi så ansatte sjekke kassarapporten etter vakten, men dagen etter var den vanskelig å finne igjen.',
+        sier: 'Det andre var salget. Vi så ansatte sjekke kassarapporten når vakten var over.',
         regi: '«Salg» tegnes ved bordet. Merket «observert».',
       },
       {
         hvem: 'A',
-        sier: 'Det tredje var anerkjennelse, fra gjester, kolleger og ledere. Og etter vakten skjedde det nesten ingenting. Innsatsen ble ikke synlig noe sted.',
-        regi: 'Bildet blir mørkt: vakten er over. De tre funnene står igjen.',
+        sier: 'Det tredje var anerkjennelse, fra gjester, kolleger og ledere. Vår tolkning er at lite av innsatsen blir synlig etter vakten. Kassarapporten er nesten det eneste.',
+        regi: 'Bildet blir mørkt: vakten er over. Tolkningen står merket «vår tolkning», og de tre funnene står igjen.',
       },
     ],
     overgang: 'A klikker. SYKEFRAVÆR kommer tilbake.',
-    kilder: ['A2-1', 'A2-2', 'A2-3', 'A3', 'I1'],
+    kilder: ['A2-1', 'A2-2', 'A2-3', 'A3', 'I1', 'I2', 'I3'],
   },
   {
     id: 'snu',
     tittel: 'Problemstillingen',
     del: 'Problem og innsikt',
     fase: 'define',
-    varighet: 40,
+    varighet: 48,
     takter: [
       {
         hvem: 'A',
-        sier: 'Noen koblet lav motivasjon til fravær. En servitør fortalte at hun gikk på jobb syk fordi de alltid mangler folk.',
-        regi: 'Det informantene pekte på, står rundt SYKEFRAVÆR.',
+        sier: 'Da vi spurte hvorfor folk blir borte fra jobb, svarte de slitsom jobb, lange dager, tunge løft og lønn. En leder sa at folk føler seg brukt. Og servitøren vi siterte, gikk på jobb selv om hun burde vært hjemme, fordi de alltid mangler folk.',
+        regi: 'Det de svarte om fravær, står rundt SYKEFRAVÆR.',
       },
       {
         hvem: 'stille',
@@ -112,12 +112,12 @@ export const manus: Scene[] = [
       },
       {
         hvem: 'B',
-        sier: 'Fravær henger sammen med bemanning, lønn og mye vi ikke kan designe bort. Motivasjon kan vi gjøre noe med. Så spørsmålet ble: Hvordan kan vi øke motivasjonen i jobben som servitør? Vi har ikke vist at lav motivasjon gir fravær. Men det var dit folk pekte.',
+        sier: 'Lønn og bemanning kan ikke vi designe bort. Men det å bli sett for innsatsen sin, kan vi gjøre noe med. Så spørsmålet ble: Hvordan kan vi øke motivasjonen i jobben som servitør? At mer motivasjon gir mindre fravær, har vi ikke vist.',
         regi: 'Problemstillingen står under MOTIVASJON.',
       },
     ],
     overgang: 'B klikker videre til den første ideen.',
-    kilder: ['A1', 'A3', 'I2'],
+    kilder: ['A1', 'A3', 'I1', 'I2', 'I3'],
   },
   {
     id: 'valg',
@@ -128,13 +128,13 @@ export const manus: Scene[] = [
     takter: [
       {
         hvem: 'B',
-        sier: 'Den første ideen var en slags Strava for jobben: en skritteller som starter når du stempler inn og stopper når du går hjem.',
+        sier: 'Den første ideen var en slags Strava for jobben, fordi flere allerede talte skrittene sine. En skritteller som starter når du stempler inn, og stopper når du går hjem.',
         regi: 'Skissen av ideen.',
       },
       {
         hvem: 'B',
-        sier: 'Så fortalte en servitør om en kveld der sjefen hadde lovet en premie for å selge vin til 5 000 kroner. Hun lærte opp en ny servitør samtidig og gikk veldig mye. Hun solgte tre flasker og syntes det var verdt det.',
-        regi: 'Historien, merket «fortalt i ett intervju».',
+        sier: 'Den samme servitøren fortalte om en travel kveld hun gikk hjem fra i godt humør. Sjefen hadde lovet henne noe hvis hun solgte en dyr vin. Hun gikk veldig mye, og hun solgte tre flasker.',
+        regi: 'Historien, merket «gjenfortalt, ikke ordrett». Pris og premie er uklare i opptaket – ikke nevn tall.',
       },
       {
         hvem: 'stille',
@@ -144,12 +144,12 @@ export const manus: Scene[] = [
       },
       {
         hvem: 'B',
-        sier: 'Der hørte skrittene og salget sammen. Det ble Vaktlogg.',
+        sier: 'Der hang skrittene og salget sammen. Vi samlet dem i én app, med anerkjennelse fra kollegene. Den appen er Vaktlogg.',
         regi: 'Merket står.',
       },
       {
         hvem: 'B',
-        sier: 'Men hvordan blir en konkurranse rettferdig når folk har ulike stasjoner? Høyest omsetning gir den beste stasjonen fordel, og flest skritt belønner å slite seg ut. Vi valgte at hver måles mot sin egen vanlige kveld, og at man kan stå utenfor. Og selv om historien startet med vin, er det ingen konkurranser om alkohol.',
+        sier: 'Men hvordan blir en konkurranse rettferdig når folk har ulike stasjoner? Måler vi salg, vinner den med best stasjon. Måler vi skritt, belønner vi å slite seg ut. Så hver måles mot sin egen vanlige kveld, og rolig modus lar deg stå utenfor. Og det er ingen konkurranser om alkohol.',
         regi: 'Fire alternativer. To strykes, valget og «rolig modus» blir stående, og vinen krysses ut.',
       },
     ],
@@ -161,16 +161,16 @@ export const manus: Scene[] = [
     tittel: 'Det vi prioriterte',
     del: 'Design Thinking og konsept',
     fase: 'ideate',
-    varighet: 31,
+    varighet: 32,
     takter: [
       {
         hvem: 'B',
-        sier: 'Det vi lærte, ble funksjoner. Kassarapporten ble Salg, som du ser underveis. Skrittene ble Helse, bare for deg selv. Hjelpen til kolleger, som ikke synes i kassen, ble kudos og takkekort. Og rommet etter vakten ble sluttrapporten.',
+        sier: 'Hvert funn ga oss en funksjon. Kassarapporten ga oss Salg, der du ser salget mens du jobber. Skrittene havnet i Helse, som bare du ser. Hjelp til kolleger synes ikke i kassen, så den kan de takke for med kudos. Og for tiden etter vakten laget vi sluttrapporten.',
         regi: 'Telefonen viser ekte skjermbilder, ett per funksjon, med det funksjonen kom fra.',
       },
       {
         hvem: 'B',
-        sier: 'Noe kom med uten å være kjernen, som oversikten over gjester og bord som testerne ba om. Og lederen ser bare laget, aldri tall per person.',
+        sier: 'Mål, premier og personalmenyen er med som tillegg. Lederen ser bare tall for hele laget, fordi tall per person fort blir kontroll.',
         regi: 'Resten står nedtonet. Lederprinsippet lyser opp. B klikker og er stille – C går frem med mobilen.',
       },
     ],
@@ -192,17 +192,17 @@ export const manus: Scene[] = [
       },
       {
         hvem: 'C',
-        sier: 'Dette er prototypen. Emma og restauranten er fiktive, og tallene er simulert. Værsågod, Sir Domeo viser deg rundt.',
+        sier: 'Dette er prototypen. Emma og restauranten er fiktive, og tallene er simulert. Se etter hva Emma sitter igjen med når vakten er over. Værsågod, Sir Domeo viser deg rundt.',
         regi: 'C gir mobilen til sensor. Storskjermen viser det samme som mobilen, og Sir Domeo snakker fra høyttalerne. Trykker sensor «Start vakt», går presentasjonen videre av seg selv.',
       },
       {
         hvem: 'sensor',
         sek: 130,
-        regi: 'Sensor trykker seg gjennom seks stopp: Start vakt → Salg → tilbake til Vakt → kudos → Avslutt vakt → sluttrapporten. Ikke forklar underveis – hjelp bare hvis sensor står fast. Senest ved 2:30 tar C over, uansett hvor sensor er. Uten mobil: C styrer med musen og sensor sier hva hun vil trykke på.',
+        regi: 'Sensor trykker seg gjennom seks stopp: Start vakt → Salg → tilbake til Vakt → kudos → Avslutt vakt → sluttrapporten. Ikke forklar underveis – hjelp bare hvis sensor står fast. Ved 2:00: står sensor ikke på sluttrapporten, sier C «Trykk Avslutt vakt nederst». Senest ved 2:30 tar C over, uansett hvor sensor er. Har dere to sensorer: bestem på forhånd hvem som får mobilen. Uten mobil: C styrer med musen og sensor sier hva hun vil trykke på.',
       },
       {
         hvem: 'C',
-        sier: 'Det du nettopp gjorde, har testerne våre gjort uten oss, med en lenke og Sir Domeo som guide. De kan også sende oss tilbakemelding rett fra appen.',
+        sier: 'Takk. Det du så til slutt, er det hun sitter igjen med. Og duellen på startskjermen er valget B viste: Emma mot sin egen vanlige kveld.',
         regi: 'C tar mobilen tilbake.',
       },
     ],
@@ -215,7 +215,7 @@ export const manus: Scene[] = [
     del: 'Prototype og testing',
     tema: 'mork',
     fase: 'test',
-    varighet: 62,
+    varighet: 60,
     takter: [
       {
         hvem: 'stille',
@@ -224,12 +224,12 @@ export const manus: Scene[] = [
       },
       {
         hvem: 'C',
-        sier: 'Vi hoppet hele tiden mellom innsikt og prototype. Vi viste en tidlig prototype til servitører, og 22. oktober kom den første digitale versjonen. Folk skulle kunne prøve uten oss, så 27. oktober la vi den ut på en lenke. Da trengte de en guide, og det ble Sir Domeo. Fra 30. oktober kan alle sende tilbakemelding rett fra appen.',
+        sier: 'Vi viste en tidlig prototype til servitører og laget så den første digitale versjonen. Folk skulle kunne prøve uten oss, så vi la den ut på en lenke. Uten oss trengte de en guide, og det ble Sir Domeo. Til slutt la vi inn tilbakemelding rett i appen, så vi kunne høre fra flere.',
         regi: 'Parene «vi så → vi endret» kommer frem langs sporet, med dato.',
       },
       {
         hvem: 'C',
-        sier: 'Ett ønske gikk motsatt vei: Flere servitører ville ha oversikt over egne gjester og bord. Det var ikke en del av ideen om motivasjon, men vi prøvde det, og lærte at vi må prioritere. Et testopplegg med hypoteser er utarbeidet, men ikke gjennomført ennå.',
+        sier: 'Flere servitører ville også ha oversikt over egne gjester og bord. Det hørte ikke til motivasjonsideen, så det er med i appen, men utenfor kjernen. Om Vaktlogg motiverer, har ingen test svart på ennå. Vi har skrevet et testopplegg med hypoteser, men ikke gjennomført det.',
         regi: 'Hvem som har prøvd står som én setning under.',
       },
     ],
@@ -240,21 +240,21 @@ export const manus: Scene[] = [
     id: 'vet',
     tittel: 'Hva vi vet, og hva nå',
     del: 'Refleksjon og videre',
-    varighet: 49,
+    varighet: 53,
     takter: [
       {
         hvem: 'C',
-        sier: 'Det vi har sett: ansatte som sjekker kassarapporten og snakker om skrittene sine. Det vi tror: at synlig innsats og anerkjennelse kan gi mer motivasjon. Det vi må teste: om noen faktisk åpner appen etter vakten, med sine egne tall.',
+        sier: 'Vi har sett ansatte sjekke kassarapporten, og hørt dem fortelle om skrittene sine. Vi tror at det å se sin egen innsats, og bli sett for den, kan gi mer motivasjon. Om noen faktisk åpner appen etter vakten, vet vi ikke. Det må testes.',
         regi: 'Tre kolonner: sett, tror, må teste.',
       },
       {
         hvem: 'C',
-        sier: 'Og materialet har svakheter. Noen spørsmål var ledende, flere av de sterkeste eksemplene kommer fra samme intervju, og positive tilbakemeldinger kan være høflighet.',
+        sier: 'Og materialet har svakheter. Bevegelse var et kjernetema i guiden, så skrittene er delvis noe vi spurte etter. Sitatet, vinhistorien og sykdomseksempelet kommer fra samme intervju. Og positive tilbakemeldinger kan være høflighet.',
         regi: 'Svakhetene står som en kort liste under kolonnene.',
       },
       {
         hvem: 'C',
-        sier: 'Derfor vil vi finne svar før vi lager mer. Hvordan blir det rettferdig? Hvordan unngår vi at det blir et kontrollsystem? Hvem skal betale? Og får vi data fra kassasystemene? En liten pilot med én restaurant kan gi oss svarene.',
+        sier: 'Før vi bygger mer, vil vi prøve Vaktlogg i én restaurant over tid. Oppleves det rettferdig å måles mot sin egen vanlige kveld? Oppleves det som kontroll? Og får vi data fra kassasystemet? Hvem som skal betale, vet vi ikke ennå.',
         regi: 'Spørsmålene og piloten.',
       },
     ],
@@ -268,11 +268,11 @@ export const manus: Scene[] = [
     varighet: 21,
     takter: [
       { hvem: 'A', sier: 'Vi startet med sykefravær.', regi: 'Bongskinnen kommer tilbake.' },
-      { hvem: 'B', sier: 'Vi endte med motivasjon, og med spørsmålet om hva servitøren sitter igjen med etter vakten.' },
+      { hvem: 'B', sier: 'Vi endte med motivasjon, og med det samme spørsmålet som i starten. Hva sitter servitøren igjen med etter vakten?' },
       {
         hvem: 'C',
         anim: 3,
-        sier: 'Vaktlogg er vårt forslag: Når vakten er over, kan hun se hva hun fikk til. Om det faktisk motiverer, må vi teste. Takk.',
+        sier: 'Vaktlogg er vårt forslag. Når vakten er over, kan hun se hva hun fikk til. Om det faktisk motiverer, må vi teste. Takk.',
         regi: 'Den siste bongen skrives ut: «Vakt ferdig».',
       },
       { hvem: 'alle', regi: 'Sluttkortet med lenken står mens dere tar imot spørsmål.' },

@@ -92,6 +92,24 @@ export function Salen() {
   const [peker, setPeker] = useState(true)
   const lyd = useRef<HTMLAudioElement>(null)
 
+  // Hold skjermen våken: PC-en får ingen tastetrykk i minuttene sensor bruker mobilen (localhost er en sikker kontekst)
+  useEffect(() => {
+    let laas: WakeLockSentinel | null = null
+    const be = () => {
+      if (document.visibilityState !== 'visible') return
+      navigator.wakeLock
+        ?.request('screen')
+        .then((l) => (laas = l))
+        .catch(() => {})
+    }
+    be()
+    document.addEventListener('visibilitychange', be)
+    return () => {
+      document.removeEventListener('visibilitychange', be)
+      laas?.release().catch(() => {})
+    }
+  }, [])
+
   // ── Tastatur og klikker ──
   useEffect(() => {
     const ned = (e: KeyboardEvent) => {
@@ -257,7 +275,7 @@ export function Salen() {
         <DemoTelefon visning={t.startet && scene.id === 'demo' && !arkiv ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && t.scene >= DEMO_I - 1 && t.scene <= DEMO_I + 1} sensor={t.startet && scene.id === 'demo' && takt.hvem === 'sensor'} overlevering={t.startet && scene.id === 'demo' && t.takt === 1} />
 
         {t.startet && scene.fase && !arkiv && (
-          <div className={`faser ${scene.id === 'demo' ? 'hoyre' : ''}`} aria-hidden="true">
+          <div className={`faser ${scene.id === 'demo' ? 'hoyre' : ''} ${['funn', 'demo', 'hopping'].includes(scene.id) ? 'pa-film' : ''} ${takt.hvem === 'stille' && takt.anim ? 'under-film' : ''}`} aria-hidden="true">
             {scene.id === 'hopping' && (
               <svg className="sloyfe" width="560" height="30" viewBox="0 0 560 30">
                 <path d="M520 26 C 500 2, 230 2, 210 24" fill="none" stroke="#F08FB0" strokeWidth="1.5" strokeDasharray="4 5" markerEnd="url(#sloyfePil)" />

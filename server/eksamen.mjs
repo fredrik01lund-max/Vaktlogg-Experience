@@ -14,7 +14,8 @@ import { WebSocketServer } from 'ws'
 
 const ROT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const PORT = Number(process.env.PORT || 8080)
-const MAPPE = [process.argv[2], 'dist-eksamen', 'dist'].filter(Boolean).map((m) => path.resolve(ROT, m)).find((m) => fs.existsSync(path.join(m, 'index.html')))
+// Den frosne kopien (dist-eksamen-trygg) går foran et ferskt bygg: på eksamensdagen skal det som er øvd på, kjøres
+const MAPPE = [process.argv[2], 'dist-eksamen-trygg', 'dist-eksamen', 'dist'].filter(Boolean).map((m) => path.resolve(ROT, m)).find((m) => fs.existsSync(path.join(m, 'index.html')))
 if (!MAPPE) {
   console.error('Fant ingen bygget presentasjon. Kjør først: npm run build:eksamen')
   process.exit(1)
@@ -22,6 +23,14 @@ if (!MAPPE) {
 if (!process.argv[2] && path.basename(MAPPE) === 'dist') {
   console.warn('\n  ⚠ Fant ikke dist-eksamen – bruker dist/ (den offentlige versjonen). Kjør npm run build:eksamen.')
 }
+const bygget = (m) => fs.statSync(path.join(m, 'index.html')).mtime
+if (path.basename(MAPPE) === 'dist-eksamen-trygg' && fs.existsSync(path.join(ROT, 'dist-eksamen', 'index.html')) && bygget(path.join(ROT, 'dist-eksamen')) > bygget(MAPPE)) {
+  console.warn('\n  ⚠ dist-eksamen er nyere enn den frosne kopien. Vil dere bruke det nye bygget: node server/eksamen.mjs dist-eksamen')
+}
+// Filene scenene trenger – mangler noe, skal det sies nå og ikke midt i fremføringen
+const TRENGS = ['film/apning.mp4', 'film/apning-slutt.png', 'film/apning-frys.png', 'film/telefon.mp4', 'film/telefon-slutt.png', 'film/hopping.mp4', 'film/hopping-slutt.png', 'demo/vaktlogg.html', ...[0, 1, 2, 3, 4, 5].map((i) => `demo/domeo/sensor-${i}.mp3`), ...['salg', 'helse', 'live', 'rapport', 'sjef'].map((n) => `skjerm/${n}.png`)]
+const mangler = TRENGS.filter((f) => !fs.existsSync(path.join(MAPPE, f)))
+if (mangler.length) console.warn('\n  ⚠ Mangler i ' + path.basename(MAPPE) + ': ' + mangler.join(', '))
 
 // En feil i én forespørsel skal aldri stoppe tjeneren midt i fremføringen
 process.on('uncaughtException', (e) => console.error('  Feil (tjeneren kjører videre):', e?.message ?? e))
@@ -47,6 +56,11 @@ const TYPER = {
 
 const tjener = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x')
+  // Kort adresse til sensors mobil (skrives for hånd): /s
+  if (url.pathname === '/s') {
+    res.writeHead(302, { location: '/demo/vaktlogg.html?sensor&speil=send' }).end()
+    return
+  }
   if (url.pathname === '/speil-status') {
     res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' })
     res.end(JSON.stringify({ speil: true, mobiler: sendere() }))
@@ -96,6 +110,11 @@ const sendere = () => [...rolle.values()].filter((r) => r === 'send').length
 wss.on('connection', (ws, req) => {
   const fra = req.socket.remoteAddress?.replace('::ffff:', '') ?? '?'
   rolle.set(ws, 'ukjent')
+  // Be klienten melde seg: mobilen svarer med tilstanden sin, så den blir registrert og storskjermen synkes straks
+  // (ellers står den som frakoblet etter dvale til sensor trykker på noe)
+  try {
+    ws.send(JSON.stringify({ type: 'hei' }))
+  } catch {}
   ws.on('message', (data) => {
     const tekst = String(data)
     try {
@@ -123,13 +142,17 @@ function adresser() {
   )
 }
 
+tjener.on('error', (e) => {
+  console.error(e.code === 'EADDRINUSE' ? `\n  Port ${PORT} er opptatt – en annen eksamenstjener kjører trolig allerede. Lukk den (Ctrl+C i det vinduet) og start på nytt.\n` : e)
+  process.exit(1)
+})
 tjener.listen(PORT, '0.0.0.0', () => {
   const ip = adresser()
-  console.log(`\nVaktlogg Experience – eksamen (${path.relative(ROT, MAPPE)})\n`)
+  console.log(`\nVaktlogg Experience – eksamen (${path.relative(ROT, MAPPE)}, bygget ${bygget(MAPPE).toLocaleString('nb-NO')})\n`)
   console.log(`  Storskjermen:  http://localhost:${PORT}/`)
   if (ip.length) {
     console.log(`  Sensor-mobilen (samme nett som PC-en):`)
-    for (const a of ip) console.log(`                 http://${a.adresse}:${PORT}/demo/vaktlogg.html?sensor&speil=send   (${a.navn})`)
+    for (const a of ip) console.log(`                 http://${a.adresse}:${PORT}/s   (${a.navn})`)
     console.log('  Bruk adressen på kortet mobilen er koblet til (Wi-Fi / hotspot). Spør Windows om brannmuren:')
     console.log('  tillat Node på både private og offentlige nett – en hotspot blir ofte regnet som offentlig.')
   } else {
