@@ -3,11 +3,11 @@
 Regi (12 s):
   N1 0–1,4 s   Lav vinkel langs de to banene i varmt kveldslys fra venstre (samme lysretning som åpningen).
                Banene går ut av bildet i begge ender. Kula faller inn og klemmes ved første nedslag.
-  N2 1,4–8,6 s Ti nedslag, fem par: innsikt → prototype. Hvert nedslag på prototypebanen skriver ut en liten bong
+  N2 1,3–7,9 s Ti nedslag, fem par: innsikt → prototype. Hvert nedslag på prototypebanen skriver ut en liten bong
                med datoen (22.10, 27.10, 28.10, 30.10) – samme bong som i resten av presentasjonen. Innsiktsnedslagene
                setter et mintfarget stempel. Kameraet følger, et par bilder etter kula.
-  N3 8,6–10,4 s Kranen går opp og legger seg rett over sporet. Sporet gløder sterkere.
-  N4 10,4–12 s Hvile ovenfra: hele flettemønsteret i øvre del av bildet. Presentasjonen legger parene
+  N3 8,4–10,3 s Kranen går opp og legger seg rett over sporet. Sporet gløder sterkere.
+  N4 10,3–12 s Hvile ovenfra: hele flettemønsteret i øvre del av bildet. Presentasjonen legger parene
                «vi så → vi endret» under (src/scenes/Del3.tsx), med de samme datoene.
 
 Kjør:
@@ -80,8 +80,8 @@ def tekst(navn, body, storrelse, plass, materiale, rot_z=0.0, align="LEFT"):
 
 
 def tider_for_nedslag():
-    """Rytme: rolig først, så tettere – men ikke etter en formel; pausene følger omtrent avstanden mellom datoene."""
-    gap = [1.05, 0.95, 0.85, 0.8, 0.72, 0.7, 0.66, 0.62, 0.6]
+    """Rytme: rolig først, så tettere – farten øker etter hvert som prosessen går raskere (ikke en tidslinje)."""
+    gap = [1.0, 0.9, 0.82, 0.76, 0.7, 0.66, 0.62, 0.6, 0.56]
     t = [1.3]
     for g in gap:
         t.append(t[-1] + g)
@@ -99,12 +99,22 @@ def bygg():
     x0, x1 = -14.0, (n - 1) * DX + 14.0
 
     # Gulvet: mørk eik, og de to banene som lakkerte plater (avfaset, med navnet malt på i Courier)
-    st.kloss("Gulv", (x1 - x0 + 40, 60, 0.2), ((x0 + x1) / 2, 0, -0.1), st.tre("Gulv", lys="#5A4030", mork="#3E2B1E", skala=0.25), avfasing=0.0)
-    farger = {"innsikt": ("#BFE9D3", "#2A8A5F"), "prototype": ("#FFD9B3", "#C0661A")}
+    st.kloss("Gulv", (x1 - x0 + 40, 60, 0.2), ((x0 + x1) / 2, 0, -0.1), st.tre("Bardisk", lys="#8C6A4C", mork="#4A3424", skala=1.6), avfasing=0.0)
+    cx0 = (n - 1) * DX / 2
+    st.kloss("Bakvegg", (60, 0.2, 14), (cx0, 20, 5), st.matt("Bakvegg", "#5A4A3E", ruhet=0.8), avfasing=0)
+    dag = st.lysende("Dagslys", "#E4ECF2", 1.4)
+    karm = st.matt("Karm", "#2A2420")
+    for vx in (-9.0, -3.5, 5.0, 10.5, 19.0, 24.5):
+        st.kloss(f"Vindu bak {vx}", (3.2, 0.05, 5.0), (cx0 + vx - 7.0, 19.85, 3.6), dag, avfasing=0)
+        st.kloss(f"Sprosse bak {vx}", (0.15, 0.08, 5.0), (cx0 + vx - 7.0, 19.8, 3.6), karm, avfasing=0)
+    farger = {"innsikt": ("#A8E6DA", "#2A8A5F"), "prototype": ("#FFD9B3", "#C0661A")}
     for bane, y in BANE_Y.items():
         lys_f, merk_f = farger[bane]
         st.kloss(f"Bane {bane}", (x1 - x0, 1.6, PLATE_H), ((x0 + x1) / 2, y, PLATE_H / 2), st.matt(f"Bane {bane}", lys_f, ruhet=0.42, coat=0.35), avfasing=0.03)
         tekst(f"Navn {bane}", "INNSIKT" if bane == "innsikt" else "PROTOTYPE", 0.42, (-4.6, y, PLATE_H + 0.001), st.matt(f"Navn {bane}", merk_f, ruhet=0.5))
+        merke = bpy.data.objects.new(f"Banemerke {'1' if bane == 'innsikt' else '2'} {bane}", None)
+        sc.collection.objects.link(merke)
+        merke.location = ((n - 1) * DX + 2.0, y, PLATE_H)
 
     # Kula og sporet
     kule = bpy.data.objects.new("Kule-rot", None)
@@ -113,11 +123,15 @@ def bygg():
     kulekropp = bpy.context.active_object
     kulekropp.name = "Kule"
     bpy.ops.object.shade_smooth()
+    for v in kulekropp.data.vertices:
+        v.co.z += R_KULE
+    kulekropp.visible_shadow = False
     kulekropp.data.materials.append(st.lysende("Kule", "#F08FB0", 0.85, base="#F08FB0"))
     kulekropp.parent = kule
+    kulekropp.location = (0, 0, -R_KULE)
     kulelys_d = bpy.data.lights.new("Kulelys", "POINT")
-    kulelys_d.color = st.farge("#F7A8C6")[:3]
-    kulelys_d.energy = 18
+    kulelys_d.color = st.farge("#FFC8DA")[:3]
+    kulelys_d.energy = 8
     kulelys_d.shadow_soft_size = 0.2
     kulelys = bpy.data.objects.new("Kulelys", kulelys_d)
     sc.collection.objects.link(kulelys)
@@ -130,9 +144,8 @@ def bygg():
     PR = 48  # punkter per bue (glatt kurve, ingen knekker)
     for i in range(1, len(alle)):
         a, b = alle[i - 1], alle[i]
-        hoyde = 1.45 if i > 1 else 0.0
-        if i >= len(alle) - 2:
-            hoyde = 0.95  # de siste hoppene er lavere – farten går ut
+        T = alle_t[i] - alle_t[i - 1]
+        hoyde = 10.5 * T * T / 8 if i > 1 else 0.0
         for j in range(1, PR + 1):
             u = j / PR
             p = a.lerp(b, u)
@@ -156,6 +169,7 @@ def bygg():
     cu.materials.append(spor_mat)
     spor = bpy.data.objects.new("Spor", cu)
     sc.collection.objects.link(spor)
+    spor.visible_shadow = False  # ellers tegner skyggen en ekstra, mørk sikksakk
 
     # Kula og sporets ende følger buene i takt
     pref = bpy.context.preferences.edit
@@ -173,11 +187,14 @@ def bygg():
     for t in tider:
         skala += [(t - 0.07, (0.94, 0.94, 1.1)), (t, (1.16, 1.16, 0.8)), (t + 0.07, (1.06, 1.06, 0.93)), (t + 0.15, (1, 1, 1))]
     nk(kulekropp, "scale", skala)
+    ts = tider[-1]
+    nk(kulekropp, "location", [(0.0, (0, 0, -R_KULE)), (ts, (0, 0, -R_KULE)), (ts + 0.12, (0, 0, -R_KULE + 0.15)), (ts + 0.24, (0, 0, -R_KULE)),
+                               (ts + 0.30, (0, 0, -R_KULE + 0.04)), (ts + 0.36, (0, 0, -R_KULE))])
 
     # Spor etter hvert nedslag: mintstempel på innsiktsbanen, en bong med dato på prototypebanen
     stempel_mat = st.matt("Stempel", "#2A8A5F", ruhet=0.6)
-    papir = st.papir("Bong", "#FBF7EE")
-    blekk = st.matt("Blekk", "#262220", ruhet=0.7)
+    papir = st.papir("Bong", "#F7F6F2")
+    blekk = st.matt("Blekk", "#2B2622", ruhet=0.7)
     for i, ((bane, dato), t) in enumerate(zip(NEDSLAG, tider)):
         p = punkter[i]
         if bane == "innsikt":
@@ -231,11 +248,17 @@ def bygg():
     cam = st.kamera(sc, linse=40, mal=mal, blender=2.8, sensor=36.0)
     cx = (punkter[0].x + punkter[-1].x) / 2
     folg = [(0.0, punkter[0].x - 1.6)] + [(t + 0.15, p.x + 0.4) for t, p in zip(tider, punkter)]
-    nk(cam, "location", [(t, (x - 2.2, -7.8, 2.6)) for t, x in folg] + [(10.2, (cx + 0.4, -0.9, 30.0)), (LENGDE, (cx + 0.4, -0.85, 30.5))])
-    nk(mal, "location", [(t, (x, 0.2, 0.95)) for t, x in folg] + [(10.2, (cx + 0.4, 0.0, 0.0)), (LENGDE, (cx + 0.4, 0.0, 0.0))])
+    sx = folg[-1][1]
+    nk(cam, "location", [(t, (x - 2.2, -7.8, 2.6)) for t, x in folg] + [(8.4, (sx - 2.2, -7.8, 2.6)), (10.3, (cx + 1.6, -0.9, 31.5)), (LENGDE, (cx + 1.6, -0.85, 32.0))])
+    nk(mal, "location", [(t, (x, 0.2, 0.95)) for t, x in folg] + [(8.4, (sx, 0.2, 0.95)), (10.3, (cx + 1.6, 0.0, 0.0)), (LENGDE, (cx + 1.6, 0.0, 0.0))])
+    fokus = bpy.data.objects.new("Fokus", None)
+    sc.collection.objects.link(fokus)
+    nk(fokus, "location", [(t, (x + 0.85, -1.6, 0.25)) for t, x in folg] + [(8.4, (sx + 0.85, -1.6, 0.25)), (10.3, (cx + 1.6, 0.0, 0.0))])
+    cam.data.dof.focus_object = fokus
     # Linseforskyvning: banene skal ligge i øvre del av bildet på slutten (presentasjonen legger tekst under)
-    nk(cam.data, "shift_y", [(tider[-1], 0.0), (10.2, -0.13), (LENGDE, -0.13)])
-    nk(cam.data.dof, "aperture_fstop", [(0.0, 2.4), (tider[-1], 2.8), (9.6, 22.0), (LENGDE, 22.0)])
+    nk(cam.data, "shift_y", [(8.4, 0.0), (10.3, -0.13), (LENGDE, -0.13)])
+    # 1 enhet = 10 cm (et bord), så f-tallet er en tidel av det «ekte» – vinduene bak blir myke
+    nk(cam.data.dof, "aperture_fstop", [(0.0, 0.45), (8.4, 0.45), (9.8, 22.0), (LENGDE, 22.0)])
 
     st.kvalitet(sc, samples=128, lukker=0.5)
     sc.frame_start, sc.frame_end = 1, int(LENGDE * FPS)

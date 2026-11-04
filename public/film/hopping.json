@@ -10,47 +10,47 @@
     {
       "bane": "prototype",
       "dato": "TIDLIG",
-      "tid": 2.35
+      "tid": 2.3
     },
     {
       "bane": "innsikt",
       "dato": null,
-      "tid": 3.3
+      "tid": 3.2
     },
     {
       "bane": "prototype",
       "dato": "22.10",
-      "tid": 4.15
+      "tid": 4.02
     },
     {
       "bane": "innsikt",
       "dato": null,
-      "tid": 4.95
+      "tid": 4.78
     },
     {
       "bane": "prototype",
       "dato": "27.10",
-      "tid": 5.67
+      "tid": 5.48
     },
     {
       "bane": "innsikt",
       "dato": null,
-      "tid": 6.37
+      "tid": 6.14
     },
     {
       "bane": "prototype",
       "dato": "28.10",
-      "tid": 7.03
+      "tid": 6.76
     },
     {
       "bane": "innsikt",
       "dato": null,
-      "tid": 7.65
+      "tid": 7.36
     },
     {
       "bane": "prototype",
       "dato": "30.10",
-      "tid": 8.25
+      "tid": 7.92
     }
   ]
 }

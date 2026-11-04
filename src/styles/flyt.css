@@ -450,6 +450,21 @@
   font-weight: 700;
   font-size: 24px;
 }
+/* Banenavnene står på enden av hver bane i sluttbildet, i samme farge som navnet er malt med i filmen */
+.hopping-banenavn {
+  position: absolute;
+  transform: translateY(-50%);
+  font-family: var(--bong);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.04em;
+}
+.hopping-banenavn.innsikt {
+  color: #1f6e4b;
+}
+.hopping-banenavn.prototype {
+  color: #9a4d12;
+}
 .hopping-motsatt {
   position: absolute;
   left: var(--k1);

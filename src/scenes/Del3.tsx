@@ -344,6 +344,12 @@ export function Hopping({ takt }: SceneProps) {
       <img className="hopping-film" src="film/hopping-slutt.png" alt="" />
       <motion.video ref={video} className="hopping-film" src={filmUrl('hopping')} muted playsInline preload="auto" onEnded={ferdig} onError={() => setFilmFeil(true)} animate={{ opacity: takt === 0 ? 1 : 0 }} transition={{ duration: 0.6 }} />
 
+      {hoppingMeta.baner.map((b, i) => (
+        <Inn key={b.navn} vis={takt >= 1} d={0.1} className={`hopping-banenavn ${i === 0 ? 'innsikt' : 'prototype'}`} style={{ left: b.x * 1920, top: b.y * 1080 }}>
+          {i === 0 ? 'Innsikt' : 'Prototype'}
+        </Inn>
+      ))}
+
       <motion.div className="hopping-par" initial={{ opacity: 0 }} animate={{ opacity: takt >= 1 ? 1 : 0 }} transition={{ duration: 0.6 }}>
         {ITERASJONER.map((p, i) => (
           <Inn key={p.dato} vis={takt === 1} d={0.3 + i * 0.45} className="hopping-iterasjon" style={{ left: (hoppingMeta.bonger?.[i]?.x ?? 0.2 + i * 0.17) * 1920 }}>
