@@ -115,8 +115,11 @@ export function Funn({ takt }: SceneProps) {
       {FUNN.map((f, i) => {
         const [px, py] = p[f.punkt]
         const vis = i === takt && takt < 2
+        const x = px * 1920 + FORSKYV
+        // Nær høyrekanten står merkelappen til venstre for punktet, ellers havner den utenfor bildet
+        const plass = x > 1500 ? { right: 1920 - x, top: py * 1080 } : { left: x, top: py * 1080 }
         return (
-          <motion.div key={f.id} className="funn-punkt" style={{ left: px * 1920 + FORSKYV, top: py * 1080, color: f.farge }} initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: vis ? 1 : 0, scale: vis ? 1 : 0.6 }} transition={{ duration: 0.5, delay: vis ? 0.4 : 0, ease: MYK }}>
+          <motion.div key={f.id} className={`funn-punkt ${x > 1500 ? 'mot-venstre' : ''}`} style={{ ...plass, color: f.farge }} initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: vis ? 1 : 0, scale: vis ? 1 : 0.6 }} transition={{ duration: 0.5, delay: vis ? 0.4 : 0, ease: MYK }}>
             <i />
             <span>{f.id === 'bevegelse' ? 'Bevegelse' : f.id === 'salg' ? 'Salg' : 'Anerkjennelse'}</span>
           </motion.div>

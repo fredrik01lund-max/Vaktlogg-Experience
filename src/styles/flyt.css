@@ -141,6 +141,10 @@
   gap: 14px;
   margin: -13px 0 0 -13px;
 }
+.funn-punkt.mot-venstre {
+  flex-direction: row-reverse;
+  margin: -13px -13px 0 0;
+}
 .funn-punkt i {
   width: 26px;
   height: 26px;
@@ -597,11 +601,18 @@
   line-height: 1.25;
   max-width: 1300px;
 }
+/* Ordmerket som i appen: kursiv serif, ikke sperrede versaler */
 .lerret .tittel-vaktlogg {
-  letter-spacing: 0.32em;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 44px;
+  letter-spacing: 0;
+  margin-right: 0;
 }
 .lerret .tittel-navn {
   font-family: var(--sans);
-  font-size: 26px;
-  letter-spacing: 0.04em;
+  font-size: 28px;
+  letter-spacing: 0;
+  text-transform: none;
 }

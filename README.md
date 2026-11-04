@@ -31,7 +31,7 @@ Publikum følger reisen fra et bredt problem (sykefravær) til et innsiktsbasert
 | 9 | Hva vi vet, og hva nå | C | Sett / tror / må teste, svakhetene i materialet, og spørsmålene en pilot skal svare på. |
 | 10 | Avslutning | A, B, C | Bongskinnen kommer tilbake. Siste bong: «Vakt ferdig». |
 
-Tid (fra `npm run sjekk`): **planlagt 9:41**, med margin til 10:00 og 2:19 til den harde grensen på 12:00. A, B og C har omtrent like mye å si (cirka 260 ord hver), filmene og animasjonene tar cirka 1:00, og sensor får 2:10 i prototypen.
+Tid (fra `npm run sjekk`): **planlagt 9:34**, med margin til 10:00 og 2:26 til den harde grensen på 12:00. A, B og C har omtrent like mye å si (cirka 260 ord hver), filmene og animasjonene tar cirka 0:54, og sensor får 2:10 i prototypen.
 
 Scenene som er tatt ut eller slått sammen, er **lagt til side** (ikke slettet) – se under.
 

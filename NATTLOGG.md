@@ -190,8 +190,26 @@ Alle filmene bygges på `studio.py` og får samme lys og materialer.
     - Roligere fliser, ekte glass på brettet og litt himmelfarge i vinduene.
     - Kameraet løfter seg over hodet hennes før det svinger ut.
   - Fullrendring: 128 samples. Den første rendringen hoppet over alt, fordi den gamle filmens 750 bilder lå i mappen. De er flyttet til `frames_apning_gammel`.
+- **Telefon:** rendret, committet og pushet (f03bf94).
+  - Sluttbildet er kontrollert: skjermen står midt i bildet fra 7 til 93 % av høyden, og fargen er nøyaktig #f3f6f2.
+  - I demoen gikk «Styres herfra» inn i telefonen. Merkene er nå stablet nede til venstre.
+  - Navnelinjen har fått en svak skygge, så den kan leses over vaktlista.
 - **Hopping:**
   - Rendret (360 bilder, 45 min sammen med de andre) og committet (7ff112a).
+  - Art director (runde etter fullrendring) mente det var verdt å rendre på nytt. Det ble endret:
+    - sporet og kula kaster ikke skygge (skyggen tegnet en ekstra, mørk sikksakk)
+    - sluttbildet er sentrert på bongene
+    - samme eik og bakvegg med dagslysvinduer som telefonfilmen
+    - mintbanen er kjøligere, så den ikke blir oliven i sola
+    - svakere lys i kula
+    - fokus på bongene, med f-tall delt på 10 (bordskala)
+    - buene blir lavere når pausene blir kortere (samme tyngdekraft)
+    - kula klemmes mot banen, ikke i lufta
+    - to små etterhopp til slutt
+    - siste bong er ferdig skrevet før kranen starter
+    - samme papir og blekk som vaktlista
+  - Rytmen følger ikke datoene, og docstringen påstår ikke lenger det.
+  - Banenavnene legges som tekst i sluttbildet (projisert fra filmen), fordi de ellers bare synes de første sekundene.
   - I nettleseren gikk de to siste kortene i hverandre, og «Tilbakemelding» fløt ut av kortet. Kortene er smalere og har myk orddeling, og takt 2 tar dem ut, så panelet ikke dekker dem.
 - **.gitignore** fanget ikke nye rendermapper (frames_telefon, test_hopark). Nå ignoreres alle `blender/frames*` og `blender/test*`. Ingenting var committet.
 - **Hopping:** fullrendring pågår (360 bilder).

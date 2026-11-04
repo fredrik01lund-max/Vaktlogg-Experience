@@ -283,13 +283,13 @@ export function Slutt({ takt }: SceneProps) {
           <Merke storrelse={128} />
         </Inn>
         <Inn vis={takt >= 3} d={0.7} className="tittel-vaktlogg">
-          VAKTLOGG
+          Vaktlogg
         </Inn>
         <Inn vis={takt >= 3} d={0.9} className="tittel-bak stor-serif">
           Behind the shift
         </Inn>
         <Inn vis={takt >= 3} d={1.3} className="tittel-navn">
-          {navn('A')} <i>·</i> {navn('B')} <i>·</i> {navn('C')}
+          {navn('A')}, {navn('B')} og {navn('C')}
         </Inn>
         <Inn vis={takt >= 3} d={1.6} className="slutt-url">
           {oppsett.prototypeUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}

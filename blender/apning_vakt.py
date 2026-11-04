@@ -29,24 +29,30 @@ from mathutils import Vector
 
 HER = os.path.dirname(os.path.abspath(__file__))
 ROT = os.path.dirname(HER)
+sys.path.insert(0, HER)
+import studio as st  # noqa: E402
 FRAMES = os.path.join(HER, "frames_apning")
 FILM = os.path.join(ROT, "public", "film")
 
 FPS = 30
-LENGDE = 25.0
+LENGDE = 17.5
 SLUTT = int(LENGDE * FPS)
 BREDDE, HOYDE = 1920, 1080
 
 # Innstemplingen tar de første sekundene; restaurantens tidslinje (S) starter T0 sekunder senere
 T0 = 1.4
+K = 0.72  # restaurantens tid går fortere enn før (25 s → 17,5 s): etter cirka 8 s kommer det ikke ny informasjon
 STEMPLE_INN = 1.55  # 16:00 – trykket på telefonen
 VAKT_START = 2.6  # (restaurant-tid) servitøren begynner å gå
-LYS_AV = 20.0
 
 
 def S(t):
     """Tid i restaurantens fortelling → tid i filmen."""
-    return t + T0
+    return T0 + t * K
+
+
+LYS_AV = S(18.6)
+FRYS = S(9.2)  # stillbildet til «Nøkkelfunn»: midt i kvelden, servitøren med brett, gjester ved bordene
 
 
 def F(t):
@@ -61,8 +67,8 @@ def srgb(h, a=1.0):
 
 # Prototypens farger
 FARGE = {
-    "gulv_a": "#F0E6D9",
-    "gulv_b": "#E6D9C8",
+    "gulv_a": "#DDCBB6",
+    "gulv_b": "#CDB8A0",
     "vegg": "#F8F2EA",
     "bord_ledig": "#ECE6DE",
     "bord_aktiv": "#BFE9D3",  # --green-fill
@@ -77,7 +83,8 @@ FARGE = {
     "spor": "#F08FB0",  # --pink-strong (Helse/aktivitet = rosa)
     "plante": "#7CC9A1",  # --green-strong
 }
-GJESTEFARGER = ["#CFDCF6", "#BFE9D3", "#FBE6A2", "#FFD9B3", "#F9CADB", "#E9DCF9"]
+GJESTEFARGER = ["#D4DCEB", "#CAE3D6", "#F2E6BD", "#F3DCC5", "#EDD0DB", "#E7DFF0"]  # prototypens farger, dempet 40 %
+HARFARGER = ["#2B1D17", "#6B4A35", "#B88A5A", "#8C8C8C"]
 FLASKER = ["#F5B46E", "#F08FB0", "#7CC9A1", "#94B0E6", "#F0CC5C", "#E8829F"]
 
 
@@ -158,6 +165,8 @@ def kule(navn, sted, r, materiale, parent=None):
 
 
 def nokkel(ting, egenskap, verdier):
+    tider = [t for t, _ in verdier]
+    assert tider == sorted(tider), f"nøklene må stå i tidsrekkefølge: {tider}"
     for t, v in verdier:
         if isinstance(ting, bpy.types.NodeSocket):
             ting.default_value = v
@@ -240,13 +249,26 @@ SKALA_SERV = 1.2
 
 
 def stoler(bx, by, mat_stol, antall=4):
+    """Bistrostoler: sete, rygg (på yttersiden) og fire tynne bein."""
     plass = []
     for i in range(antall):
         a = math.pi / 2 * i + math.pi / 4
         x, y = bx + math.cos(a) * 0.52, by + math.sin(a) * 0.52
-        boks(f"Stol {bx:.1f}{by:.1f}{i}", (x, y, 0.11), (0.2, 0.2, 0.22), mat_stol, avrund=0.04)
+        stol = tom(f"Stol {bx:.1f}{by:.1f}{i}", (x, y, 0))
+        stol.rotation_euler = (0, 0, a)
+        boks(f"Stolsete {bx:.1f}{by:.1f}{i}", (0, 0, 0.2), (0.21, 0.21, 0.03), mat_stol, avrund=0.012, parent=stol)
+        boks(f"Stolrygg {bx:.1f}{by:.1f}{i}", (0.095, 0, 0.32), (0.025, 0.2, 0.2), mat_stol, avrund=0.01, parent=stol)
+        for bi, (lx, ly) in enumerate(((-0.08, -0.08), (-0.08, 0.08), (0.08, -0.08), (0.08, 0.08))):
+            sylinder(f"Stolbein {bx:.1f}{by:.1f}{i}{bi}", (lx, ly, 0.095), 0.012, 0.19, mat_stol, parent=stol, hjorner=12)
         plass.append((x, y, a))
     return plass
+
+
+def bord_mobel(navn, x, y, m_plate, m_fot, r=0.38):
+    """Bistrobord: tynn plate, én fot og en rund sokkel."""
+    sylinder(f"{navn} plate", (x, y, BORDHOYDE - 0.02), r, 0.04, m_plate, avrund=0.012, hjorner=64)
+    sylinder(f"{navn} fot", (x, y, (BORDHOYDE - 0.04) / 2), 0.03, BORDHOYDE - 0.04, m_fot, hjorner=24)
+    sylinder(f"{navn} sokkel", (x, y, 0.012), 0.17, 0.024, m_fot, avrund=0.008, hjorner=48)
 
 
 def plante(navn, x, y, m_potte, m_blad, hoyde=0.5):
@@ -263,30 +285,27 @@ def bygg():
     sc = bpy.context.scene
     sc.render.engine = "CYCLES"
     sc.cycles.device = "CPU"
-    sc.cycles.samples = 40
+    sc.cycles.samples = 128
     sc.cycles.use_adaptive_sampling = True
-    sc.cycles.adaptive_threshold = 0.03
+    sc.cycles.adaptive_threshold = 0.008
     sc.cycles.use_denoising = True
     try:
         sc.cycles.denoiser = "OPENIMAGEDENOISE"
     except Exception:
         pass
-    sc.cycles.max_bounces = 4
+    sc.cycles.max_bounces = 6
     sc.cycles.volume_bounces = 0
     sc.cycles.caustics_reflective = False
     sc.cycles.caustics_refractive = False
     sc.render.use_persistent_data = True
     # Litt bevegelsesuskarphet – som et ekte kamera
     sc.render.use_motion_blur = True
-    sc.render.motion_blur_shutter = 0.35
+    sc.render.motion_blur_shutter = 0.15
     sc.render.resolution_x, sc.render.resolution_y = BREDDE, HOYDE
     sc.render.fps = FPS
     sc.frame_start, sc.frame_end = 1, SLUTT
-    sc.view_settings.view_transform = "AgX"
-    try:
-        sc.view_settings.look = "AgX - Medium High Contrast"
-    except Exception:
-        pass
+    sc.view_settings.view_transform = "Standard"  # samme grading som telefon- og hoppefilmen
+    sc.view_settings.look = "None"
 
     # Verden: himmelen lyser opp rommet, men kameraet ser en rolig, varm bakgrunn (som et fotostudio)
     w = bpy.data.worlds.new("Himmel")
@@ -308,12 +327,14 @@ def bygg():
 
     # ── Rommet ──
     m_vegg = mat("Vegg", FARGE["vegg"], ruhet=0.8)
-    m_stol = mat("Stol", FARGE["stol"], ruhet=0.6)
-    m_annen = mat("Annet bord", FARGE["bord_annen"], ruhet=0.5)
+    m_stol = st.tre("Stol", lys="#C99A6B", mork="#9A6E48", skala=3.0, ruhet=0.5, lakk=0.12)
+    m_fot = mat("Bordfot", "#3B3530", ruhet=0.35, metall=0.6)
+    m_plate = st.matt("Bordplate", "#2E2724", ruhet=0.35, coat=0.3)
     m_kjokken = mat("Kjøkken", FARGE["kjokken"], ruhet=0.45)
     m_hvit = mat("Hvit", "#FFFFFF", ruhet=0.35)
     m_tallerken = mat("Tallerken", "#FFFFFF", ruhet=0.2)
     m_glass = mat("Glass", "#F6E7EE", ruhet=0.1)
+    m_brettglass = st.glass("Brettglass")
     m_metall = mat("Stål", "#D8D8DC", ruhet=0.25, metall=0.9)
     m_potte = mat("Potte", "#E9D9C6", ruhet=0.6)
     m_blad = mat("Blad", FARGE["plante"], ruhet=0.7)
@@ -324,9 +345,12 @@ def bygg():
     sjakk = gn.nodes.new("ShaderNodeTexChecker")
     sjakk.inputs["Color1"].default_value = srgb(FARGE["gulv_a"])
     sjakk.inputs["Color2"].default_value = srgb(FARGE["gulv_b"])
-    sjakk.inputs["Scale"].default_value = 26.0
-    gtc = gn.nodes.new("ShaderNodeTexCoord")
-    gn.links.new(gtc.outputs["Generated"], sjakk.inputs["Vector"])
+    sjakk.inputs["Scale"].default_value = 3.33
+    geo = gn.nodes.new("ShaderNodeNewGeometry")
+    kart = gn.nodes.new("ShaderNodeMapping")
+    kart.inputs["Scale"].default_value = (1.0, 1.0, 0.0)
+    gn.links.new(geo.outputs["Position"], kart.inputs["Vector"])
+    gn.links.new(kart.outputs["Vector"], sjakk.inputs["Vector"])
     gn.links.new(sjakk.outputs["Color"], bsdf(m_gulv).inputs["Base Color"])
     boks("Gulv", (0, 0, -0.05), (9.4, 6.4, 0.1), m_gulv)
 
@@ -339,7 +363,27 @@ def bygg():
     boks("Vegg bak kjøkkenet", (4.62, 0.95, 0.65), (0.18, 4.6, 1.3), m_vegg)
     # Utsikten gjennom vinduene: dagslys → skumring → natt
     m_ute = mat("Ute", "#FFF1DC", ruhet=1.0, emisjon="#FFF1DC", styrke=2.0)
-    boks("Ute", (0, 4.4, 1.2), (14, 0.1, 3.6), m_ute)
+    # rett bak veggen og ikke høyere enn vindusåpningene, så den bare synes gjennom vinduene (ikke som en plate over veggen ovenfra)
+    ute = boks("Ute", (0, 3.3, 0.69), (9.3, 0.02, 0.9), m_ute)
+    ute.visible_shadow = False  # sola og himmelen skal inn gjennom vinduene
+    m_karm = mat("Karm", "#3B3530", ruhet=0.5)
+    for x0, x1 in ((-3.9, -2.7), (-2.35, -1.15), (-0.8, 0.4), (0.75, 1.95)):
+        boks(f"Sprosse {x0}", ((x0 + x1) / 2, 3.15, 0.69), (0.03, 0.06, 0.9), m_karm)
+        boks(f"Losholt {x0}", ((x0 + x1) / 2, 3.15, 0.86), (x1 - x0, 0.06, 0.03), m_karm)
+    # Taket stenger himmelen ute, så lyset kommer inn gjennom vinduene som flekker på gulvet (kameraet ser det ikke)
+    tak = boks("Tak", (0, 0, 1.32), (9.4, 6.4, 0.04), m_vegg)
+    tak.visible_camera = False
+    tak.visible_glossy = False
+    tak.keyframe_insert("scale", frame=1)
+    tak.keyframe_insert("scale", frame=F(LYS_AV - 0.15))
+    tak.scale = (0, 0, 0)
+    tak.keyframe_insert("scale", frame=F(LYS_AV - 0.1))
+    # Mørke kapper på veggtoppene og gulvkanten: modellen leses som et bevisst snitt, ikke som en modell i et tomt rom
+    m_snitt = mat("Snitt", "#241C18", ruhet=0.7)
+    boks("Kappe bakvegg", (0, 3.15, 1.305), (9.4, 0.18, 0.01), m_snitt)
+    boks("Kappe venstre", (-4.75, 0.2, 0.605), (0.18, 5.9, 0.01), m_snitt)
+    boks("Kappe kjøkken", (4.62, 0.95, 1.305), (0.18, 4.6, 0.01), m_snitt)
+    boks("Gulvkant", (0, 0, -0.052), (9.44, 6.44, 0.1), m_snitt)
 
     # Planter i hjørnene og ved døra
     plante("Plante bak venstre", -4.35, 2.75, m_potte, m_blad, 0.55)
@@ -376,31 +420,38 @@ def bygg():
         if isinstance(nr, int):
             m = mat(f"Bord {nr}", FARGE["bord_ledig"], ruhet=0.4)
             bordmat[nr] = m
-            sylinder(f"Bord {nr}", (x, y, BORDHOYDE / 2), 0.38, BORDHOYDE, m, avrund=0.02)
+            bord_mobel(f"Bord {nr}", x, y, m_plate, m_fot)
+            sylinder(f"Brikke {nr}", (x, y, BORDHOYDE + 0.002), 0.12, 0.004, m, hjorner=48)
             stolplass[nr] = stoler(x, y, m_stol)
         else:
-            sylinder(f"Annet bord {nr}", (x, y, BORDHOYDE / 2), 0.36, BORDHOYDE, m_annen, avrund=0.02)
+            bord_mobel(f"Annet bord {nr}", x, y, m_plate, m_fot, r=0.36)
             stolplass[nr] = stoler(x, y, m_stol)
         sylinder(f"Lys {nr}", (x, y, BORDHOYDE + 0.03), 0.022, 0.06, m_lys)
         kule(f"Flamme {nr}", (x, y, BORDHOYDE + 0.075), 0.014, m_flamme)
 
     # De andre seksjonene: grå bord, men fulle av gjester – det er en travel kveld
     m_gjest_annen = mat("Gjest annen seksjon", "#D9D3CB", ruhet=0.6)
+    m_har = [mat(f"Hår {i}", f, ruhet=0.6) for i, f in enumerate(HARFARGER)]
     m_hud_annen = mat("Hud annen seksjon", "#E8DCD2", ruhet=0.6)
     for i, (x, y) in enumerate(ANDRE):
         for g, (sx, sy, _a) in enumerate(stolplass[f"a{i}"][: 2 + (i % 3)]):
             rot = tom(f"Annen gjest {i}-{g}", (sx, sy, 0))
-            sylinder(f"Annen gjest kropp {i}-{g}", (0, 0, 0.32), 0.1, 0.34, m_gjest_annen, parent=rot, avrund=0.04)
+            rot.rotation_euler = (0, 0, _a)
+            sylinder(f"Annen gjest kropp {i}-{g}", (0, 0, 0.32), 0.1, 0.34, m_gjest_annen, parent=rot, avrund=0.04).scale = (0.85, 1.25, 1.0)
             kule(f"Annen gjest hode {i}-{g}", (0, 0, 0.56), 0.085, m_hud_annen, parent=rot)
+            kule(f"Annen gjest hår {i}-{g}", (0, 0, 0.585), 0.088, m_har[(i + g) % 4], parent=rot).scale = (1.0, 1.0, 0.75)
             popp(rot, S(4.6 + i * 0.5 + g * 0.07), S(14.2 + i * 0.45 + g * 0.05))
 
     # ── Kvelden: bordsettinger (bord, ankommer, varighet – i restaurant-tid) ──
     settinger = [
-        (11, 3.0, 6.2), (13, 3.5, 5.8), (12, 4.2, 5.6), (15, 4.9, 5.2), (14, 5.5, 6.0),
+        (14, 3.0, 6.2), (13, 3.5, 5.8), (12, 4.2, 5.6), (15, 4.9, 5.2), (11, 5.5, 6.0),  # første tur til nærmeste bord, så kameraet rekker å følge henne
         (16, 6.2, 4.8), (17, 6.8, 5.0), (11, 9.9, 4.6), (15, 10.6, 4.0), (12, 10.4, 4.3),
-        (13, 10.0, 4.2), (16, 11.6, 3.4), (17, 12.3, 3.0),
+        # (13, 10.0, 4.2), (16, 11.6, 3.4), (17, 12.3, 3.0) – tatt ut: hun rakk ikke alt uten å teleportere
     ]
     besok = []  # (tid i filmen, sted, hva)
+    serveringer = []  # (sted, bord) der hun setter fra seg maten
+    OPPHOLD = 0.05  # kort stopp ved bordet eller passet
+    GANG = 16.0  # meter (modell) per sekund film når hun går mellom bordet og kjøkkenet
     leveringer = []  # (hentes på kjøkkenet, leveres) – tallerkener på brettet
     for s_i, (nr, ank, var) in enumerate(settinger):
         bx, by = BORD[nr]
@@ -417,11 +468,13 @@ def bygg():
         # Gjester, tallerkener og glass
         antall = 2 + (s_i % 3)
         for g in range(antall):
-            sx, sy, _a = stolplass[nr][g]
+            sx, sy, a = stolplass[nr][g]
             farge = GJESTEFARGER[(s_i * 3 + g) % len(GJESTEFARGER)]
             rot = tom(f"Gjest {s_i}-{g}", (sx, sy, 0))
-            sylinder(f"Gjest kropp {s_i}-{g}", (0, 0, 0.32), 0.1, 0.34, mat(f"Gjest {s_i}-{g}", farge, ruhet=0.5), parent=rot, avrund=0.04)
+            rot.rotation_euler = (0, 0, a)
+            sylinder(f"Gjest kropp {s_i}-{g}", (0, 0, 0.32), 0.1, 0.34, mat(f"Gjest {s_i}-{g}", farge, ruhet=0.5), parent=rot, avrund=0.04).scale = (0.85, 1.25, 1.0)
             kule(f"Gjest hode {s_i}-{g}", (0, 0, 0.56), 0.085, mat(f"Gjest hud {s_i}-{g}", "#F3DCCB"), parent=rot)
+            kule(f"Gjest hår {s_i}-{g}", (0, 0, 0.585), 0.088, m_har[(s_i + g) % 4], parent=rot).scale = (1.0, 1.0, 0.75)
             popp(rot, ank + g * 0.06, drar - 0.1 + g * 0.05)
             tx, ty = bx + (sx - bx) * 0.48, by + (sy - by) * 0.48
             popp(sylinder(f"Tallerken {s_i}-{g}", (tx, ty, BORDHOYDE + 0.012), 0.085, 0.018, m_tallerken), mat_t + g * 0.05, drar - 0.25)
@@ -435,17 +488,20 @@ def bygg():
         slot = Vector((3.99, -0.05 + (s_i % 8) * 0.3, 0.8))
         nokkel(bong, "location", [(bestill, (bx, by, 0.95)), (bestill + 0.75, (bx, by, 1.0)), (bestill + 1.35, (slot.x, slot.y, slot.z + 0.25)), (bestill + 1.55, tuple(slot))])
         nokkel(bong, "rotation_euler", [(bestill, (math.radians(55), 0, 0)), (bestill + 0.75, (math.radians(55), 0, 0)), (bestill + 1.45, (math.radians(90), 0, math.radians(90)))])
-        popp(bong, bestill, mat_t - 0.25, skala=1.5)
+        popp(bong, bestill, mat_t - 0.25, skala=0.8)
         # Servitøren: bestilling, til kjøkkenet, mat ut, betaling
-        side = Vector((bx + ((s_i * 37) % 7 - 3) * 0.03, (1.2 if by > 1 else -0.42) + ((s_i * 53) % 5 - 2) * 0.05, 0))
-        besok += [(bestill, side, "bestill"), (bestill + 0.32, KJOKKEN, "kjokken"), (mat_t - 0.32, KJOKKEN, "kjokken"), (mat_t, side, "mat"), (betal, side, "betal")]
-        leveringer.append((mat_t - 0.32, mat_t))
+        side = Vector((bx + ((s_i * 37) % 7 - 3) * 0.05, (1.2 if by > 1 else -0.42) + ((s_i * 53) % 5 - 2) * 0.07, 0))
+        # (Betalingen vises bare som bordfarge – et eget besøk ga for tett tidslinje i den kortere filmen)
+        tur = 0.12 + (side - KJOKKEN).length / GANG
+        besok += [(bestill, side, "bestill"), (bestill + tur, KJOKKEN, "kjokken"), (mat_t - tur, KJOKKEN, "kjokken"), (mat_t, side, "mat")]
+        leveringer.append((mat_t - tur, mat_t))
+        serveringer.append((side.copy(), nr))
 
     # ── Servitørens rute: i gangene mellom bordene, med stopp ved bordene og kjøkkenet ──
     besok.sort(key=lambda b: b[0])
     visit = [(S(VAKT_START), KJOKKEN.copy())]
     for t, sted, _ in besok:
-        t = max(t, visit[-1][0] + 0.2)
+        t = max(t, visit[-1][0] + OPPHOLD + (sted - visit[-1][1]).length / GANG)
         if (sted - visit[-1][1]).length < 0.05:
             continue
         visit.append((t, sted.copy()))
@@ -476,16 +532,16 @@ def bygg():
     def mellom(a, b):
         ra, rb = sone(a), sone(b)
         if {ra, rb} == {"midt", "kjokken"}:
-            return [rykk(Vector((2.2, -0.42, 0)), 0.15, 0.12)]
+            return [rykk(Vector((2.2, -0.55, 0)), 0.25, 0.35)]
         if {ra, rb} == {"midt", "vindu"}:
             m, v = (a, b) if ra == "midt" else (b, a)
-            gx = min(GAP_X, key=lambda g: abs(g - m.x) + abs(g - v.x)) + rnd() * 0.16
-            p = [rykk(Vector((gx, -0.42, 0)), 0.0, 0.12), rykk(Vector((gx, 1.2, 0)), 0.0, 0.13)]
+            gx = min(GAP_X, key=lambda g: abs(g - m.x) + abs(g - v.x)) + rnd() * 0.8
+            p = [rykk(Vector((gx, -0.55, 0)), 0.0, 0.35), rykk(Vector((gx, 1.15, 0)), 0.0, 0.25)]
             return p if ra == "midt" else p[::-1]
         if {ra, rb} == {"vindu", "vegg"}:
-            return [Vector((-3.45, 1.2, 0)), Vector((-3.45, -0.42, 0))] if ra == "vindu" else [Vector((-3.45, -0.42, 0)), Vector((-3.45, 1.2, 0))]
+            return [Vector((-3.45, 1.2, 0)), Vector((-3.45, -0.55, 0))] if ra == "vindu" else [Vector((-3.45, -0.55, 0)), Vector((-3.45, 1.2, 0))]
         if {ra, rb} == {"kjokken", "vegg"}:
-            return [Vector((2.2, -0.42, 0))]
+            return [rykk(Vector((2.2, -0.55, 0)), 0.2, 0.3)]
         return []
 
     def avrund_hjorner(pkt, d=0.11):
@@ -504,7 +560,7 @@ def bygg():
         return ut
 
     FART = 3.4  # meter (modell) per sekund film
-    rute = [(0.0, KJOKKEN.copy())]
+    rute = [(0.0, KJOKKEN + Vector((0.03, 0, 0)))]  # 3 cm bak: gir retning (mot salen) fra første bilde
     for i in range(len(visit)):
         t, p = visit[i]
         if i == 0:
@@ -514,7 +570,7 @@ def bygg():
         punkter = mellom(forrige_p, p) + [p]
         if sone(forrige_p) == sone(p) and sone(p) in ("vindu", "midt"):
             midt = (forrige_p + p) / 2
-            punkter = [rykk(Vector((midt.x, midt.y, 0)), 0.2, 0.13)] + punkter
+            punkter = [rykk(Vector((midt.x, midt.y, 0)), 0.6, 0.24)] + punkter
         alle = avrund_hjorner([forrige_p] + punkter)
         delt = [0.0]
         for j in range(1, len(alle)):
@@ -526,6 +582,18 @@ def bygg():
             rute.append((start, forrige_p.copy()))
         for j in range(1, len(alle)):
             rute.append((start + varighet * delt[j] / max(lengde, 1e-6), alle[j].copy()))
+
+    frys_t = FRYS
+    beste = 0.0
+    for k in range(len(rute) - 1):
+        t, p = rute[k]
+        if not (7.5 <= t <= 9.5) or (rute[k + 1][1] - p).length > 1e-6:
+            continue
+        if any((p - sd).length < 1e-6 and nr in (16, 17) for sd, nr in serveringer):
+            ro = rute[k + 1][0] - t
+            if ro > beste:
+                beste, frys_t = ro, t + min(0.12, ro / 2)
+    print("frysbilde", round(frys_t, 2), "står stille", round(beste, 2), "s")
 
     lengder = [0.0]
     for i in range(1, len(rute)):
@@ -542,11 +610,40 @@ def bygg():
     rute_o = lenk(bpy.data.objects.new("Rute", cu))
 
     # Sporet: samme kurve, med lysende rosa rør som vokser bak servitøren
-    spor_cu = cu.copy()
-    spor_cu.bevel_depth = 0.022
+    # Egen kurve uten stillestående punkter: nullange biter fikk «bevel factor» til å tegne hele etapper
+    # før hun hadde gått dem. Lengden langs kurven er den samme, så nøklene (lengde / total) treffer fortsatt.
+    spor_cu = bpy.data.curves.new("Spor", "CURVE")
+    spor_cu.dimensions = "3D"
+    spor_pkt = [rute[0][1]]
+    for _, p in rute[1:]:
+        if (p - spor_pkt[-1]).length > 1e-4:
+            spor_pkt.append(p)
+    ssp = spor_cu.splines.new("POLY")
+    ssp.points.add(len(spor_pkt) - 1)
+    for i, p in enumerate(spor_pkt):
+        ssp.points[i].co = (p.x, p.y, 0.025, 1)
+    spor_cu.bevel_depth = 0.009
     spor_cu.bevel_resolution = 3
     spor_cu.bevel_factor_mapping_end = "SPLINE"
-    m_spor = mat("Spor", FARGE["spor"], ruhet=0.4, emisjon=FARGE["spor"], styrke=0.6)
+    # Additivt lys: der hun har gått mange ganger, legger strekene seg oppå hverandre og gløder sterkere –
+    # sluttbildet viser hvor mye hun gikk, ikke bare hvor
+    m_spor = bpy.data.materials.new("Spor")
+    try:
+        m_spor.use_nodes = True
+    except Exception:
+        pass
+    snt = m_spor.node_tree
+    for n in list(snt.nodes):
+        snt.nodes.remove(n)
+    s_ut = snt.nodes.new("ShaderNodeOutputMaterial")
+    s_em = snt.nodes.new("ShaderNodeEmission")
+    s_em.inputs["Color"].default_value = srgb("#E0457B")
+    s_gj = snt.nodes.new("ShaderNodeBsdfTransparent")
+    s_sum = snt.nodes.new("ShaderNodeAddShader")
+    snt.links.new(s_em.outputs[0], s_sum.inputs[0])
+    snt.links.new(s_gj.outputs[0], s_sum.inputs[1])
+    snt.links.new(s_sum.outputs[0], s_ut.inputs["Surface"])
+    spor_styrke = s_em.inputs["Strength"]
     spor_cu.materials.append(m_spor)
     lenk(bpy.data.objects.new("Spor", spor_cu))
 
@@ -555,19 +652,21 @@ def bygg():
     serv.scale = (SKALA_SERV,) * 3
     m_serv = mat("Servitør", FARGE["servitor"], ruhet=0.45)
     m_hud = mat("Servitør hud", FARGE["hud"])
-    sylinder("Sokkel", (0, 0, 0.006), 0.2, 0.012, mat("Sokkel", FARGE["spor"], ruhet=0.4, emisjon=FARGE["spor"], styrke=1.2), parent=serv)
+    sylinder("Sokkel", (0, 0, 0.006), 0.2, 0.012, mat("Sokkel", FARGE["spor"], ruhet=0.4, emisjon=FARGE["spor"], styrke=0.6), parent=serv)
     sylinder("Servitør kropp", (0, 0, 0.36), 0.12, 0.5, m_serv, parent=serv, avrund=0.05)
     sylinder("Forkle", (0, 0.0, 0.25), 0.124, 0.22, mat("Forkle", FARGE["forkle"]), parent=serv)
     kule("Servitør hode", (0, 0, 0.72), 0.1, m_hud, parent=serv)
-    har = kule("Hår", (0, -0.025, 0.75), 0.104, mat("Hår", "#4A2C24", ruhet=0.6), parent=serv)
-    har.scale = (1.0, 0.95, 0.82)
+    m_har_serv = mat("Hår", "#4A2C24", ruhet=0.6)
+    har = kule("Hår", (0, -0.01, 0.745), 0.104, m_har_serv, parent=serv)
+    har.scale = (1.0, 1.0, 0.9)
+    kule("Hårknute", (0, -0.1, 0.70), 0.04, m_har_serv, parent=serv)
 
     # Brettet (tas opp etter innstemplingen) – glass, og tallerkener når hun bærer mat ut
     brett = tom("Brett", (0, 0, 0), serv)
     sylinder("Arm", (0.15, 0.05, 0.52), 0.035, 0.22, m_serv, parent=brett).rotation_euler = (math.radians(70), 0, 0)
     sylinder("Brettplate", (0.2, 0.16, 0.66), 0.16, 0.015, mat("Brett", FARGE["brett"], ruhet=0.25, metall=0.8), parent=brett)
     for i, (gx, gy) in enumerate(((0.16, 0.12), (0.25, 0.2), (0.22, 0.08))):
-        sylinder(f"Brettglass {i}", (gx, gy, 0.72), 0.025, 0.1, m_glass, parent=brett)
+        sylinder(f"Brettglass {i}", (gx, gy, 0.71), 0.02, 0.07, m_brettglass, parent=brett)
     brettmat = tom("Brettmat", (0.2, 0.16, 0.68), brett)
     for i, (dx, dy) in enumerate(((-0.06, -0.03), (0.07, 0.05))):
         sylinder(f"Brett-tallerken {i}", (dx, dy, 0.0), 0.075, 0.016, m_tallerken, parent=brettmat)
@@ -611,6 +710,13 @@ def bygg():
     nokkel(skjerm_bland[1], None, [(stemple_ut, 0.0), (stemple_ut + 0.08, 1.0)])
     nokkel(skjerm_styrke, None, [(0, 1.1), (ved_dora, 1.1), (ved_dora + 0.4, 4.0), (LENGDE - 2.6, 4.0), (LENGDE - 2.5, 0.0)])
 
+    dorlys_d = bpy.data.lights.new("Dørlys", "POINT")
+    dorlys_d.color = srgb("#FFD9C8")[:3]
+    dorlys_d.shadow_soft_size = 0.3
+    dorlys = lenk(bpy.data.objects.new("Dørlys", dorlys_d))
+    dorlys.location = (DOR.x + 0.25, DOR.y + 0.2, 0.9)
+    nokkel(dorlys_d, "energy", [(0, 0.0), (ved_dora, 0.0), (stemple_ut, 30.0), (LENGDE - 2.6, 30.0), (LENGDE - 2.5, 0.0)])
+
     fp = serv.constraints.new("FOLLOW_PATH")
     fp.name = "Følg"
     fp.target = rute_o
@@ -638,15 +744,16 @@ def bygg():
     sol_d = bpy.data.lights.new("Sol", "SUN")
     sol_d.angle = math.radians(2)
     sol = lenk(bpy.data.objects.new("Sol", sol_d))
-    sol.rotation_euler = Vector((0.35, -0.9, -0.42)).normalized().to_track_quat("-Z", "Y").to_euler()
-    nokkel(sol_d, "energy", [(0, 0.0), (0.4, 0.0), (1.6, 3.4), (S(6.0), 2.8), (S(9.5), 0.9), (S(11.5), 0.0)])
-    nokkel(sol_d, "color", [(0, srgb("#FFE6C6")[:3]), (S(6.0), srgb("#FFD0A0")[:3]), (S(10.0), srgb("#FF9E78")[:3])])
+    sol.rotation_euler = Vector((0.35, -0.9, -0.3)).normalized().to_track_quat("-Z", "Y").to_euler()
+    nokkel(sol_d, "energy", [(0, 0.0), (0.4, 0.0), (1.6, 6.0), (S(6.0), 5.0), (S(9.5), 1.6), (S(11.5), 0.0)])
+    nokkel(sol_d, "color", [(0, srgb("#FFD7A8")[:3]), (S(6.0), srgb("#FFC890")[:3]), (S(10.0), srgb("#FF9468")[:3])])
     nokkel(himmel.inputs["Color"], None, [(0, srgb("#DCE6F2")), (S(7.0), srgb("#F2D6CE")), (S(11.5), srgb("#1C2233")), (S(19.5), srgb("#0B0E16"))])
-    nokkel(himmel.inputs["Strength"], None, [(0, 0.05), (0.4, 0.05), (1.6, 0.9), (S(8.0), 0.7), (S(11.5), 0.12), (S(19.5), 0.05)])
-    nokkel(kamerabg.inputs["Color"], None, [(0, srgb("#F4EDE5")), (S(7.0), srgb("#F1DCD3")), (S(11.5), srgb("#151827")), (S(19.5), srgb("#08090F"))])
+    nokkel(himmel.inputs["Strength"], None, [(0, 0.05), (0.4, 0.05), (1.6, 0.35), (S(8.0), 0.3), (S(11.5), 0.08), (S(19.5), 0.04)])
+    # Kameraet ser et varmt, mørkt rom rundt restauranten hele veien (som et modellbord i en mørk sal)
+    nokkel(kamerabg.inputs["Color"], None, [(0, srgb("#2A201A")), (S(11.5), srgb("#16110E")), (S(19.5), srgb("#0B0908"))])
     nokkel(kamerabg.inputs["Strength"], None, [(0, 0.15), (0.4, 0.15), (1.6, 1.0), (LENGDE, 1.0)])
     nokkel(bsdf(m_ute).inputs["Emission Color"], None, [(0, srgb("#FFF1DC")), (S(6.5), srgb("#FFD9B0")), (S(9.5), srgb("#FF9F86")), (S(12.0), srgb("#2A3358")), (S(19.5), srgb("#141A30"))])
-    nokkel(bsdf(m_ute).inputs["Emission Strength"], None, [(0, 0.3), (0.4, 0.3), (1.6, 2.2), (S(9.5), 1.6), (S(12.0), 0.6), (S(19.5), 0.35)])
+    nokkel(bsdf(m_ute).inputs["Emission Strength"], None, [(0, 0.3), (0.4, 0.3), (1.6, 1.3), (S(9.5), 1.1), (S(12.0), 0.6), (S(19.5), 0.35)])
 
     # Taklampene og stearinlysene: tennes i skumringen, slukkes bord for bord ved stengetid
     alle_pos = [p for _, p in alle_bord]
@@ -657,24 +764,24 @@ def bygg():
         l.color = srgb("#FFCF9A")[:3]
         l.shadow_soft_size = 0.18
         lo = lenk(bpy.data.objects.new(f"Lampe {i}", l))
-        lo.location = (x, y, 1.35)
-        nokkel(l, "energy", [(pa - 0.05, 0.0), (pa + 0.35, 22.0), (av - 0.05, 22.0), (av + 0.1, 0.0)])
+        lo.location = (x, y, 1.2)
+        nokkel(l, "energy", [(pa - 0.05, 0.0), (pa + 0.35, 9.0), (av - 0.05, 9.0), (av + 0.1, 0.0)])
         c = bpy.data.lights.new(f"Stearinlys {i}", "POINT")
         c.color = srgb("#FFB868")[:3]
         c.shadow_soft_size = 0.03
         co = lenk(bpy.data.objects.new(f"Stearinlys {i}", c))
         co.location = (x, y, BORDHOYDE + 0.1)
-        nokkel(c, "energy", [(pa + 0.1, 0.0), (pa + 0.3, 3.5), (av - 0.05, 3.5), (av + 0.1, 0.0)])
-    nokkel(bsdf(m_flamme).inputs["Emission Strength"], None, [(S(8.2), 0.0), (S(8.7), 9.0), (S(16.6), 9.0), (S(18.3), 0.0)])
+        nokkel(c, "energy", [(pa + 0.1, 0.0), (pa + 0.3, 1.2), (av - 0.05, 1.2), (av + 0.1, 0.0)])
+    nokkel(bsdf(m_flamme).inputs["Emission Strength"], None, [(S(8.2), 0.0), (S(8.7), 4.0), (S(16.6), 4.0), (S(18.3), 0.0)])
     pass_l = bpy.data.lights.new("Pass", "AREA")
     pass_l.size, pass_l.size_y = 0.4, 3.0
     pass_l.color = srgb("#FFDDB4")[:3]
     pl = lenk(bpy.data.objects.new("Pass", pass_l))
     pl.location = (3.6, 0.9, 1.5)
     nokkel(pass_l, "energy", [(0, 0.0), (0.3, 140.0), (S(18.2), 140.0), (S(18.5), 0.0)])
-    nokkel(bsdf(m_pass).inputs["Emission Strength"], None, [(0, 0.0), (0.3, 6.0), (S(18.2), 6.0), (S(18.5), 0.0)])
+    nokkel(bsdf(m_pass).inputs["Emission Strength"], None, [(0, 0.0), (0.3, 2.5), (S(18.2), 2.5), (S(18.5), 0.0)])
     # Sporet gløder mer når det blir mørkt
-    nokkel(bsdf(m_spor).inputs["Emission Strength"], None, [(0, 0.6), (S(11.0), 0.9), (S(16.5), 2.2), (S(19.0), 5.0)])
+    nokkel(spor_styrke, None, [(0, 1.4), (S(11.0), 1.1), (S(16.5), 0.9), (S(19.0), 0.8)])
 
     # ── Kamera: telefonen tett på → over skulderen → kran opp → rett ovenfra ──
     cd = bpy.data.cameras.new("Kamera")
@@ -691,26 +798,24 @@ def bygg():
     # Telefonen i verden: hun står ved passet og ser mot salen (−x)
     tlf_v = Vector((KJOKKEN.x - 0.17 * SKALA_SERV, KJOKKEN.y - 0.07 * SKALA_SERV, 0.6 * SKALA_SERV))
     nokkel(cam, "location", [
-        (0, (3.24, 0.78, 0.98)), (1.9, (3.2, 0.8, 0.96)),
-        # Over hodet hennes (ikke gjennom det) fra venstre til høyre skulder
-        (2.7, (3.42, 1.08, 1.62)),
-        (3.4, (3.78, 1.42, 0.92)), (S(2.4), (3.7, 1.38, 0.98)),
-        (S(7.0), (2.4, -5.0, 4.2)), (S(12.5), (-0.6, -5.4, 6.4)), (S(18.5), (-0.3, -1.9, 8.4)), (LENGDE, (-0.3, -1.85, 8.5)),
+        (0, (3.30, 0.75, 1.02)), (1.75, (3.26, 0.77, 1.00)), (2.15, (3.42, 0.82, 1.32)), (2.6, (3.6, 1.3, 1.35)),
+        # ut og opp over skulderen hennes mens hun går ut i salen
+        (3.6, (3.95, 1.35, 1.45)),
+        (S(7.0), (2.4, -5.0, 4.2)), (S(12.5), (-0.6, -5.4, 6.4)), (S(18.5), (-0.3, -1.65, 9.2)), (LENGDE, (-0.3, -1.6, 9.3)),
     ])
     nokkel(mal, "location", [
-        (0, tuple(tlf_v)), (1.9, tuple(tlf_v)),
-        (2.7, (1.3, 1.05, 0.4)),
-        (3.4, (0.6, 1.15, 0.42)), (S(2.4), (0.5, 1.1, 0.4)),
-        (S(7.0), (0.6, 1.0, 0.2)), (S(12.5), (-0.4, 0.8, 0.0)), (S(18.5), (-0.3, 0.35, 0.0)), (LENGDE, (-0.3, 0.35, 0.0)),
+        (0, tuple(tlf_v)), (1.75, tuple(tlf_v)), (2.15, (2.5, 1.0, 0.62)), (2.6, (1.9, 1.15, 0.5)),
+        (3.6, (0.8, 1.1, 0.4)),
+        (S(7.0), (0.6, 1.0, 0.2)), (S(12.5), (-0.4, 0.8, 0.0)), (S(18.5), (-0.3, 0.08, 0.0)), (LENGDE, (-0.3, 0.05, 0.0)),
     ])
-    nokkel(cd, "lens", [(0, 46.0), (1.9, 46.0), (3.4, 30.0)])
-    nokkel(cd.dof, "focus_distance", [(0, 0.48), (1.9, 0.48), (3.0, 0.85), (3.6, 0.85), (4.6, 3.2), (S(7.0), 6.5), (S(12.5), 8.4), (S(18.5), 8.6)])
+    nokkel(cd, "lens", [(0, 46.0), (1.75, 46.0), (3.6, 30.0)])
+    nokkel(cd.dof, "focus_distance", [(0, 0.59), (1.75, 0.54), (2.6, 1.6), (3.6, 2.6), (S(7.0), 6.5), (S(12.5), 8.4), (S(18.5), 9.35)])
     # Liten dybdeskarphet under kranen gir miniatyrpreg («tilt-shift»)
-    nokkel(cd.dof, "aperture_fstop", [(0, 2.4), (1.9, 2.4), (3.4, 1.5), (S(2.4), 2.0), (S(6.0), 4.0), (S(12.5), 5.0), (S(16.5), 16.0)])
+    nokkel(cd.dof, "aperture_fstop", [(0, 3.2), (1.75, 3.2), (3.6, 2.8), (S(6.0), 4.0), (S(12.5), 5.0), (S(16.5), 16.0)])
 
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(HER, "apning.blend"))
 
-    meta = {"fps": FPS, "varighet": LENGDE, "vaktStart": STEMPLE_INN, "vaktSlutt": round(stemple_ut, 2), "lysAv": LYS_AV, "rutepunkter": len(rute)}
+    meta = {"fps": FPS, "varighet": LENGDE, "vaktStart": STEMPLE_INN, "vaktSlutt": round(stemple_ut, 2), "lysAv": round(LYS_AV, 2), "frys": round(frys_t, 2), "rutepunkter": len(rute)}
     for sti_ut in (os.path.join(FILM, "apning.json"), os.path.join(ROT, "src", "lib", "apning.json")):
         with open(sti_ut, "w", encoding="utf-8") as fh:
             json.dump(meta, fh, indent=2)
@@ -751,7 +856,9 @@ def test():
     sc.cycles.samples = 24
     ut = os.path.join(HER, "test_apning")
     os.makedirs(ut, exist_ok=True)
-    for t in (0.6, 1.4, 1.75, 2.5, 3.4, 6.2, 9.4, 12.4, 15.4, 18.0, 19.6, 21.0, 24.5):
+    i = sys.argv.index("--")
+    tider = [float(a) for a in sys.argv[i + 3:]] if len(sys.argv) > i + 3 else [0.6, 1.75, 2.8, 4.6, 6.4, 8.0, 10.5, 12.6, 14.0, 15.2, 17.2]
+    for t in tider:
         sc.frame_set(F(t))
         sc.render.filepath = os.path.join(ut, f"t{t:04.1f}.png")
         bpy.ops.render.render(write_still=True)
@@ -811,6 +918,35 @@ def film():
     print("film ferdig", laget)
 
 
+def frys():
+    """Stillbildet til «Nøkkelfunn» (full kvalitet), og hvor servitøren, baren og gjestene står i det."""
+    from bpy_extras.object_utils import world_to_camera_view
+
+    bpy.ops.wm.open_mainfile(filepath=os.path.join(HER, "apning.blend"))
+    bruk_gpu()
+    sc = bpy.context.scene
+    with open(os.path.join(ROT, "src", "lib", "apning.json"), encoding="utf-8") as fh:
+        frys_t = json.load(fh)["frys"]
+    sc.frame_set(F(frys_t))
+    sc.render.use_motion_blur = False
+    sc.cycles.samples = 160
+    sc.render.filepath = os.path.join(FILM, "apning-frys.png")
+    bpy.ops.render.render(write_still=True)
+    dg = bpy.context.evaluated_depsgraph_get()
+    cam = sc.camera.evaluated_get(dg)
+
+    def punkt(navn, hoyde=0.0):
+        o = sc.objects[navn].evaluated_get(dg)
+        p = o.matrix_world.translation + Vector((0, 0, hoyde))
+        v = world_to_camera_view(sc, cam, p)
+        return [round(v.x, 4), round(1 - v.y, 4)]
+
+    data = {"bilde": "film/apning-frys.png", "punkter": {"servitor": punkt("Servitør", 0.5), "bar": punkt("Disk", 0.5), "gjester": punkt("Gjest 5-0", 0.45)}}
+    with open(os.path.join(ROT, "src", "lib", "frys.json"), "w", encoding="utf-8") as fh:
+        json.dump(data, fh, indent=2)
+    print("frys", data)
+
+
 steg = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv else "bygg"
 if steg == "bygg":
     bygg()
@@ -819,3 +955,5 @@ elif steg in ("test", "render"):
     test() if steg == "test" else render()
 elif steg == "film":
     film()
+elif steg == "frys":
+    frys()

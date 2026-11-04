@@ -19,11 +19,11 @@ export const manus: Scene[] = [
     tittel: 'Vakten',
     del: 'Åpning',
     tema: 'mork',
-    varighet: 51,
+    varighet: 44,
     takter: [
       {
         hvem: 'stille',
-        anim: 25,
+        anim: 18,
         regi: 'Ingen snakker. Filmen: servitøren stempler inn (16:00), kameraet løfter seg over restauranten mens kvelden går, og sporet der hun går blir igjen når lysene slukkes. Tittelen kommer. Går videre av seg selv når filmen er ferdig.',
       },
       {

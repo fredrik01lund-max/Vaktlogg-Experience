@@ -1,8 +1,9 @@
 {
   "fps": 30,
-  "varighet": 25.0,
+  "varighet": 17.5,
   "vaktStart": 1.55,
-  "vaktSlutt": 19.2,
-  "lysAv": 20.0,
-  "rutepunkter": 208
+  "vaktSlutt": 14.8,
+  "lysAv": 14.79,
+  "frys": 7.95,
+  "rutepunkter": 113
 }

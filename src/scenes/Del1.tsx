@@ -82,13 +82,13 @@ function Tittel({ vis, navnene = false }: { vis: boolean; navnene?: boolean }) {
   return (
     <div className="tittel-blokk">
       <Inn vis={vis} className="tittel-vaktlogg" tid={1.6}>
-        VAKTLOGG
+        Vaktlogg
       </Inn>
       <Inn vis={vis} d={0.35} className="tittel-bak stor-serif" tid={1.8}>
         Behind the shift
       </Inn>
       <Inn vis={vis && navnene} d={0.5} className="tittel-navn">
-        {navn('A')} <i>·</i> {navn('B')} <i>·</i> {navn('C')}
+        {navn('A')}, {navn('B')} og {navn('C')}
       </Inn>
     </div>
   )

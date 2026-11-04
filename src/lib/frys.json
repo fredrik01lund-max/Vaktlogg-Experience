@@ -1,8 +1,17 @@
 {
   "bilde": "film/apning-frys.png",
   "punkter": {
-    "servitor": [0.414, 0.592],
-    "bar": [0.83, 0.5],
-    "gjester": [0.545, 0.47]
+    "servitor": [
+      0.5322,
+      0.5953
+    ],
+    "bar": [
+      0.8361,
+      0.4658
+    ],
+    "gjester": [
+      0.424,
+      0.4729
+    ]
   }
 }
