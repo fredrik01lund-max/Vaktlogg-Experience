@@ -5,7 +5,7 @@ import { mmss, planTid, sceneStart, taktPlan } from '../content/tid.ts'
 import type { Ordet } from '../content/types.ts'
 import { mobilAdresse, romkode, speilmodus } from '../lib/mobil.ts'
 import { FARGE, medNavn, navnMangler, oppsett } from '../lib/oppsett.ts'
-import { apneVindu, forrige, gaTil, lydtest, neste, nullstill, nyDemo, start, svart, useStatus, useTilstand, velg } from '../lib/sync.ts'
+import { apneVindu, forrige, gaTil, lydtest, neste, nullstill, nyDemo, svart, useStatus, useTilstand, velg } from '../lib/sync.ts'
 import { VALG } from '../scenes/Del2.tsx'
 
 // Presentatørvisningen: eget vindu på bærbar-skjermen. Viser hvem som snakker, manus,
@@ -94,10 +94,9 @@ export function Presentator() {
         </div>
         <div className="pv-knapper">
           {!hovedTilkoblet && <button onClick={() => apneVindu('hoved')}>Åpne hovedskjerm</button>}
-          <button onClick={(e) => { e.currentTarget.blur(); if (!t.startet || confirm('Presentasjonen er i gang. Tilbake til venteskjermen og klokka på 0:00?')) nullstill() }} title="Tilbake til venteskjermen, klokka på 0:00 – uten å starte">Klar til start</button>
           <button onClick={(e) => { e.currentTarget.blur(); lydtest() }} title="Hovedskjermen spiller Sir Domeos første replikk">Test lyd</button>
           <button onClick={(e) => { e.currentTarget.blur(); nyDemo() }} title="Last prototypen på nytt med rene data (også på sensors mobil)">Nullstill demo</button>
-          <button onClick={() => (confirm('Starte hele presentasjonen på nytt og nullstille tiden?') ? (nullstill(), start()) : null)}>Start på nytt</button>
+          <button onClick={(e) => { e.currentTarget.blur(); if (!t.startet || confirm('Presentasjonen er i gang. Tilbake til startskjermen og klokka på 0:00?')) nullstill() }} title="Tilbake til den svarte startskjermen med klokka på 0:00. Presentasjonen starter først når dere trykker Start.">Start på nytt</button>
         </div>
       </header>
 

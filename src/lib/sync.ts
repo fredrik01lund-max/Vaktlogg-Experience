@@ -191,6 +191,8 @@ export function forrige() {
   if (!t.startet) return
   if (t.takt > 0) gaTil(t.scene, t.takt - 1)
   else if (t.scene > 0) gaTil(t.scene - 1, manus[t.scene - 1].takter.length - 1)
+  // Bakover fra aller første takt: tilbake til den svarte startskjermen (så det går uten presentatørvisningen også)
+  else nullstill()
 }
 
 /** Sensors valg i designvalget (scenen er lagt til side – da gjør dette ingenting). */
@@ -201,6 +203,7 @@ export function velg(n: number) {
   gaTil(i, manus[i].takter.length - 1)
 }
 
+/** Tilbake til den svarte startskjermen med klokka på 0:00. Presentasjonen starter først når noen trykker Start. */
 export function nullstill() {
   sett({ ...ny(), demoNr: tilstand.demoNr + 1 })
 }

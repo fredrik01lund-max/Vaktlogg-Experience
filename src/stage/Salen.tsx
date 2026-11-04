@@ -378,7 +378,7 @@ export function Salen() {
               <dt><kbd>→</kbd> <kbd>mellomrom</kbd> <kbd>PageDown</kbd></dt>
               <dd>Neste (klikkeren virker også inne i prototypen)</dd>
               <dt><kbd>←</kbd> <kbd>PageUp</kbd></dt>
-              <dd>Forrige</dd>
+              <dd>Forrige. Fra første takt: tilbake til startskjermen (klokka på 0:00)</dd>
               <dt><kbd>P</kbd></dt>
               <dd>Åpne presentatørvisningen i eget vindu (dra det til din skjerm)</dd>
               <dt><kbd>F</kbd></dt>

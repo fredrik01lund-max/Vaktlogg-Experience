@@ -47,13 +47,15 @@ Hver animasjon skal forklare noe. Flippbrettet viser omdefineringen, frysbildet 
    - **Uten internett (reserve):** koble PC-en og mobilen til samme nett (en mobil-hotspot holder). Kjør `npm run eksamen`. Tjeneren bruker den frosne kopien `dist-eksamen-trygg`, skriver når den ble bygget, og sier fra hvis en film eller lydfil mangler. Sensors adresse er kort: `http://<IP>:8080/s`.
 2. Win+P → «Utvid». Åpne storskjerm-adressen, trykk **P** (presentatørvisning) og dra presentatørvinduet til den bærbare skjermen. Klikk så på hovedvinduet på projektoren og trykk **F** (fullskjerm), og klikk til slutt på presentatørvinduet så klikkeren styrer derfra. Virker ikke «Utvid» (bare «Dupliser»): kjør bare hovedvinduet i fullskjerm og ha manuset på papir (`?vis=manus`).
 3. Åpne adressen på sensors mobil. På mobilen: automatisk lås av, Ikke forstyrr på, fullt batteri. PC-en: lader i. Presentatørvisningen skal vise **«Hovedskjerm tilkoblet»**, **«Film lastet»** og **«Sensors mobil tilkoblet»** (vises fra start).
-4. Koble til høyttaler og velg den som lydenhet i Windows etter at projektoren er koblet til – Sir Domeos stemme kommer fra PC-en. Trykk **Test lyd** i presentatørvisningen, og igjen etter enhver omlasting. Til slutt **Klar til start** (venteskjermen, klokka på 0:00). Er presentasjonen allerede i gang, spør knappen før den nullstiller.
+4. Koble til høyttaler og velg den som lydenhet i Windows etter at projektoren er koblet til – Sir Domeos stemme kommer fra PC-en. Trykk **Test lyd** i presentatørvisningen, og igjen etter enhver omlasting. Til slutt **Start på nytt** (den svarte startskjermen, klokka på 0:00). Presentasjonen starter ikke før dere trykker Start. Er presentasjonen allerede i gang, spør knappen først.
 5. Start med klikkeren (→ / PageDown). Filmene går videre av seg selv når de er ferdige. Overalt ellers er det ett klikk per takt.
+
+Tastene virker både på hovedskjermen og i presentatørvisningen, så dere kan styre med piltastene uten presentatørvisningen.
 
 | Tast | Hva |
 |---|---|
 | → mellomrom PageDown Enter | Neste. Virker også mens fokus er inne i prototypen. |
-| ← PageUp | Forrige |
+| ← PageUp | Forrige. Fra første takt: tilbake til den svarte startskjermen (klokka på 0:00). |
 | B eller . | Svart skjerm |
 | O | Oversikt: hopp til en scene. Under «Lagt til side» ligger scenene som er tatt ut – Esc lukker |
 | R | Last prototypen på nytt med rene data, og start omvisningen på sensors mobil på nytt |
