@@ -177,7 +177,9 @@ export function Salen() {
   // Hvor sensors mobil kobler seg til: på startskjermen og under H (aldri under selve fremføringen)
   const mobilLinje =
     mobil.modus === 'rele' ? (
-      mobil.mobil > 0 ? (
+      mobil.rele === false ? (
+        <>Sensors mobil: får ikke kontakt med reléet. Sjekk at PC-en har internett (kode {mobil.kode}).</>
+      ) : mobil.mobil > 0 ? (
         <>Sensors mobil er koblet til (kode {mobil.kode}).</>
       ) : (
         <>Sensors mobil: åpne <b>{mobil.adresse}</b> og skriv koden <b className="mobil-kode">{mobil.kode}</b></>

@@ -52,7 +52,7 @@
 <main>
   <form id="skjema" hidden>
     <h1>Koble mobilen til storskjermen</h1>
-    <p>Koden står på startskjermen til presentasjonen på PC-en, under Start-knappen. Den står også i presentatørvisningen (trykk P). Mobilen husker koden til neste gang.</p>
+    <p>Koden står på startskjermen til presentasjonen på PC-en, under Start-knappen. Den står også i presentatørvisningen (trykk P). Sjekk at koden her er den samme.</p>
     <input id="kode" name="kode" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Kode" maxlength="12">
     <button type="submit">Koble til</button>
     <p class="feil" id="feil" role="alert"></p>
@@ -71,8 +71,9 @@
     try { localStorage.setItem(NOKKEL, k) } catch (e) {}
     location.replace('../demo/vaktlogg.html?sensor&speil=send&rom=' + k)
   }
-  var fraAdresse = vask(decodeURIComponent(location.hash.slice(1))) || vask(q.get('rom'))
-  var kode = fraAdresse || (q.has('ny') ? '' : husket)
+  // Koden i adressen (#kode) brukes rett. Ellers vises skjemaet alltid, med koden mobilen husker ferdig utfylt –
+  // så en gammel kode aldri brukes uten at man ser den.
+  var kode = vask(decodeURIComponent(location.hash.slice(1))) || vask(q.get('rom'))
   if (kode.length >= 4) gaa(kode)
   else {
     var skjema = document.getElementById('skjema')

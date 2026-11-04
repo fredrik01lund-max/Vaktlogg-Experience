@@ -85,11 +85,16 @@ export function startMobilvakt() {
     const k = romkode()
     let sistFraMobilen = 0
     // Alt mobilen sender teller som livstegn (pulsen hvert 3. sekund, tilstand, rulling …).
-    // «hei» og «nullstill» kommer fra prototypen på storskjermen, ikke fra mobilen.
-    const rele = kobleRele(k, { paMelding: (m) => m.type !== 'hei' && m.type !== 'nullstill' && (sistFraMobilen = Date.now()) })
+    // «hei», «nullstill» og «skjerm» kommer fra storskjermen (prototypen og presentasjonen), ikke fra mobilen.
+    const rele = kobleRele(k, { paMelding: (m) => !['hei', 'nullstill', 'skjerm'].includes(m.type) && (sistFraMobilen = Date.now()) })
+    // Presentasjonen sier fra om seg selv, så mobilen kan vise om den har funnet storskjermen (riktig kode)
+    window.setInterval(() => rele.send({ type: 'skjerm' }), 3000)
     let forrige = ''
+    const t0 = Date.now()
     const meld = () => {
-      const s = { mobil: Date.now() - sistFraMobilen < 8000 ? 1 : 0, mobilKode: k, mobilAdresse: mobilAdresse(), rele: rele.apne() > 0 }
+      // rele: null de første sekundene mens den kobler til (ikke meld feil før det er en feil)
+      const releOk = rele.apne() > 0 ? true : Date.now() - t0 < 6000 ? null : false
+      const s = { mobil: Date.now() - sistFraMobilen < 8000 ? 1 : 0, mobilKode: k, mobilAdresse: mobilAdresse(), rele: releOk }
       const json = JSON.stringify(s)
       if (json === forrige) return
       forrige = json
