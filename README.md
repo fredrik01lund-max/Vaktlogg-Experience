@@ -25,13 +25,13 @@ Publikum følger reisen fra et bredt problem (sykefravær) til et innsiktsbasert
 | 3 | Nøkkelfunn | A | Et stillbilde fra åpningsfilmen fryses (en stilisert figur, merket «illustrasjon»), og de tre funnene tegnes inn: bevegelse (selvrapportert), salg (observert) og anerkjennelse – og rommet etter vakten, der nesten ingenting skjedde. |
 | 4 | Problemstillingen | A → B | Flippbrettet: SYKEFRAVÆR blir MOTIVASJON (ti bokstaver begge), og problemstillingen. |
 | 5 | Fra Strava til Vaktlogg | B | Den første ideen, vinhistorien fortalt slik den står i intervjuet, merket som bygges av skritt og salg – og beslutningen: fire måter å gjøre en konkurranse rettferdig på, to valgt bort, og ingen konkurranser om alkohol. |
-| 6 | Det vi prioriterte | B | Innsikt → funksjon, med opphav (observert, selvrapportert, fortalt, vår tolkning) og ekte skjermbilder fra prototypen. |
+| 6 | Det vi prioriterte | stille → B | Blender-film (16 s, «Alt vi pakket inn»): skjermbildene fra prototypen svever rundt telefonen og flyr inn i den, én for én. Så innsikt → funksjon, med opphav (observert, selvrapportert, fortalt, vår tolkning) og ekte skjermbilder fra prototypen. |
 | 7 | Prøv selv | stille → C → sensor → C | Blender-film (7 s): telefonen ligger på servitørens brett like før vakten, ved siden av kaffen og vaktlista. Skjermen våkner, og kameraet legger seg rett over den. Den **ekte** prototypen tar over nøyaktig der. Sensor trykker seg gjennom Sir Domeos omvisning på en mobil, og storskjermen viser det samme. |
 | 8 | Frem og tilbake | stille → C | Blender-film (12 s): kula spretter mellom innsikt og prototype og skriver ut en bong med dato for hver versjon. Under sporet kommer parene «vi så → vi endret», og hvem som har prøvd prototypen. |
 | 9 | Hva vi vet, og hva nå | C | Sett / tror / må teste, svakhetene i materialet, og spørsmålene en pilot skal svare på. |
 | 10 | Avslutning | A, B, C | Bongskinnen kommer tilbake. Siste bong: «Vakt ferdig». |
 
-Tid (fra `npm run sjekk`): **planlagt 9:47**, med margin til 10:00 og 2:13 til den harde grensen på 12:00. A, B og C har omtrent like mye å si (304, 266 og 294 ord), filmene og animasjonene tar cirka 0:54, og sensor får 2:10 i prototypen.
+Tid (fra `npm run sjekk`): **planlagt 9:57**, med margin til 10:00 og 2:03 til den harde grensen på 12:00. A, B og C har omtrent like mye å si (304, 266 og 294 ord), filmene og animasjonene tar cirka 1:10, og sensor får 2:10 i prototypen.
 
 Scenene som er tatt ut eller slått sammen, er **lagt til side** (ikke slettet) – se under.
 
@@ -164,9 +164,10 @@ Fire filmer, alle bygd med kode og rendret på grafikkortet (Cycles, OptiX – l
 |---|---|---|---|
 | `apning.mp4` | [`blender/apning_vakt.py`](blender/apning_vakt.py) | 17,5 s | «Vakten ovenfra». Steget `frys` lager stillbildet til Nøkkelfunn og skriver hvor servitøren, baren og gjestene står (`src/lib/frys.json`). |
 | `telefon.mp4` | [`blender/telefon_bord.py`](blender/telefon_bord.py) | 7 s | Telefonen på servitørens brett like før vakten, i ettermiddagslys gjennom vinduet. Sluttbildet treffer skjermens plass nøyaktig (`src/lib/telefon.json`) og blir bakgrunnen i demoen. Skjermbildet er `blender/skjerm-sensor.png` (prototypen med Sir Domeos første boble). |
+| `pakket.mp4` | [`blender/pakket_ideer.py`](blender/pakket_ideer.py) | 16 s | «Alt vi pakket inn», første takt i «Det vi prioriterte»: skjermbildene flyr inn i telefonen. Kortene er skjermbilder fra prototypen (`blender/kort/`, laget med `xp-kort.mjs`). Rendret på nytt 4.11 med dagens prototype: uten fotoportrett og flasketall, 128 samples. |
 | `hopping.mp4` | [`blender/hopping_spor.py`](blender/hopping_spor.py) | 12 s | «Frem og tilbake»: kula spretter mellom innsikt og prototype og skriver ut en bong med dato for hver versjon. `blender/projiser.py` skriver hvor bongene havner i sluttbildet (`src/lib/hopping.json`), så tekstene står rett under. |
 
-Felles håndverk (materialer, lys, avfasing, rendering og MP4 uten striper) ligger i [`blender/studio.py`](blender/studio.py). Lagt til side: `telefon_reveal.py` (den svevende telefonen), `pakket_ideer.py` (pakket-filmen) og `hopping.py` (første hoppefilm). Pakket-filmen vises fortsatt fra arkivscenen «Alt vi pakket inn».
+Felles håndverk (materialer, lys, avfasing, rendering og MP4 uten striper) ligger i [`blender/studio.py`](blender/studio.py). Lagt til side: `telefon_reveal.py` (den svevende telefonen, som pakket-filmen fortsatt bruker) og `hopping.py` (første hoppefilm).
 
 Alle skriptene bygger hele scenene med kode: modellene, materialene, lyset, kamerabanen og tidslinjen. De er reproduserbare, og har de samme stegene (`bygg`, `test`, `render`, `film`). Åpningens bordsettinger, servitørens rute og klokkeslettene står øverst i skriptet; tidspunktene presentasjonen trenger skrives til `src/lib/apning.json`.
 

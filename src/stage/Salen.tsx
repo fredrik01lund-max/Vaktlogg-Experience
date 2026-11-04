@@ -46,7 +46,7 @@ const ARKIV: Record<string, ComponentType<SceneProps>> = {
   nabc: Nabc,
 }
 
-// Prototypen lastes fra scenen før demoen (Det vi prioriterte) til scenen etter
+// Prototypen lastes fra scenen før demoen (Det vi prioriterte, etter pakket-filmen, så filmen ikke hakker) til scenen etter
 const DEMO_I = manus.findIndex((s) => s.id === 'demo')
 
 const FASER: { id: Fase; navn: string }[] = [
@@ -289,7 +289,7 @@ export function Salen() {
         {/* Lagt til side: en arkivert scene vises over flyten til Esc trykkes (flyten står stille imens) */}
         {arkiv && <ArkivVisning i={arkiv.i} takt={arkiv.takt} valg={arkiv.valg} />}
 
-        <DemoTelefon visning={t.startet && scene.id === 'demo' && !arkiv ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && t.scene >= DEMO_I - 1 && t.scene <= DEMO_I + 1} sensor={t.startet && scene.id === 'demo' && takt.hvem === 'sensor'} overlevering={t.startet && scene.id === 'demo' && t.takt === 1} />
+        <DemoTelefon visning={t.startet && scene.id === 'demo' && !arkiv ? demoVisning : 'skjult'} demoNr={t.demoNr} last={t.startet && (t.scene >= DEMO_I || (t.scene === DEMO_I - 1 && t.takt >= 1)) && t.scene <= DEMO_I + 1} sensor={t.startet && scene.id === 'demo' && takt.hvem === 'sensor'} overlevering={t.startet && scene.id === 'demo' && t.takt === 1} />
 
         {t.startet && scene.fase && !arkiv && (
           <div className={`faser ${scene.id === 'demo' ? 'hoyre' : ''} ${['funn', 'demo', 'hopping'].includes(scene.id) ? 'pa-film' : ''} ${takt.hvem === 'stille' && takt.anim ? 'under-film' : ''}`} aria-hidden="true">

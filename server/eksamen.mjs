@@ -28,7 +28,7 @@ if (path.basename(MAPPE) === 'dist-eksamen-trygg' && fs.existsSync(path.join(ROT
   console.warn('\n  ⚠ dist-eksamen er nyere enn den frosne kopien. Vil dere bruke det nye bygget: node server/eksamen.mjs dist-eksamen')
 }
 // Filene scenene trenger – mangler noe, skal det sies nå og ikke midt i fremføringen
-const TRENGS = ['film/apning.mp4', 'film/apning-slutt.png', 'film/apning-frys.png', 'film/telefon.mp4', 'film/telefon-slutt.png', 'film/hopping.mp4', 'film/hopping-slutt.png', 'demo/vaktlogg.html', ...[0, 1, 2, 3, 4, 5].map((i) => `demo/domeo/sensor-${i}.mp3`), ...['salg', 'helse', 'live', 'rapport', 'sjef'].map((n) => `skjerm/${n}.png`)]
+const TRENGS = ['film/apning.mp4', 'film/apning-slutt.png', 'film/apning-frys.png', 'film/pakket.mp4', 'film/telefon.mp4', 'film/telefon-slutt.png', 'film/hopping.mp4', 'film/hopping-slutt.png', 'demo/vaktlogg.html', ...[0, 1, 2, 3, 4, 5].map((i) => `demo/domeo/sensor-${i}.mp3`), ...['salg', 'helse', 'live', 'rapport', 'sjef'].map((n) => `skjerm/${n}.png`)]
 const mangler = TRENGS.filter((f) => !fs.existsSync(path.join(MAPPE, f)))
 if (mangler.length) console.warn('\n  ⚠ Mangler i ' + path.basename(MAPPE) + ': ' + mangler.join(', '))
 

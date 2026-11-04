@@ -1,5 +1,9 @@
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import { manus } from '../content/manus.ts'
+import { filmUrl } from '../lib/film.ts'
 import frys from '../lib/frys.json'
+import { hent, neste } from '../lib/sync.ts'
 import { oppsett } from '../lib/oppsett.ts'
 import { Apning, TittelScene } from './Del1.tsx'
 import { Ide, ToInnsikter, VALG } from './Del2.tsx'
@@ -235,14 +239,60 @@ const PAR = [
   { fra: 'Tiden etter vakten', merke: 'Vår tolkning', til: 'Sluttrapporten', skjerm: 'rapport' },
 ]
 
+/** Først Blender-filmen «Alt vi pakket inn» (takt 0): skjermbildene flyr inn i telefonen. Den går videre av seg selv
+ *  når den er ferdig, og B forteller hvilket funn som ble hvilken funksjon (takt 1–2). */
 export function Prioritert({ takt }: SceneProps) {
   useLys(0)
-  const t = useSek()
-  // Telefonen viser funksjonen som nettopp er nevnt (omtrent i takt med replikken), og lederens visning til slutt
-  const aktiv = takt === 0 ? Math.min(PAR.length - 1, Math.floor(Math.max(0, t - 2) / 3.6)) : -1
-  const skjerm = takt === 0 ? PAR[aktiv].skjerm : 'sjef'
+  const video = useRef<HTMLVideoElement>(null)
+  const [filmFeil, setFilmFeil] = useState(false)
+
+  useEffect(() => {
+    if (takt !== 0) return
+    const v = video.current
+    if (!v) return
+    v.currentTime = 0
+    v.play().catch(() => setFilmFeil(true))
+  }, [takt])
+
+  const ferdig = () => {
+    const n = hent()
+    if (manus[n.scene]?.id === 'prioritert' && n.takt === 0) neste()
+  }
+  // Mangler filmen, går scenen videre med en gang, så B aldri står og venter
+  useEffect(() => {
+    if (!filmFeil || takt !== 0) return
+    const id = window.setTimeout(ferdig, 1500)
+    return () => clearTimeout(id)
+  }, [filmFeil, takt])
+
   return (
     <div className="scene prioritert">
+      {takt >= 1 && <PrioritertInnhold b={takt - 1} />}
+      <motion.video
+        ref={video}
+        className="prioritert-film"
+        src={filmUrl('pakket')}
+        muted
+        playsInline
+        preload="auto"
+        onEnded={ferdig}
+        onError={() => setFilmFeil(true)}
+        initial={false}
+        animate={{ opacity: takt === 0 && !filmFeil ? 1 : 0 }}
+        transition={{ duration: 0.9, ease: MYK }}
+      />
+    </div>
+  )
+}
+
+function PrioritertInnhold({ b }: { b: number }) {
+  const t = useSek()
+  // Telefonen viser funksjonen som nettopp er nevnt (omtrent i takt med replikken), og lederens visning til slutt
+  const aktiv = b === 0 ? Math.min(PAR.length - 1, Math.floor(Math.max(0, t - 2) / 3.6)) : -1
+  const skjerm = b === 0 ? PAR[aktiv].skjerm : 'sjef'
+  const takt = b
+  return (
+    <>
       <div className="rute prioritert-venstre">
         <h2 className="h2">Det vi prioriterte</h2>
         <ol className="par-liste">
@@ -267,7 +317,7 @@ export function Prioritert({ takt }: SceneProps) {
       </div>
       {/* Bildetekst under telefonen (den gjelder skjermbildene), så den ikke kolliderer med lederlinjen */}
       <p className="kilde-linje prioritert-kilde">Ekte skjermbilder fra prototypen. Fiktiv restaurant, simulerte tall.</p>
-    </div>
+    </>
   )
 }
 

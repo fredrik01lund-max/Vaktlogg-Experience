@@ -389,6 +389,15 @@
   object-position: top;
   border-radius: 46px;
 }
+/* Blender-filmen «Alt vi pakket inn» dekker hele lerretet i første takt, og tones bort når B begynner */
+.prioritert-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
 
 /* ── 7. Prøv selv: telefonen fra filmen er rammen (siste bilde ligger bak), CSS-rammen er usynlig ── */
 .scene.demo {

@@ -161,8 +161,13 @@ export const manus: Scene[] = [
     tittel: 'Det vi prioriterte',
     del: 'Design Thinking og konsept',
     fase: 'ideate',
-    varighet: 32,
+    varighet: 48,
     takter: [
+      {
+        hvem: 'stille',
+        anim: 16,
+        regi: 'Ingen snakker. Blender-filmen: skjermbildene fra prototypen svever rundt telefonen og flyr inn i den, én for én og stadig raskere. Når alt er pakket inn, kommer pastellringene. Går videre av seg selv når filmen er ferdig.',
+      },
       {
         hvem: 'B',
         sier: 'Hvert funn ga oss en funksjon. Kassarapporten ga oss Salg, der du ser salget mens du jobber. Skrittene havnet i Helse, som bare du ser. Hjelp til kolleger synes ikke i kassen, så den kan de takke for med kudos. Og for tiden etter vakten laget vi sluttrapporten.',
@@ -183,7 +188,7 @@ export const manus: Scene[] = [
     del: 'Prototype og testing',
     tema: 'mork',
     fase: 'prototype',
-    varighet: 166,
+    varighet: 163,
     takter: [
       {
         hvem: 'stille',
@@ -215,7 +220,7 @@ export const manus: Scene[] = [
     del: 'Prototype og testing',
     tema: 'mork',
     fase: 'test',
-    varighet: 60,
+    varighet: 57,
     takter: [
       {
         hvem: 'stille',

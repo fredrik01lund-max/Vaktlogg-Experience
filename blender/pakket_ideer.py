@@ -119,7 +119,7 @@ def skjermmontasje(filer):
 
 def bygg():
     sc = tr.tom_scene()
-    sc.cycles.samples = 64
+    sc.cycles.samples = 128
     sc.render.fps = FPS
     sc.frame_start, sc.frame_end = 1, SLUTT
     sc.render.use_motion_blur = True
