@@ -1,0 +1,34 @@
+node_modules
+dist
+dist-eksamen
+*.zip
+*.log
+
+# Bilder som bare er klarert for eksamen – aldri på nettet (LES-MEG ligger i git som forklaring)
+foto-eksamen/*
+!foto-eksamen/LES-MEG.txt
+
+# Blender: enkeltbilder og prøverender (filmen selv ligger i public/film)
+blender/frames
+blender/test
+blender/*.blend1
+blender/telefon-slutt.png
+blender/frames_apning
+blender/test_apning
+
+blender/frames_pakket
+blender/test_pakket
+blender/frames_hopping
+blender/test_hopping
+blender/__pycache__
+dist-eksamen-trygg
+
+# Alle render- og prøvemapper, også nye (frames_*, test_*)
+blender/frames*
+blender/test*
+tsconfig.tsbuildinfo
+
+blender/frames_maned
+blender/test_maned
+blender/frames_maned_anim
+blender/test_maned_anim

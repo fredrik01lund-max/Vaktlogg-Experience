@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f6f2">
+<title>Vaktlogg – sensors mobil</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px 20px;
+    background: #f3f6f2;
+    color: #1d2a24;
+    font: 18px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { width: 100%; max-width: 360px; }
+  h1 { margin: 0 0 8px; font-size: 26px; line-height: 1.2; font-weight: 650; }
+  p { margin: 0 0 22px; color: #4c5a53; }
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #c9d3cd;
+    border-radius: 12px;
+    background: #fff;
+    color: inherit;
+    font: 600 28px/1.2 ui-monospace, "Cascadia Mono", Menlo, monospace;
+    letter-spacing: 0.12em;
+    text-align: center;
+  }
+  input:focus { outline: none; border-color: #1d2a24; }
+  button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 15px;
+    border: 0;
+    border-radius: 12px;
+    background: #1d2a24;
+    color: #fff;
+    font: 600 18px/1 inherit;
+    font-family: inherit;
+  }
+  .feil { margin: 12px 0 0; color: #a3402f; font-size: 16px; min-height: 1.4em; }
+  [hidden] { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <form id="skjema" hidden>
+    <h1>Koble mobilen til storskjermen</h1>
+    <p>Koden står på startskjermen til presentasjonen på PC-en, under Start-knappen. Den står også i presentatørvisningen (trykk P). Sjekk at koden her er den samme.</p>
+    <input id="kode" name="kode" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Kode" maxlength="12">
+    <button type="submit">Koble til</button>
+    <p class="feil" id="feil" role="alert"></p>
+  </form>
+</main>
+<script>
+  // Sensors mobil: åpner prototypen i sensormodus og sender alt til storskjermen via reléet over internett,
+  // i rommet med koden fra presentatørvisningen (#kode i adressen, ellers den mobilen husker, ellers skjemaet).
+  // ?ny viser skjemaet selv om mobilen husker en kode.
+  var NOKKEL = 'vaktlogg-experience:rom-mobil'
+  var vask = function (k) { return String(k || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12) }
+  var q = new URLSearchParams(location.search)
+  var husket = ''
+  try { husket = vask(localStorage.getItem(NOKKEL)) } catch (e) {}
+  var gaa = function (k) {
+    try { localStorage.setItem(NOKKEL, k) } catch (e) {}
+    location.replace('../demo/vaktlogg.html?sensor&speil=send&rom=' + k)
+  }
+  // Koden i adressen (#kode) brukes rett. Ellers vises skjemaet alltid, med koden mobilen husker ferdig utfylt –
+  // så en gammel kode aldri brukes uten at man ser den.
+  var kode = vask(decodeURIComponent(location.hash.slice(1))) || vask(q.get('rom'))
+  if (kode.length >= 4) gaa(kode)
+  else {
+    var skjema = document.getElementById('skjema')
+    var felt = document.getElementById('kode')
+    skjema.hidden = false
+    felt.value = husket
+    felt.focus()
+    skjema.addEventListener('submit', function (e) {
+      e.preventDefault()
+      var k = vask(felt.value)
+      if (k.length < 4) {
+        document.getElementById('feil').textContent = 'Koden har fem tegn, for eksempel k7qmp.'
+        return
+      }
+      gaa(k)
+    })
+  }
+</script>
+</body>
+</html>

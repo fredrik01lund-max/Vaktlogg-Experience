@@ -1,0 +1,475 @@
+/* ══ Vaktlogg Experience – grunnstil ═════════════════════════════════════════════
+   Mørk, filmatisk base med varmt hvitt. Fargene er Vaktlogg-merkets fersken→rosa,
+   pluss tre datafarger som går igjen hele veien:
+   aktivitet = mint · salg = fersken · anerkjennelse = rosa. */
+
+:root {
+  --svart: #0b0a0a;
+  --svart-2: #141212;
+  --svart-3: #1d1a19;
+  --papir: #f4ede4;
+  --papir-2: #e9dfd2;
+  --dempet: rgba(244, 237, 228, 0.64);
+  --svak: rgba(244, 237, 228, 0.4);
+  --linje: rgba(244, 237, 228, 0.14);
+  --linje-2: rgba(244, 237, 228, 0.24);
+
+  --fersken: #ffc896;
+  --korall: #fdb8b4;
+  --rosa: #f6a2c8;
+  --vin: #94284c;
+  --plomme: #6e2a3c;
+  --mint: #8fd9c0;
+  --gull: #e9c27a;
+
+  --aktivitet: var(--mint);
+  --salg: var(--fersken);
+  --anerkjennelse: var(--rosa);
+  --merke: linear-gradient(135deg, #ffc896 0%, #fdb8b4 55%, #f6a2c8 100%);
+
+  --serif: 'Fraunces Variable', 'Fraunces', Georgia, serif;
+  --sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  --myk: cubic-bezier(0.22, 1, 0.36, 1);
+  --film: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--svart);
+  color: var(--papir);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* ── Scenen: et fast 1920 × 1080-lerret som skaleres til skjermen (svarte kanter ved andre formater) ── */
+.salen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+  cursor: default;
+}
+.salen.skjul-peker {
+  cursor: none;
+}
+.lerret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--papir);
+}
+.scene {
+  position: absolute;
+  inset: 0;
+}
+
+/* Filmkorn og vignett over alt */
+.korn {
+  position: absolute;
+  inset: -6%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.06;
+  will-change: transform;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: korn 0.9s steps(6) infinite;
+}
+@keyframes korn {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+.vignett {
+  position: absolute;
+  inset: 0;
+  z-index: 59;
+  pointer-events: none;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Svart skjerm (B eller .) */
+.blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  background: #000;
+  pointer-events: none;
+  transition: opacity 0.5s var(--film);
+}
+
+/* ── Fellesting i scenene ── */
+.overtittel {
+  font-family: var(--mono);
+  font-size: 22px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--dempet);
+}
+.stor-serif {
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-weight: 340;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+.merket {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--linje-2);
+  font-family: var(--mono);
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  color: var(--dempet);
+  white-space: nowrap;
+}
+.merket::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+}
+.merket.illustrasjon {
+  color: var(--gull);
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+.merket.observert {
+  color: var(--mint);
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+.merket.fiktiv {
+  color: var(--rosa);
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+/* ── Hovedskjermens ramme: Design Thinking-fasene, navnelinjen og fremdriften ── */
+.faser {
+  position: absolute;
+  left: 72px;
+  top: 56px;
+  z-index: 40;
+  display: flex;
+  gap: 26px;
+  font-family: var(--mono);
+  font-size: 18px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--svak);
+  pointer-events: none;
+}
+.faser.hoyre {
+  left: auto;
+  right: 110px;
+}
+.faser span {
+  position: relative;
+  transition: color 0.8s var(--myk);
+}
+.faser span.na {
+  color: var(--papir);
+}
+.faser span.na::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 2px;
+  background: var(--merke);
+  border-radius: 2px;
+}
+.faser .sloyfe {
+  position: absolute;
+  left: 0;
+  top: -26px;
+  overflow: visible;
+}
+
+.navnelinje {
+  position: absolute;
+  right: 72px;
+  bottom: 56px;
+  flex-direction: row-reverse;
+  text-align: right;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  pointer-events: none;
+}
+.navnelinje .strek {
+  width: 4px;
+  height: 58px;
+  border-radius: 4px;
+}
+.navnelinje b {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 420;
+  font-size: 34px;
+  letter-spacing: -0.01em;
+}
+.navnelinje small {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dempet);
+}
+
+.fremdrift {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  z-index: 46;
+  background: var(--merke);
+  opacity: 0.35;
+  transition: width 0.9s var(--myk);
+  pointer-events: none;
+}
+
+/* Før start */
+.venter {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--svak);
+}
+.venter .tittel {
+  font-family: var(--mono);
+  font-size: 20px;
+  letter-spacing: 0.5em;
+  color: var(--dempet);
+}
+.venter p {
+  margin: 22px 0 0;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+}
+.venter kbd,
+.hjelp kbd {
+  display: inline-block;
+  min-width: 30px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--linje-2);
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--papir);
+}
+
+/* Oversikt (O) og hjelp (H) */
+.oversikt,
+.hjelp {
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  background: rgba(8, 7, 7, 0.94);
+  backdrop-filter: blur(10px);
+  padding: 90px 110px;
+}
+.oversikt h2,
+.hjelp h2 {
+  margin: 0 0 40px;
+  font-family: var(--serif);
+  font-weight: 380;
+  font-size: 52px;
+}
+.oversikt ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.oversikt button {
+  width: 100%;
+  min-height: 118px;
+  text-align: left;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--linje);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+}
+.oversikt button:hover,
+.oversikt button.na {
+  border-color: var(--fersken);
+  background: rgba(255, 200, 150, 0.08);
+}
+.oversikt button small {
+  display: block;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--dempet);
+  letter-spacing: 0.08em;
+}
+.oversikt button b {
+  display: block;
+  margin-top: 10px;
+  font-size: 23px;
+  font-weight: 560;
+}
+.hjelp dl {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 18px 30px;
+  font-size: 24px;
+  margin: 0;
+}
+.hjelp dt {
+  text-align: right;
+}
+.hjelp dd {
+  margin: 0;
+  color: var(--dempet);
+}
+.hjelp-mobil {
+  margin: 48px 0 0 330px;
+  font-size: 24px;
+}
+.hjelp-mobil b {
+  color: var(--papir);
+}
+/* Startskjermen: hvor sensors mobil kobler seg til (forsvinner når presentasjonen starter) */
+.venter .venter-mobil {
+  margin: 56px 0 0;
+  font-size: 22px;
+  letter-spacing: 0;
+  color: var(--dempet);
+}
+.venter .venter-mobil b {
+  color: var(--papir);
+  font-weight: 600;
+}
+.venter .venter-mobil .mobil-kode {
+  font-family: var(--mono);
+  font-size: 30px;
+  letter-spacing: 0.1em;
+}
+.venter .venter-mobil.ok {
+  color: var(--mint);
+}
+
+/* ══ Fargetema ════════════════════════════════════════════════════════════════════
+   Hovedtemaet er prototypens: lys bakgrunn (#f3f6f2), hvite kort, mørk grønnsvart tekst og
+   pastellfargene med samme betydning som i appen: Helse/aktivitet = rosa, Salg = oransje,
+   Konkurranse/anerkjennelse = gul, Gjester/laget = grønn, plommefarget blekk.
+   Mørkt brukes bare der det har en hensikt (åpningen – natten og vakten). Hver scene velger
+   tema i manus.ts (tema: 'mork'); standard er lyst. */
+.lerret {
+  --aktivitet: #f6a2c8;
+  --salg: #ffc896;
+  --anerkjennelse: #f0cc5c;
+  --kort: rgba(255, 255, 255, 0.03);
+  --kort-sterk: rgba(20, 18, 18, 0.92);
+  --panel: rgba(11, 10, 10, 0.9);
+  --kort-skygge: none;
+  --merke-tekst: var(--merke);
+  --skygge: rgba(0, 0, 0, 0.55);
+  --kald: #b9c2cf;
+  --rod: #ff9a8a;
+  --foto-tom: radial-gradient(ellipse at 30% 30%, #2a1f1c, #120f0e 70%);
+  --foto-tone: radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(11, 10, 10, 0.55) 100%), linear-gradient(180deg, rgba(11, 10, 10, 0.15), rgba(11, 10, 10, 0.4));
+  --rosa-flate: #f9cadb;
+  --fersken-flate: #ffd9b3;
+  --gronn-flate: #bfe9d3;
+  --gul-flate: #fbe6a2;
+  background: var(--svart);
+  transition: background-color 1.2s var(--film);
+}
+.lerret.tema-lys {
+  --svart: #f3f6f2;
+  --svart-2: #ffffff;
+  --svart-3: #e8ede9;
+  --papir: #17231f;
+  --papir-2: #2b3832;
+  --dempet: rgba(23, 35, 31, 0.7);
+  --svak: rgba(23, 35, 31, 0.48);
+  --linje: rgba(23, 35, 31, 0.12);
+  --linje-2: rgba(23, 35, 31, 0.2);
+  /* Tekststerke varianter av pastellfargene (lesbare på lys bakgrunn) */
+  --fersken: #c0661a;
+  --korall: #d9694c;
+  --rosa: #c2447a;
+  --mint: #2a8a5f;
+  --gull: #94700c;
+  --vin: #94284c;
+  --plomme: #6e2a3c;
+  --aktivitet: #c2447a;
+  --salg: #c0661a;
+  --anerkjennelse: #94700c;
+  --kort: #ffffff;
+  --kort-sterk: #ffffff;
+  --panel: rgba(255, 255, 255, 0.94);
+  --kort-skygge: 0 1px 2px rgba(23, 35, 31, 0.05), 0 16px 36px -20px rgba(23, 35, 31, 0.3);
+  --merke-tekst: linear-gradient(120deg, #ec8a3e 0%, #e2658f 55%, #a83c66 100%);
+  --skygge: rgba(80, 50, 40, 0.22);
+  --kald: #5e6f80;
+  --rod: #cf4f3f;
+  --foto-tom: radial-gradient(ellipse at 30% 30%, #fff4ea, #ebe4dc 75%);
+  --foto-tone: radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(23, 35, 31, 0.22) 100%);
+}
+.lerret.tema-lys .vignett {
+  opacity: 0;
+}
+.lerret.tema-lys .korn {
+  opacity: 0.035;
+}
+.vignett {
+  transition: opacity 1.2s var(--film);
+}
+.oversikt h2.oversikt-arkiv {
+  margin: 44px 0 24px;
+  font-size: 30px;
+  color: var(--dempet);
+}
+.oversikt ol.oversikt-arkiv button {
+  min-height: 92px;
+  border-style: dashed;
+}
+.oversikt ol.oversikt-arkiv button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.oversikt {
+  overflow-y: auto;
+}

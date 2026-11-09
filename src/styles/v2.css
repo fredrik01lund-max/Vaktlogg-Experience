@@ -1,0 +1,1317 @@
+/* ══ Manus v2 (8.11): diamanten og de nye scenene ═══════════════════════════════════ */
+
+/* ── Diamant-ikonet øverst til høyre (ui/Diamant.tsx): bildene har gjennomsiktig bakgrunn ── */
+.diamant-ikon {
+  position: absolute;
+  right: 80px;
+  top: 48px;
+  width: 340px;
+  height: 143px;
+  z-index: 40;
+  pointer-events: none;
+}
+.diamant-ikon img,
+.diamant-ikon video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.diamant-navn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 146px;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #f08fb0;
+}
+
+/* ── Plassholder (steg 3) ── */
+.v2.plassholder {
+  display: grid;
+  place-items: center;
+  color: rgba(244, 237, 228, 0.35);
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+}
+
+/* ── 4. Ny problemstilling: flipptavla og bongen under ── */
+.ps-midt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 300px;
+}
+.ps-skriver {
+  margin-top: 34px;
+  width: 900px;
+}
+.ps-skriver span {
+  display: block;
+  height: 16px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #0b0a09, #2a2725 60%, #3a3633);
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.08), inset 0 3px 6px rgba(0, 0, 0, 0.8);
+}
+.ps-utskrift {
+  margin-top: -6px;
+  width: 860px;
+  height: 360px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.ps-bong {
+  width: 820px;
+  height: max-content;
+  padding: 52px 48px 64px;
+  font-family: var(--bong);
+  font-size: 54px;
+  line-height: 1.35;
+  text-align: center;
+  font-weight: 700;
+}
+.ps-bong p {
+  margin: 0;
+}
+
+/* ── Presentatørvisningen: hvor diamanten står ── */
+.pv-diamant {
+  width: 120px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 12px;
+  vertical-align: middle;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* ── 1. Problemområdet: linjen og tallet under flipptavla ── */
+.pr-linje {
+  margin-top: 80px;
+  font-size: 60px;
+  font-style: italic;
+  color: rgba(244, 237, 228, 0.92);
+}
+.pr-tall {
+  margin-top: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.pr-tall b {
+  font-family: var(--serif);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 1;
+  color: #f08fb0;
+}
+.pr-tall span {
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  color: rgba(244, 237, 228, 0.55);
+  letter-spacing: 0.04em;
+}
+.pr-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── 2. Innsiktsarbeidet: én bong per intervju på skinna, og to fotografier under ── */
+.in-skinne {
+  top: 250px;
+  left: 90px;
+  right: 300px;
+  transform-origin: 0 50%;
+}
+.in-bonger {
+  position: absolute;
+  left: 110px;
+  top: 258px;
+  display: flex;
+  gap: 10px;
+}
+.in-bong {
+  position: relative;
+  width: 108px;
+  height: 178px;
+  padding: 30px 3px 0;
+  background-color: #f7f2ea;
+  color: #1b1816;
+  font-family: var(--bong);
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-align: center;
+  transform-origin: 50% 0;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.55);
+  background-image: linear-gradient(0deg, var(--rolle) 0 46px, transparent 46px);
+  clip-path: polygon(0 0, 100% 0, 100% 95%, 88% 100%, 75% 95%, 62% 100%, 50% 95%, 38% 100%, 25% 95%, 12% 100%, 0 95%);
+}
+.in-bong b {
+  display: block;
+  font-weight: 700;
+  word-break: break-word;
+}
+.in-bong.egen {
+  margin-left: 34px;
+  width: 132px;
+  background-color: #2a2522;
+  color: #f4ede4;
+}
+.in-klype {
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 26px;
+  height: 14px;
+  margin-left: -13px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #9a948d, #4a4642);
+}
+.in-bong.nytt-sted {
+  margin-left: 34px;
+}
+.in-bilde {
+  position: absolute;
+  background: #f4efe6;
+  padding: 12px 12px 54px;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6);
+}
+.in-bilde .foto {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+/* Fem bilder i en løs bunke under knaggen (9.11): liggende, stående, liggende, liggende, stående */
+.in-b1 {
+  left: 110px;
+  top: 560px;
+  width: 440px;
+  height: 330px;
+}
+.in-b2 {
+  left: 500px;
+  top: 500px;
+  width: 320px;
+  height: 450px;
+}
+.in-b3 {
+  left: 780px;
+  top: 580px;
+  width: 420px;
+  height: 370px;
+}
+.in-b4 {
+  left: 1150px;
+  top: 520px;
+  width: 440px;
+  height: 330px;
+}
+.in-b5 {
+  left: 1530px;
+  top: 560px;
+  width: 300px;
+  height: 420px;
+}
+.in-merke {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--bong);
+  font-size: 22px;
+  font-weight: 700;
+  color: #2a8a5f;
+}
+.in-merke svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* ── 3. Nøkkelfunn: filmene i fullskjerm, telleren og sitatet ── */
+.fu-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fu-teller {
+  position: absolute;
+  right: 96px;
+  bottom: 100px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: baseline;
+  column-gap: 24px;
+  row-gap: 14px;
+  width: 760px;
+}
+.fu-teller em {
+  order: -1;
+  flex-basis: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.fu-teller b {
+  font-family: var(--serif);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 1;
+  color: #f08fb0;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 40px rgba(240, 143, 176, 0.35);
+}
+.fu-teller span {
+  font-family: var(--sans);
+  font-size: var(--t-ingress);
+  color: rgba(244, 237, 228, 0.85);
+}
+.fu-teller em {
+  font-style: normal;
+}
+.fu-teller em.merket {
+  flex-basis: auto;
+  margin-left: auto;
+}
+.fu-sitat {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 260px;
+}
+.fu-sitat blockquote {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 76px;
+  line-height: 1.25;
+  color: #f4ede4;
+}
+.fu-sitat blockquote span {
+  display: inline-block;
+  white-space: pre;
+}
+.fu-sitat p {
+  margin: 48px 0 0;
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  letter-spacing: 0.06em;
+  color: rgba(244, 237, 228, 0.5);
+}
+.fu-illustrasjon {
+  position: absolute;
+  left: 96px;
+  bottom: 96px;
+}
+/* Tre merker øverst til venstre: hvilket av de tre funnene vi er på (fotspor, kassalapp, snakkeboble) */
+.fu-prikker {
+  position: absolute;
+  left: 96px;
+  top: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 5;
+}
+.fu-prikker span {
+  --f: #f08fb0;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--f);
+  background: rgba(14, 12, 11, 0.62);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.fu-prikker span.m-salg {
+  --f: #ffc48e;
+}
+.fu-prikker span.m-sitat {
+  --f: #f0cc5c;
+}
+.fu-prikker svg {
+  width: 36px;
+  height: 36px;
+  opacity: 0.55;
+}
+.fu-prikker .merke-tegn {
+  fill: none;
+  stroke: var(--f);
+}
+.fu-prikker .merke-tegn.fylt {
+  fill: var(--f);
+  stroke: none;
+}
+.fu-prikker span.ferdig svg {
+  opacity: 0.85;
+}
+.fu-prikker span.na {
+  background: var(--f);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--f) 65%, transparent), 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.fu-prikker span.na svg {
+  opacity: 1;
+}
+.fu-prikker span.na .merke-tegn {
+  fill: #f7f2ea;
+  stroke: #1b1816;
+}
+.fu-prikker span.na .merke-tegn.fylt {
+  fill: #1b1816;
+}
+.fu-boble {
+  position: absolute;
+  max-width: 820px;
+  padding: 34px 42px;
+  border-radius: 34px;
+  background: #f7f2ea;
+  color: #1b1816;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 48px;
+  line-height: 1.28;
+  transform-origin: 0 100%;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+}
+.fu-boble::after {
+  content: '';
+  position: absolute;
+  left: -26px;
+  bottom: 38px;
+  border-style: solid;
+  border-width: 18px 30px 18px 0;
+  border-color: transparent #f7f2ea transparent transparent;
+}
+.fu-kilde {
+  position: absolute;
+  left: 96px;
+  bottom: 70px;
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* ── 5. Brukerreisen: filmene, fasene nederst, følelseskurven og tekstene ── */
+.re-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.re-skygge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 360px;
+  background: linear-gradient(0deg, rgba(8, 7, 7, 0.88), rgba(8, 7, 7, 0.55) 55%, transparent);
+  pointer-events: none;
+}
+.re-intro {
+  position: absolute;
+  left: 96px;
+  top: 72px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  color: #f4ede4;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+}
+.re-tekst {
+  position: absolute;
+  left: 96px;
+  top: 72px;
+  padding: 14px 24px;
+  border-radius: 14px;
+  background: rgba(14, 12, 11, 0.72);
+  font-family: var(--sans);
+  font-size: var(--t-ingress);
+  color: #f4ede4;
+  backdrop-filter: blur(6px);
+}
+.re-tekst b {
+  font-family: var(--serif);
+  font-weight: 600;
+  margin-right: 10px;
+  color: #f6c98a;
+}
+.re-tekst.sitat {
+  font-family: var(--serif);
+  font-style: italic;
+  background: rgba(247, 242, 234, 0.92);
+  color: #1b1816;
+}
+.re-sporsmal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 380px;
+  margin: 0;
+  text-align: center;
+  font-size: var(--t-h1);
+  color: #f4ede4;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
+}
+.re-kurve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.re-grunn {
+  stroke: rgba(244, 237, 228, 0.35);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 6;
+}
+.re-flate-godt {
+  fill: rgba(124, 201, 161, 0.22);
+}
+.re-flate-tungt {
+  fill: rgba(255, 74, 46, 0.2);
+}
+.re-linje-godt,
+.re-linje-tungt {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.re-linje-godt {
+  stroke: #7cc9a1;
+}
+.re-linje-tungt {
+  stroke: #ff6a4e;
+}
+.re-merke-godt {
+  fill: #7cc9a1;
+  stroke: #0e0c0b;
+  stroke-width: 3;
+}
+.re-merke-tungt {
+  fill: #ff6a4e;
+  stroke: #0e0c0b;
+  stroke-width: 3;
+}
+.re-merke-tegn {
+  stroke: #0e0c0b;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.re-prikk-godt {
+  fill: #ffffff;
+  stroke: #7cc9a1;
+  stroke-width: 4;
+}
+.re-prikk-tungt {
+  fill: #ffffff;
+  stroke: #ff6a4e;
+  stroke-width: 4;
+}
+.re-faser {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 70px;
+  height: 64px;
+}
+.re-fase {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 1.5px solid rgba(244, 237, 228, 0.25);
+  display: flex;
+  align-items: center;
+  padding-left: 18px;
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  letter-spacing: 0.06em;
+  color: rgba(244, 237, 228, 0.45);
+  transition: color 0.5s, background 0.5s;
+}
+.re-fase.na {
+  color: #f4ede4;
+  font-weight: 650;
+  background: linear-gradient(0deg, rgba(244, 237, 228, 0.1), transparent);
+}
+
+/* Snakkeboblene: står over hodet til den som snakker, med halen ned mot hodet */
+.re-boble {
+  position: absolute;
+  transform: translate(-28%, calc(-100% - 26px));
+  transform-origin: 28% 100%;
+  max-width: 560px;
+  width: max-content;
+  padding: 18px 26px;
+  border-radius: 24px;
+  background: #f7f2ea;
+  color: #1b1816;
+  font-family: var(--serif);
+  font-size: 36px;
+  line-height: 1.25;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+}
+.re-boble::after {
+  content: '';
+  position: absolute;
+  left: 28%;
+  bottom: -20px;
+  border-style: solid;
+  border-width: 22px 14px 0 14px;
+  border-color: #f7f2ea transparent transparent transparent;
+}
+.re-boble.gjest {
+  font-style: italic;
+  background: #fff4d6;
+}
+.re-boble.gjest::after {
+  border-color: #fff4d6 transparent transparent transparent;
+}
+
+/* ── 6. Ideate: stillbildet med ringene, kildefilmen med etikettene, og helsedataen ── */
+.id-bilde,
+.id-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.id-tegning {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.id-ring {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.5));
+}
+.id-ring.salg {
+  stroke: #ffc48e;
+}
+.id-ring.skritt {
+  stroke: #f08fb0;
+}
+.id-strek {
+  stroke: #f4ede4;
+  stroke-width: 4;
+  stroke-dasharray: 10 12;
+  stroke-linecap: round;
+}
+.id-merke {
+  stroke: #0e0c0b;
+  stroke-width: 4;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5));
+}
+.id-merke.salg {
+  fill: #ffc48e;
+}
+.id-merke.skritt {
+  fill: #f08fb0;
+}
+.merke-tegn {
+  fill: #f7f2ea;
+  stroke: #1b1816;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.merke-tegn.fylt {
+  fill: #1b1816;
+  stroke: none;
+}
+.id-brudd {
+  fill: #ff6a4e;
+  stroke: #0e0c0b;
+  stroke-width: 4;
+}
+.id-kryss {
+  stroke: #0e0c0b;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+/* Plassen sentrerer etiketten over tingen (eller til venstre for den, .side); etiketten inni animeres av motion */
+.id-etikett-plass {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+}
+.id-etikett-plass.side {
+  transform: translate(-100%, -50%);
+}
+.id-etikett {
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(27, 24, 22, 0.86);
+  color: #f7f2ea;
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.id-etikett.telefon {
+  background: #94284c;
+}
+.id-helse {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 70% 50%, #2a1d22, #0b0a0a 60%);
+}
+.id-helse-tekst {
+  position: absolute;
+  left: 160px;
+  top: 380px;
+  width: 760px;
+}
+.id-helse-tekst p {
+  margin: 0;
+  font-size: var(--t-h1);
+  color: #f4ede4;
+}
+.id-hvem {
+  display: flex;
+  gap: 44px;
+  margin-top: 56px;
+}
+.id-hvem span {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.id-hvem .ja {
+  background: #f9cadb;
+}
+.id-hvem .nei {
+  background: #3a3633;
+}
+.id-hvem svg {
+  width: 60px;
+  height: 60px;
+  fill: none;
+  stroke: #1b1816;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+.id-hvem .nei svg {
+  stroke: #b8b0a6;
+}
+.id-hvem .merke {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border-radius: 50%;
+  stroke-width: 3;
+}
+.id-hvem .ja .merke {
+  background: #7cc9a1;
+  stroke: #0e2b1f;
+}
+.id-hvem .nei .merke {
+  background: #ff6a4e;
+  stroke: #2b0e09;
+}
+.id-telefon {
+  position: absolute;
+  left: 1100px;
+  top: 250px;
+  width: 350px;
+  padding: 14px;
+  border-radius: 56px;
+  background: #e8e1da;
+  box-shadow: 0 50px 120px rgba(0, 0, 0, 0.6), 0 0 120px rgba(240, 143, 176, 0.25);
+}
+.id-telefon img {
+  display: block;
+  width: 100%;
+  border-radius: 44px;
+}
+.id-las {
+  position: absolute;
+  right: -30px;
+  top: 90px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: #94284c;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+.id-las svg {
+  width: 46px;
+  height: 46px;
+  fill: none;
+  stroke: #f7f2ea;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+/* ── 7. Papirskissen før telefonfilmen ── */
+.sk {
+  background: radial-gradient(circle at 50% 45%, #2a2320, #0b0a0a 70%);
+}
+.sk-ark {
+  position: absolute;
+  left: 760px;
+  top: 200px;
+  width: 400px;
+  height: 740px;
+  padding: 30px;
+  background: #f7f2ea;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+}
+.sk-ark .foto {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.sk-strek {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #3a3530;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sk-merke {
+  position: absolute;
+  left: 30px;
+  bottom: -54px;
+}
+.sk-pil {
+  position: absolute;
+  left: 860px;
+  top: 470px;
+  width: 220px;
+  fill: none;
+  stroke: #f08fb0;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.sk-telefon {
+  position: absolute;
+  left: 1130px;
+  top: 250px;
+  width: 350px;
+  padding: 14px;
+  border-radius: 56px;
+  background: #e8e1da;
+  box-shadow: 0 50px 120px rgba(0, 0, 0, 0.6);
+}
+.sk-telefon img {
+  display: block;
+  width: 100%;
+  border-radius: 44px;
+}
+
+/* ── 8. Test og iterasjon: lenken, e-posten og Sir Domeo, hoppefilmen ── */
+.te {
+  background: radial-gradient(circle at 50% 30%, #241d1b, #0b0a0a 70%);
+}
+.te-linjer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.te-linjer line {
+  stroke: rgba(240, 143, 176, 0.55);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 10;
+}
+.te-lenke {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: max-content;
+  top: 200px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 36px;
+  border-radius: 999px;
+  background: #f7f2ea;
+  color: #1b1816;
+  font-family: var(--sans);
+  font-size: var(--t-ingress);
+  font-weight: 600;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 8px rgba(240, 143, 176, 0.25);
+}
+.te-lenke svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: #94284c;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.te-telefon {
+  position: absolute;
+  width: 116px;
+  padding: 5px;
+  border-radius: 20px;
+  background: #e8e1da;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+.te-telefon img {
+  display: block;
+  width: 100%;
+  border-radius: 16px;
+}
+.te-epost {
+  position: absolute;
+  inset: 0;
+}
+.te-brev {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 26px 36px 34px;
+  border-radius: 18px;
+  background: #f7f2ea;
+  color: #1b1816;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55);
+}
+.te-brev-topp {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 22px;
+  margin-bottom: 26px;
+  border-bottom: 2px solid #e2d9cd;
+}
+.te-brev-topp svg {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: #94284c;
+  stroke-width: 2;
+}
+.te-brev-topp i {
+  height: 14px;
+  width: 220px;
+  border-radius: 7px;
+  background: #d9cfc3;
+}
+.te-brev-topp i.kort {
+  width: 120px;
+}
+.te-brev p {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1em;
+  line-height: 1.3;
+}
+.te-brev-topp {
+  padding-bottom: 16px !important;
+  margin-bottom: 18px !important;
+}
+/* Den som ble Sir Domeo: rosa kant når de andre er borte */
+.te-brev.valgt {
+  transition: box-shadow 0.6s var(--film);
+}
+.te-epost.takt-2 .te-brev.valgt,
+.te-epost.takt-3 .te-brev.valgt {
+  box-shadow: 0 0 0 6px rgba(240, 143, 176, 0.55), 0 30px 60px -20px rgba(60, 40, 30, 0.45);
+}
+.te-pil {
+  position: absolute;
+  left: 930px;
+  top: 500px;
+  width: 160px;
+  fill: none;
+  stroke: #f08fb0;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.te-domeo {
+  position: absolute;
+  left: 1140px;
+  top: 250px;
+  width: 360px;
+  padding: 14px;
+  border-radius: 56px;
+  background: #e8e1da;
+  box-shadow: 0 50px 120px rgba(0, 0, 0, 0.6);
+}
+.te-domeo img {
+  display: block;
+  width: 100%;
+  border-radius: 44px;
+}
+.te-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.te-ring {
+  position: absolute;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 32px;
+  border-radius: 999px;
+  background: rgba(14, 12, 11, 0.8);
+  color: #f4ede4;
+  font-family: var(--sans);
+  font-size: var(--t-ingress);
+  white-space: nowrap;
+}
+.te-ring i {
+  font-style: normal;
+  color: #f08fb0;
+}
+.te-ring svg {
+  width: 54px;
+  height: 36px;
+  fill: none;
+  stroke: #f08fb0;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* ── 9. Veien videre: piloten, flipptavla og sluttbongen med QR-kode ── */
+.vi-pilot {
+  position: absolute;
+  inset: 0;
+}
+.vi-kilder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Restauranten står rett over kassa (sluttbildet fra kildefilmen: kassa x 15–430, toppen ved y 315) */
+.vi-restaurant {
+  position: absolute;
+  left: 44px;
+  top: 34px;
+  width: 404px;
+  padding: 10px;
+  background: #f4efe6;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+.vi-restaurant img {
+  display: block;
+  width: 100%;
+}
+.vi-kobling {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.vi-kobling path {
+  fill: none;
+  stroke: #94284c;
+  stroke-width: 5;
+  stroke-dasharray: 2 12;
+  stroke-linecap: round;
+}
+.vi-bongrad {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: 760px;
+  height: 200px;
+  transform: translateX(-50%);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.vi-bong {
+  width: 700px;
+  height: max-content;
+  padding: 34px 40px 46px;
+  font-family: var(--bong);
+  font-size: 48px;
+  font-weight: 700;
+  text-align: center;
+}
+.vi-bong p {
+  margin: 0;
+}
+.vi-slutt {
+  background: #0b0a0a;
+}
+.vi-utskrift {
+  margin-top: -40px;
+  width: 520px;
+  height: 520px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.vi-sluttbong {
+  width: 440px;
+  height: max-content;
+  padding: 36px 40px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  font-family: var(--bong);
+}
+.vi-sluttbong b {
+  font-size: 46px;
+  letter-spacing: 0.08em;
+}
+.vi-sluttbong img {
+  width: 300px;
+  height: 300px;
+}
+
+/* ══ Studioet (9.11): lys, varm bakgrunn på sidene som ikke er film ═════════════════════
+   Samme rosa/fersken-studio som kilde- og pilotfilmen, tonet etter fasen i diamanten:
+   mint = første diamant (Empathize/Define), fersken = andre (Ideate/Prototype), rosa = Test og slutt.
+   Et mykt lys ovenfra og et «gulv» nederst gir dybde – ingen bokeh, korn eller vignett. */
+.studio {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 38%, var(--st-lys), transparent 75%),
+    linear-gradient(180deg, var(--st-topp) 0%, var(--st-midt) 62%, var(--st-gulv) 100%);
+}
+.studio-noytral { --st-lys: #fffaf4; --st-topp: #f3ece4; --st-midt: #ece2d8; --st-gulv: #dccbbd; }
+.studio-mint    { --st-lys: #fbfaf4; --st-topp: #e8efe8; --st-midt: #dbe8df; --st-gulv: #c3d8cb; }
+.studio-fersken { --st-lys: #fff6ee; --st-topp: #f8e8dc; --st-midt: #f6dccb; --st-gulv: #ebc4ad; }
+.studio-rosa    { --st-lys: #fff4f1; --st-topp: #f9e3dc; --st-midt: #fbd9d6; --st-gulv: #efbfc3; }
+/* Scenene som hadde egen mørk bakgrunn */
+.lerret .sk,
+.lerret .te,
+.lerret .id-helse,
+.lerret .vi-slutt {
+  background: none;
+}
+
+/* Fasenavnet under ikonet: mørkere rosa på lys bakgrunn */
+.diamant-navn {
+  transition: color 0.9s var(--film);
+}
+.studio-paa .diamant-navn {
+  color: #b83a6c;
+}
+.studio-paa .fremdrift {
+  background: rgba(23, 35, 31, 0.25);
+}
+
+/* Tekst og skygger på lys bakgrunn: varme, myke skygger i stedet for svarte */
+.lerret .pr-linje {
+  transition: color 0.9s var(--film);
+}
+.studio-paa .pr-linje {
+  color: #2b1f1c;
+}
+.studio-paa .flipp-celle {
+  box-shadow: 0 18px 30px -8px rgba(70, 40, 30, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.studio-paa .in-bong {
+  box-shadow: 0 18px 30px -10px rgba(60, 45, 35, 0.4);
+}
+.studio-paa .in-bilde,
+.studio-paa .sk-ark {
+  box-shadow: 0 30px 60px -18px rgba(60, 40, 30, 0.45), 0 2px 6px rgba(60, 40, 30, 0.12);
+}
+.studio-paa .in-bong:not(.egen) {
+  background-color: #fffdf9;
+}
+.studio-paa .ps-skriver span {
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.6), inset 0 3px 6px rgba(0, 0, 0, 0.8);
+}
+.studio-paa .ps-bong,
+.studio-paa .vi-sluttbong {
+  background-color: #fffdf9;
+  box-shadow: 0 24px 40px -18px rgba(60, 40, 30, 0.4);
+}
+.studio-paa .id-helse-tekst p {
+  color: #2b1f1c;
+}
+.studio-paa .id-hvem .ja,
+.studio-paa .id-hvem .nei {
+  box-shadow: 0 14px 26px -12px rgba(60, 40, 30, 0.45);
+}
+.studio-paa .te-brev {
+  background: #fffdf9;
+  box-shadow: 0 30px 60px -20px rgba(60, 40, 30, 0.45);
+}
+.studio-paa .te-linjer line {
+  stroke: rgba(184, 58, 108, 0.45);
+}
+.studio-paa .te-lenke {
+  background: #fffdf9;
+  box-shadow: 0 16px 34px -14px rgba(60, 40, 30, 0.45), 0 0 0 8px rgba(240, 143, 176, 0.22);
+}
+.studio-paa .te-telefon {
+  box-shadow: 0 18px 30px -14px rgba(60, 40, 30, 0.5);
+}
+.studio-paa .sk-pil path,
+.studio-paa .te-pil path {
+  stroke: #b83a6c;
+}
+.studio-paa .te-domeo,
+.studio-paa .sk-telefon,
+.studio-paa .id-telefon {
+  box-shadow: 0 40px 70px -24px rgba(60, 40, 30, 0.5), 0 2px 8px rgba(60, 40, 30, 0.12);
+}
+/* Ikonet er rendret for mørk bakgrunn: litt lysere og med en myk skygge, så buen og de mørke flatene står tydelig */
+.diamant-ikon img,
+.diamant-ikon video {
+  transition: filter 0.9s var(--film);
+}
+.studio-paa .diamant-ikon img,
+.studio-paa .diamant-ikon video {
+  filter: brightness(1.1) saturate(1.06) drop-shadow(0 3px 5px rgba(110, 42, 60, 0.35));
+}
+
+/* Takt 3: månedsoppsummeringen (Blender-loop med gjennomsiktig bakgrunn) ved siden av forslaget */
+.te-maned {
+  position: absolute;
+  left: 1130px;
+  top: 190px;
+  width: 500px;
+}
+.te-maned video {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 30px 40px rgba(110, 50, 60, 0.28));
+}
+.te-maned-navn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: -6px;
+}
+.te-maned-navn b {
+  font-family: var(--sans);
+  font-size: var(--t-merke);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  color: #6e2a3c;
+}
+.te-maned-navn {
+  margin-top: -64px;
+}
+.studio-paa .merket.illustrasjon {
+  color: #8a6410;
+}
+.te-maned-navn .merket {
+  color: #7a5508 !important;
+  background: rgba(255, 253, 249, 0.75);
+  border-color: rgba(122, 85, 8, 0.35);
+}
+/* Takt 1: skjemaet «Gi tilbakemelding» til høyre for innboksen */
+.te-domeo.te-skjema {
+  left: 1480px;
+  top: 262px;
+  width: 340px;
+  padding: 12px;
+  border-radius: 52px;
+}
+.te-domeo.te-skjema img {
+  border-radius: 42px;
+}
+.te-pil.te-pil-skjema {
+  left: 1350px;
+  top: 560px;
+  width: 120px;
+}
+
+/* Innsikt (9.11): skiltet på knaggen og «INTERVJU» på bongene */
+.in-knagg-navn {
+  position: absolute;
+  left: 90px;
+  top: 198px;
+  padding: 8px 18px 7px;
+  border-radius: 6px;
+  background: #2a2725;
+  color: #f7f2ea;
+  font-family: var(--bong);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  box-shadow: 0 8px 18px -8px rgba(40, 30, 25, 0.5);
+}
+.in-knagg-navn::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  width: 4px;
+  height: 14px;
+  margin-left: -2px;
+  background: #4a4642;
+}
+.in-bong small {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #8a7f75;
+}
+/* «INTERVJU» er overskriften på bongen (som «BORD 12» på en bestilling), rollen står under */
+.in-bong small {
+  margin: -8px 4px 8px;
+  padding-bottom: 7px;
+  border-bottom: 1.5px dashed #b9aea3;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: #1b1816;
+}
+.in-bong:not(.egen) b {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5a514b;
+}

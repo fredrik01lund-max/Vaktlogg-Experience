@@ -1,0 +1,38 @@
+{
+  "fps": 30,
+  "varighet": 10.5,
+  "skifter": [
+    3.3,
+    6.3,
+    7.7
+  ],
+  "etiketterStart": {
+    "kasse": [
+      0.1464,
+      0.2682
+    ],
+    "klokke": [
+      0.8543,
+      0.1805
+    ],
+    "telefon": [
+      0.5,
+      0.2281
+    ]
+  },
+  "etiketter": {
+    "kasse": [
+      0.1138,
+      0.2457
+    ],
+    "klokke": [
+      0.8874,
+      0.1484
+    ],
+    "telefon": [
+      0.5,
+      0.2031
+    ]
+  },
+  "film": "film/kilder.mp4"
+}

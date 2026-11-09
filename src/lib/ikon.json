@@ -1,0 +1,51 @@
+{
+  "fps": 30,
+  "steg": 1.6,
+  "stopp": {
+    "start": "film/ikon-start.png",
+    "empathize": "film/ikon-empathize.png",
+    "define": "film/ikon-define.png",
+    "ideate": "film/ikon-ideate.png",
+    "prototype": "film/ikon-prototype.png",
+    "test": "film/ikon-test.png",
+    "helhet": "film/ikon-helhet.png"
+  },
+  "overganger": [
+    {
+      "id": "T1",
+      "fra": "start",
+      "til": "empathize",
+      "film": "film/ikon-1.webm"
+    },
+    {
+      "id": "T2",
+      "fra": "empathize",
+      "til": "define",
+      "film": "film/ikon-2.webm"
+    },
+    {
+      "id": "T3",
+      "fra": "define",
+      "til": "ideate",
+      "film": "film/ikon-3.webm"
+    },
+    {
+      "id": "T4",
+      "fra": "ideate",
+      "til": "prototype",
+      "film": "film/ikon-4.webm"
+    },
+    {
+      "id": "T5",
+      "fra": "prototype",
+      "til": "test",
+      "film": "film/ikon-5.webm"
+    },
+    {
+      "id": "T6",
+      "fra": "test",
+      "til": "helhet",
+      "film": "film/ikon-6.webm"
+    }
+  ]
+}

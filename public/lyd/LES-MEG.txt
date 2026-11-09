@@ -1,0 +1,3 @@
+Valgfri restaurantlyd til åpningen (f.eks. restaurant.mp3).
+Skriv filnavnet i oppsett.js: lyd: { apning: 'lyd/restaurant.mp3', volum: 0.35 }
+Bruk bare lyd dere har rett til å spille. Presentasjonen virker like godt uten.

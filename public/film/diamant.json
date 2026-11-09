@@ -1,0 +1,78 @@
+{
+  "fps": 30,
+  "varighet": 29.0,
+  "segmenter": [
+    {
+      "id": "T0",
+      "fra": null,
+      "til": "start",
+      "start": 0.0,
+      "slutt": 4.0,
+      "lengde": 4.0,
+      "film": "film/diamant-0.mp4"
+    },
+    {
+      "id": "T1",
+      "fra": "start",
+      "til": "empathize",
+      "start": 4.0,
+      "slutt": 8.0,
+      "lengde": 4.0,
+      "film": "film/diamant-1.mp4"
+    },
+    {
+      "id": "T2",
+      "fra": "empathize",
+      "til": "define",
+      "start": 8.0,
+      "slutt": 12.0,
+      "lengde": 4.0,
+      "film": "film/diamant-2.mp4"
+    },
+    {
+      "id": "T3",
+      "fra": "define",
+      "til": "ideate",
+      "start": 12.0,
+      "slutt": 16.0,
+      "lengde": 4.0,
+      "film": "film/diamant-3.mp4"
+    },
+    {
+      "id": "T4",
+      "fra": "ideate",
+      "til": "prototype",
+      "start": 16.0,
+      "slutt": 20.0,
+      "lengde": 4.0,
+      "film": "film/diamant-4.mp4"
+    },
+    {
+      "id": "T5",
+      "fra": "prototype",
+      "til": "test",
+      "start": 20.0,
+      "slutt": 24.5,
+      "lengde": 4.5,
+      "film": "film/diamant-5.mp4"
+    },
+    {
+      "id": "T6",
+      "fra": "test",
+      "til": "helhet",
+      "start": 24.5,
+      "slutt": 29.0,
+      "lengde": 4.5,
+      "film": "film/diamant-6.mp4"
+    }
+  ],
+  "stopp": {
+    "start": "film/diamant-start.png",
+    "empathize": "film/diamant-empathize.png",
+    "define": "film/diamant-define.png",
+    "ideate": "film/diamant-ideate.png",
+    "prototype": "film/diamant-prototype.png",
+    "test": "film/diamant-test.png",
+    "helhet": "film/diamant-helhet.png"
+  }
+}

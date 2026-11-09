@@ -1,0 +1,95 @@
+{
+  "fps": 30,
+  "varighet": 12.0,
+  "nedslag": [
+    {
+      "bane": "innsikt",
+      "dato": null,
+      "tid": 1.3
+    },
+    {
+      "bane": "prototype",
+      "dato": "TIDLIG",
+      "tid": 2.3
+    },
+    {
+      "bane": "innsikt",
+      "dato": null,
+      "tid": 3.2
+    },
+    {
+      "bane": "prototype",
+      "dato": "22.10",
+      "tid": 4.02
+    },
+    {
+      "bane": "innsikt",
+      "dato": null,
+      "tid": 4.78
+    },
+    {
+      "bane": "prototype",
+      "dato": "27.10",
+      "tid": 5.48
+    },
+    {
+      "bane": "innsikt",
+      "dato": null,
+      "tid": 6.14
+    },
+    {
+      "bane": "prototype",
+      "dato": "28.10",
+      "tid": 6.76
+    },
+    {
+      "bane": "innsikt",
+      "dato": null,
+      "tid": 7.36
+    },
+    {
+      "bane": "prototype",
+      "dato": "30.10",
+      "tid": 7.92
+    }
+  ],
+  "bonger": [
+    {
+      "navn": "Bong 1",
+      "x": 0.1798,
+      "y": 0.3525
+    },
+    {
+      "navn": "Bong 3",
+      "x": 0.3478,
+      "y": 0.3525
+    },
+    {
+      "navn": "Bong 5",
+      "x": 0.5157,
+      "y": 0.3525
+    },
+    {
+      "navn": "Bong 7",
+      "x": 0.6837,
+      "y": 0.3525
+    },
+    {
+      "navn": "Bong 9",
+      "x": 0.8517,
+      "y": 0.3525
+    }
+  ],
+  "baner": [
+    {
+      "navn": "Banemerke 1 innsikt",
+      "x": 0.891,
+      "y": 0.191
+    },
+    {
+      "navn": "Banemerke 2 prototype",
+      "x": 0.8919,
+      "y": 0.3462
+    }
+  ]
+}
