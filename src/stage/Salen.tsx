@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ComponentType } from 'react'
 import { brukSpilltaster } from '../lib/spill.ts'
+import { tallTast } from '../lib/hurtigtast.ts'
 import { AnimatePresence, motion } from 'motion/react'
 import { lagtTilSide } from '../content/arkiv.ts'
 import { manus } from '../content/manus.ts'
@@ -137,7 +138,12 @@ export function Salen() {
         else if (k === 'Escape' || k === 'F5' || k === 'o' || k === 'O') setArkiv(null)
         return
       }
-      if (['ArrowRight', 'PageDown', ' ', 'Enter', 'ArrowDown'].includes(k)) {
+      if (tallTast(k)) {
+        // Talltast: rett til den delen (5 = del 5)
+        e.preventDefault()
+        setOversikt(false)
+        setHjelp(false)
+      } else if (['ArrowRight', 'PageDown', ' ', 'Enter', 'ArrowDown'].includes(k)) {
         e.preventDefault()
         if (oversikt || hjelp) return
         neste()
@@ -382,6 +388,8 @@ export function Salen() {
           <div className="hjelp" onClick={() => setHjelp(false)}>
             <h2>Taster</h2>
             <dl>
+              <dt><kbd>1</kbd>–<kbd>9</kbd></dt>
+              <dd>Rett til den delen</dd>
               <dt><kbd>→</kbd> <kbd>mellomrom</kbd> <kbd>PageDown</kbd></dt>
               <dd>Neste (klikkeren virker også inne i prototypen)</dd>
               <dt><kbd>←</kbd> <kbd>PageUp</kbd></dt>

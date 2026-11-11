@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { brukSpilltaster } from '../lib/spill.ts'
+import { tallTast } from '../lib/hurtigtast.ts'
 import { kilder } from '../content/kilder.ts'
 import { manus, PLAN_TOTAL } from '../content/manus.ts'
 import { mmss, planTid, sceneStart, taktPlan } from '../content/tid.ts'
@@ -76,6 +77,7 @@ export function Presentator() {
       } else if (e.key === 'F5' || e.key === 'Escape') e.preventDefault()
       else if (e.key === 'b' || e.key === 'B' || e.key === '.') svart()
       else if (/^[1-4]$/.test(e.key) && scene.id === 'sensor') velg(Number(e.key))
+      else if (tallTast(e.key)) e.preventDefault()
     }
     window.addEventListener('keydown', ned)
     return () => window.removeEventListener('keydown', ned)
