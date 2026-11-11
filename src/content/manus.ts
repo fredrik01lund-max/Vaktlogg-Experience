@@ -234,14 +234,12 @@ export const manus: Scene[] = [
       {
         hvem: 'C',
         sier: 'Her er vi nå: en prototype som servitører har prøvd. Veien videre starter med en gratis pilot hos et par restauranter. Vi kobler oss til dataene deres og lar ekte servitører bruke appen, mens vi bygger videre. Da ser vi om de faktisk bruker den, eller bare sier at de vil. Alt dette kan vi gjøre uten mye penger. Med det beviset er det lettere å få kunder og investorer. Servitøren bruker appen, men arbeidsgiveren betaler, så vi selger abonnement til restaurantgrupper. Senere kan Vaktlogg bygges inn i systemene restaurantene allerede har.',
-        regi: 'FORSLAG TIL REPLIKK – bytt gjerne ut med egne ord. Forretningsmodellen som et lite spill: tre figurer (dere) går veien videre. Piltaster eller A/D = gå, mellomrom = hopp. PageDown (klikkeren) = gå til neste stopp av seg selv: et par restauranter, koblet til dataene, ekte servitører bruker den, vi bygger videre, beviset, restaurantgruppene, plattformen. Ett kort nederst viser bare det som gjelder der figurene står. Etter siste stopp går PageDown videre til avslutningen. Firmalogoene er merket «mulig kunde» og «mulig partner» – det finnes ingen avtaler. Ikonet er skjult mens spillet står.',
+        regi: 'FORSLAG TIL REPLIKK – bytt gjerne ut med egne ord. Forretningsmodellen som et lite spill: tre figurer (dere) går veien videre. Piltaster eller A/D = gå, mellomrom = hopp. PageDown (klikkeren) = gå til neste stopp av seg selv: et par restauranter, koblet til dataene, ekte servitører bruker den, vi bygger videre, beviset, restaurantgruppene, plattformen og til slutt portalen. Ett kort nederst viser bare det som gjelder der figurene står. Når figurene går inn i portalen, kommer «Takk for oss». Firmalogoene er merket «mulig kunde» og «mulig partner» – det finnes ingen avtaler. Ikonet er skjult mens spillet står.',
       },
-      { hvem: 'A', sier: 'Vi startet med sykefravær.', regi: 'Spillet tones bort. SYKEFRAVÆR kommer tilbake på flipptavla.' },
-      { hvem: 'B', sier: 'Vi endte med motivasjon, og med spørsmålet fra filmen: Hva sitter servitøren igjen med etter vakten?', regi: 'Flipptavla snur: SYKEFRAVÆR blir MOTIVASJON.' },
       {
-        hvem: 'C',
-        sier: 'Med Vaktlogg kan hun se hva hun fikk til. Om det faktisk motiverer, er det neste vi må teste. Takk.',
-        regi: 'MOTIVASJON blir stående mens dere tar spørsmål. Siden med QR-koden er tatt bort (11.11).',
+        hvem: 'alle',
+        sier: 'A: Vi startet med sykefravær. B: Vi endte med motivasjon, og med spørsmålet fra filmen: Hva sitter servitøren igjen med etter vakten? C: Med Vaktlogg kan hun se hva hun fikk til. Om det faktisk motiverer, er det neste vi må teste. Takk for oss.',
+        regi: 'Figurene går inn i portalen, og «Takk for oss» kommer frem med innholdsfortegnelsen: ni kort, ett for hver del. Trykk på et kort med musen for å gå til den delen når sensor spør om noe. Avslutningsreplikkene sies her, mens siden står (flipptavla er tatt bort).',
       },
     ],
     overgang: 'Slutt. Spørsmål.',

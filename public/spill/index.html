@@ -63,8 +63,12 @@
   .skilt.port b { font-size: 30px; }
   .bom { position: absolute; width: 250px; height: 22px; border-radius: 11px; transform-origin: 239px 11px; background: repeating-linear-gradient(90deg, #ff6a4e 0 34px, #fffdf9 34px 68px); box-shadow: 0 6px 14px -4px rgba(60, 40, 30, 0.5); }
   .bomfot { position: absolute; width: 34px; height: 130px; border-radius: 10px 10px 0 0; background: #2b1f1c; }
-  .flagg { position: absolute; width: 8px; height: 260px; background: #2b1f1c; border-radius: 4px; }
-  .flagg::after { content: ''; position: absolute; left: 8px; top: 6px; width: 120px; height: 78px; background: conic-gradient(#2b1f1c 25%, #fffdf9 0 50%, #2b1f1c 0 75%, #fffdf9 0) 0 0 / 40px 39px; border-radius: 0 6px 6px 0; }
+  .portal { position: absolute; width: 230px; height: 330px; border-radius: 50%; }
+  .portal i { position: absolute; display: block; border-radius: 50%; }
+  .portal .ring { inset: 0; background: conic-gradient(#f08fb0, #ffcf6b, #7cc9a1, #b9a7f0, #f08fb0); box-shadow: 0 0 60px 14px rgba(240, 143, 176, 0.55); }
+  .portal .hull { inset: 20px; background: radial-gradient(ellipse at 50% 45%, #fffdf9 0%, #ffe9f1 34%, #f3b6cf 62%, #94284c 100%); box-shadow: inset 0 0 40px rgba(148, 40, 76, 0.55); }
+  .portal .glimt { left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px; background: #fffdf9; box-shadow: 0 0 16px 6px rgba(255, 255, 255, 0.9); }
+  .portalfot { position: absolute; height: 26px; border-radius: 50%; background: rgba(148, 40, 76, 0.28); filter: blur(6px); }
 
   /* Telefoner med ekte skjermbilder fra prototypen */
   .telefon { position: absolute; box-sizing: border-box; padding: 5px; border-radius: 20px; background: #2b1f1c; box-shadow: 0 18px 30px -12px rgba(60, 40, 30, 0.55); transform-origin: 50% 100%; }
@@ -140,7 +144,6 @@
       <h2 class="hud-tittel" id="hudTittel"></h2>
       <div class="kart" id="kart"></div>
       <div class="hud-ting">
-        <span id="tingNokkel"><svg viewBox="0 0 24 24" fill="none" stroke="#b9862a" stroke-width="2.4" stroke-linecap="round"><circle cx="8" cy="12" r="4" /><path d="M12 12h9M18 12v4M15 12v3" /></svg>Bevis</span>
         <span id="tingMynt"><i class="m"></i><b id="myntTall">0</b></span>
       </div>
     </div>
@@ -151,9 +154,9 @@
 <script src="gsap.min.js"></script>
 <script>
   // ── Verden ──
-  var W = 8500, BAKKE = 820, PLATT = 660, RAMPE0 = 6200, RAMPE1 = 6500, PORT = 3980, FART = 540
+  var W = 8900, PORTAL = 8420, BAKKE = 820, PLATT = 660, RAMPE0 = 6200, RAMPE1 = 6500, PORT = 3980, FART = 540
   // Der figurene stopper når man trykker PageDown: de fire stoppene i piloten, beviset, gruppene og plattformen
-  var STOPP = [1640, 2140, 2960, 3470, 3760, 6030, 8080]
+  var STOPP = [1640, 2140, 2960, 3470, 3760, 6030, 7960, PORTAL]
   var NIVA = [
     { fra: 0, merke: 'Start', tittel: 'Veien <em>videre</em>' },
     { fra: 900, merke: 'Nivå 1 av 3', tittel: '<em>Bevise</em>', farge: '#4fa27a' },
@@ -273,7 +276,9 @@
   for (var m = 0; m < 9; m++) FASADER.push({ e: fasade(6780 + m * 142, 116, 150 + (m % 3) * 22, '#f08fb0', PLATT), x: 6838 + m * 142, y: PLATT })
   skilt(7122, 250, logoskilt('Mulig partner', 'planday', 280, 107, '#ffffff'), PLATT - 194)
   skilt(7690, 264, logoskilt('Mulig partner', 'favrit', 210, 81, '#ffffff'), PLATT - 194)
-  legg('<div class="flagg" style="left:8170px;top:' + (PLATT - 260) + 'px"></div>')
+  // Portalen: veien ut av spillet, til «Takk for oss»
+  legg('<div class="portalfot" style="left:' + (PORTAL - 110) + 'px;top:' + (PLATT - 12) + 'px;width:220px"></div>')
+  var portalEl = legg('<div class="portal" style="left:' + (PORTAL - 115) + 'px;top:' + (PLATT - 338) + 'px"><i class="ring"></i><i class="hull"></i><i class="glimt"></i><i class="glimt"></i><i class="glimt"></i></div>')
 
   // ── Figurene: to jenter og en gutt ──
   function lagFigur(kropp, haar, type) {
@@ -296,7 +301,7 @@
   // ── Spillet ──
   var L = { x: 640, j: 0, vy: 0, dir: 1 }
   var spor = [], fase = 0, tast = { v: false, h: false }, hoppKo = false, mal = null
-  var kam = 0, zoom = 1, stille = 9, niva = -1, kortNr = -1, harNokkel = false, port = { a: 0, startet: false }, mynter = 0, T = 0, data = false, flyttetNoe = false
+  var kam = 0, zoom = 1, stille = 9, niva = -1, kortNr = -1, harNokkel = false, port = { a: 0, startet: false }, mynter = 0, T = 0, data = false, flyttetNoe = false, iPortal = false, borte = [false, false, false]
   for (var s = 0; s < 80; s++) spor.push({ x: L.x - (79 - s) * 6, j: 0 })
   ;['k1', 'k2', 'k3', 'k4'].forEach(function (id) { var p = document.getElementById(id), l = p.getTotalLength(); p.dataset.l = l; gsap.set(p, { strokeDasharray: l, strokeDashoffset: l, opacity: 0 }) })
   ;['p1', 'p2'].forEach(function (id) { var p = document.getElementById(id), l = p.getTotalLength(); p.dataset.l = l; gsap.set(p, { strokeDasharray: '2 ' + (l + 40), strokeDashoffset: 0 }) })
@@ -358,10 +363,6 @@
     harNokkel = true
     gsap.to(nokkelEl, { y: '-=150', scale: 1.4, duration: 0.5, ease: 'back.out(2)' })
     gsap.to(nokkelEl, { y: '-=120', scale: 0.6, opacity: 0, duration: 0.5, delay: 0.8, ease: 'power2.in' })
-    gsap.delayedCall(1.0, function () {
-      document.getElementById('tingNokkel').classList.add('har')
-      gsap.fromTo('#tingNokkel', { scale: 1.35 }, { scale: 1, duration: 0.45, ease: 'back.out(2)' })
-    })
   }
   function neste() {
     for (var i = 0; i < STOPP.length; i++) if (STOPP[i] > L.x + 20) { mal = STOPP[i]; return true }
@@ -377,7 +378,8 @@
     }
     var ny = L.x + inn * FART * dt
     if (port.a < 0.9 && L.x <= PORT - 64 && ny > PORT - 64) ny = PORT - 64 // porten er stengt
-    ny = Math.max(520, Math.min(W - 300, ny))
+    ny = Math.max(520, Math.min(PORTAL, ny))
+    if (iPortal) ny = L.x
     var flyttet = ny - L.x
     L.x = ny
     if (inn) L.dir = inn
@@ -389,6 +391,7 @@
     stille = Math.abs(flyttet) > 0.5 ? 0 : stille + dt
     var sist = spor[spor.length - 1]
     while (Math.abs(L.x - sist.x) >= 6) { sist = { x: sist.x + (L.x > sist.x ? 6 : -6), j: L.j }; spor.push(sist); if (spor.length > 400) spor.shift() }
+    if (iPortal && sist.x < PORTAL + 240) { sist = { x: sist.x + Math.max(2, FART * dt), j: 0 }; spor.push(sist); stille = 0; flyttet = 6 }
     fase += Math.abs(flyttet) * 0.034
     if (!flyttetNoe && Math.abs(flyttet) > 0.5) { flyttetNoe = true; gsap.to('#taster', { opacity: 0, duration: 0.6, delay: 0.8 }) }
 
@@ -412,6 +415,15 @@
     if (harNokkel && !port.startet && L.x > PORT - 190) { port.startet = true; gsap.to(port, { a: 1, duration: 0.8, ease: 'back.out(1.4)' }) }
     bom.style.transform = 'rotate(' + (port.a * 82).toFixed(1) + 'deg)'
     for (i = 0; i < FASADER.length; i++) if (!FASADER[i].paa && L.x >= FASADER[i].x - 30) { FASADER[i].paa = true; mynt(FASADER[i]) }
+    portalEl.querySelector('.ring').style.background = 'conic-gradient(from ' + ((T * 70) % 360).toFixed(1) + 'deg, #f08fb0, #ffcf6b, #7cc9a1, #b9a7f0, #f08fb0)'
+    var glimt = portalEl.querySelectorAll('.glimt')
+    for (i = 0; i < glimt.length; i++) { var v = T * 2.2 + i * 2.1, r = 0.5 + 0.5 * Math.sin(T * 1.3 + i); glimt[i].style.transform = 'translate(' + (Math.cos(v) * 62 * r).toFixed(1) + 'px,' + (Math.sin(v) * 100 * r).toFixed(1) + 'px) scale(' + (0.5 + r * 0.6).toFixed(2) + ')' }
+    if (!iPortal && L.x >= PORTAL - 4) {
+      iPortal = true
+      mal = null
+      gsap.to(portalEl, { scale: 1.18, duration: 0.5, yoyo: true, repeat: 3, ease: 'sine.inOut' })
+      gsap.delayedCall(1.5, function () { if (parent !== window) parent.postMessage({ spill: 'videre' }, '*') })
+    }
     settNiva(sisteFor(NIVA, L.x))
     settKort(sisteFor(KORT, L.x))
     document.getElementById('kartHer').style.left = pst(L.x)
@@ -427,6 +439,8 @@
       var dupp = gaar ? Math.abs(Math.sin(fase + k * 1.3)) * 9 : Math.sin(T * 2.2 + k) * 1.5
       FIG[k].e.style.transform = 'translate3d(' + (x - 45).toFixed(1) + 'px,' + (y - 150 + hopp - dupp).toFixed(1) + 'px,0)'
       FIG[k].svg.style.transform = 'scaleX(' + L.dir + ') rotate(' + vipp.toFixed(1) + 'deg)'
+      if (x >= PORTAL - 8 && !borte[k]) { borte[k] = true; gsap.to([FIG[k].e, FIG[k].skygge], { opacity: 0, duration: 0.3 }) }
+      if (borte[k]) FIG[k].svg.style.transform = 'scale(0.55)'
       FIG[k].skygge.style.transform = 'translate3d(' + (x - 40).toFixed(1) + 'px,' + (y - 9).toFixed(1) + 'px,0) scale(' + (1 + hopp / 500).toFixed(2) + ')'
     }
 
@@ -457,7 +471,7 @@
     if (k === 'ArrowRight' || k === 'd' || k === 'D') tast.h = false
   })
   addEventListener('click', function () { nesteEllerVidere() })
-  function nesteEllerVidere() { if (!neste() && parent !== window) parent.postMessage({ spill: 'videre' }, '*') }
+  function nesteEllerVidere() { if (!iPortal && !neste() && parent !== window) parent.postMessage({ spill: 'videre' }, '*') }
   // Taster sendt fra presentasjonen (hovedskjermen eller presentatørvinduet)
   addEventListener('message', function (e) {
     var m = e.data || {}

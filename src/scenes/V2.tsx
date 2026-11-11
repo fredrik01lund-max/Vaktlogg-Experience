@@ -11,6 +11,7 @@ import { Flipp } from '../ui/Deler.tsx'
 import { Foto } from '../ui/Foto.tsx'
 import { foto as hentFoto } from '../lib/foto.ts'
 import { spillFerdig, taImotSpilltaster } from '../lib/spill.ts'
+import { gaTil } from '../lib/sync.ts'
 import kilder from '../lib/kilder.json'
 import { Inn, MYK, settIkonSkjult, Studio, useLys, useSek, type SceneProps } from './felles.tsx'
 
@@ -998,19 +999,56 @@ function Spill() {
   return <motion.iframe ref={ramme} className="vi-spill" title="Veien videre" src="spill/index.html" tabIndex={-1} data-tekst="app" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.7 }} />
 }
 
+/* «Takk for oss» (11.11): portalen i spillet fører hit. Innholdsfortegnelsen er ni kort med et bilde av hver del,
+   lagt langs en prikket sti som i spillet. Et trykk på et kort går til den delen (til spørsmålsrunden).
+   Bildene ligger i public/innhold/ (lag nye med skjermbilder hvis en del endres). Teksten på kortene er meny og
+   telles ikke i tekstsjekken (data-tekst="meny"). */
+const INNHOLD = ['Problemet', 'Innsikten', 'Nøkkelfunn', 'Problemstilling', 'Brukerreisen', 'Ideen', 'Prototypen', 'Testing', 'Veien videre']
+const INNHOLD_FARGE = ['#2b1f1c', '#4fa27a', '#4fa27a', '#4fa27a', '#4fa27a', '#d98a55', '#d98a55', '#b83a6c', '#b83a6c']
+function Takk() {
+  return (
+    <div className="vi-takk">
+      <motion.h1 className="stor-serif" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.2, ease: MYK }}>
+        Takk for oss
+      </motion.h1>
+      <svg className="vi-takk-sti" viewBox="0 0 1920 1080" aria-hidden="true">
+        <motion.path d="M150 470H1770a90 90 0 0 1 0 180v60a90 90 0 0 1-90 90H330" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.8, delay: 0.5, ease: 'easeInOut' }} />
+      </svg>
+      <div className="vi-takk-kort" data-tekst="meny">
+        {INNHOLD.map((navn, i) => (
+          <motion.button
+            key={navn}
+            type="button"
+            className={`vi-takk-del d${i + 1}`}
+            style={{ ['--farge' as string]: INNHOLD_FARGE[i] }}
+            onClick={(e) => {
+              e.stopPropagation()
+              gaTil(i, 0)
+            }}
+            initial={{ opacity: 0, scale: 0.2, x: 960 - (i < 5 ? 190 + i * 350 : 365 + (i - 5) * 350), y: 100, rotate: 0 }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0, rotate: [-2, 1.5, -1, 2, -1.5, 1.5, -2, 1, -1.5][i] }}
+            whileHover={{ scale: 1.07, rotate: 0, y: -10 }}
+            transition={{ duration: 0.8, delay: 0.5 + i * 0.11, ease: [0.3, 1.5, 0.5, 1] }}
+          >
+            <img src={`innhold/${i + 1}.jpg`} alt="" draggable={false} />
+            <span>
+              <i>{i + 1}</i>
+              {navn}
+            </span>
+          </motion.button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function Videre({ takt }: SceneProps) {
   useLys(0)
   return (
     <div className="scene v2 vi">
       <Studio fase="rosa" />
       <AnimatePresence>{takt === 0 && <Spill key="spill" />}</AnimatePresence>
-      {takt >= 1 && (
-        <div className="ps-midt vi-slutt">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, ease: MYK }}>
-            <Flipp fra="SYKEFRAVÆR" til="MOTIVASJON" start={takt >= 2} />
-          </motion.div>
-        </div>
-      )}
+      {takt >= 1 && <Takk />}
     </div>
   )
 }

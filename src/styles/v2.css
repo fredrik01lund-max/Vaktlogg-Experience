@@ -1173,6 +1173,91 @@
   height: 1080px;
   border: 0;
 }
+/* «Takk for oss» med innholdsfortegnelsen: ni kort langs en prikket sti (fem øverst, fire under) */
+.vi-takk {
+  position: absolute;
+  inset: 0;
+  cursor: default;
+}
+.vi-takk h1 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 96px;
+  margin: 0;
+  text-align: center;
+  font-size: 132px;
+  line-height: 1;
+  color: #2b1f1c;
+}
+.vi-takk-sti {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.vi-takk-sti path {
+  fill: none;
+  stroke: #f08fb0;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 2 26;
+}
+.vi-takk-del {
+  position: absolute;
+  width: 310px;
+  padding: 10px 10px 0;
+  border: 0;
+  border-radius: 20px;
+  background: #fffdf9;
+  box-shadow: 0 30px 50px -22px rgba(60, 40, 30, 0.55), 0 2px 6px rgba(60, 40, 30, 0.12);
+  font: inherit;
+  color: #2b1f1c;
+  cursor: pointer;
+}
+.vi-takk-del img {
+  display: block;
+  width: 290px;
+  height: 163px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.vi-takk-del span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 2px 12px;
+  font-family: var(--sans);
+  font-size: 25px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.vi-takk-del i {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--farge);
+  color: #fffdf9;
+  font-family: var(--serif);
+  font-style: normal;
+  font-size: 21px;
+}
+.vi-takk-del.d1 { left: 35px; top: 318px; }
+.vi-takk-del.d2 { left: 385px; top: 318px; }
+.vi-takk-del.d3 { left: 735px; top: 318px; }
+.vi-takk-del.d4 { left: 1085px; top: 318px; }
+.vi-takk-del.d5 { left: 1435px; top: 318px; }
+.vi-takk-del.d6 { left: 1260px; top: 668px; }
+.vi-takk-del.d7 { left: 910px; top: 668px; }
+.vi-takk-del.d8 { left: 560px; top: 668px; }
+.vi-takk-del.d9 { left: 210px; top: 668px; }
+.lerret:has(.vi-takk) .diamant-ikon {
+  visibility: hidden;
+}
 .vi-pilot {
   position: absolute;
   inset: 0;
