@@ -341,7 +341,7 @@ export function Hopping({ takt }: SceneProps) {
 
   return (
     <div className="scene hopping">
-      <img className="hopping-film" src="film/hopping-slutt.png" alt="" />
+      <img className="hopping-film" src="film/hopping2-slutt.png" alt="" />
       <motion.video ref={video} className="hopping-film" src={filmUrl('hopping')} muted playsInline preload="auto" onEnded={ferdig} onError={() => setFilmFeil(true)} animate={{ opacity: takt === 0 ? 1 : 0 }} transition={{ duration: 0.6 }} />
 
       {hoppingMeta.baner.map((b, i) => (

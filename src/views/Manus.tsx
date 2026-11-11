@@ -128,7 +128,10 @@ export function Manus() {
             <b>Del 5, lederen:</b> replikken «En kollega er syk. Kan du ta stasjonen hennes?» er vår formulering av det manuset beskriver. Godkjenn eller endre den i V2.tsx (BOBLER).
           </li>
           <li>
-            <b>Fotografier:</b> servitøren vi intervjuet (del 2, plassen innsikt-2) og papirskissen (del 7) mangler. Legg dem inn i foto.js med samtykke. Bildene fra Noode Sky og Park 29 er klarert for nett.
+            <b>Fotografier:</b> servitøren vi intervjuet (del 2, plassen innsikt-2) mangler. Legg bildet inn i foto.js med samtykke. Bildene fra Noode Sky og Park 29, papirskissen (del 7) og de to første brukerreisene (del 5) ligger inne.
+          </li>
+          <li>
+            <b>Del 5, de to første brukerreisene:</b> replikken til B er vårt forslag. Arkene heter Theodora, filmen heter Emma – si det gjerne med én setning hvis sensor spør.
           </li>
         </ul>
       </section>

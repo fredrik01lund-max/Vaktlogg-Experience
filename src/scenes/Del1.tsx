@@ -103,7 +103,7 @@ export function TittelScene({ takt }: SceneProps) {
   return (
     <div className="scene tittel-scene">
       {harBilde && (
-        <motion.img className="apning-film" src="film/apning-slutt.png" alt="" onError={() => setHarBilde(false)} initial={false} animate={{ opacity: takt === 0 ? 1 : 0, scale: takt === 0 ? 1 : 1.04 }} transition={{ duration: 1.6, ease: MYK }} />
+        <motion.img className="apning-film" src="film/apning2-slutt.png" alt="" onError={() => setHarBilde(false)} initial={false} animate={{ opacity: takt === 0 ? 1 : 0, scale: takt === 0 ? 1 : 1.04 }} transition={{ duration: 1.6, ease: MYK }} />
       )}
       <motion.div className="tittel-dimmer" initial={false} animate={{ opacity: takt === 0 && harBilde ? 1 : 0 }} transition={{ duration: 1.2 }} />
       <motion.div animate={{ y: takt >= 1 ? -330 : 0, scale: takt >= 1 ? 0.55 : 1, opacity: takt >= 1 ? 0 : 1 }} transition={{ duration: 1.3, ease: MYK }} style={{ position: 'absolute', inset: 0 }}>

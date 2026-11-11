@@ -8,7 +8,8 @@ import type { Scene } from './types.ts'
    • Hver takt er ett klikk. «sier» er det som sies, «regi» er det som skjer og hva man gjør.
    • Diamant-ikonet øverst til høyre viser fasen (scene.diamant); når fasen skifter, glir kula dit (ui/Diamant.tsx).
    • «anim» = sekunder animasjon når takten starter (presentatørvisningen sier «vent»).
-   • Manuset er planlagt til 10:00. Litt lengre tid til prototypen enn manuset regner med gir 10:10.
+   • Manuset er planlagt til 10:00. Litt lengre tid til prototypen enn manuset regner med gir 10:10, og
+     klikket med de to første brukerreisene (11.11) gir 10:18.
      Kjør `npm run sjekk`.
    • Manus v1 (ti scener, 4.11) ligger urørt i manus-v1.ts og vises under «Lagt til side» (O).
    ════════════════════════════════════════════════════════════════════════════════ */
@@ -61,7 +62,7 @@ export const manus: Scene[] = [
       {
         hvem: 'A',
         sier: 'Tre ting gikk igjen. Det første var bevegelse. Servitørene beskriver jobben som veldig fysisk, og flere følger med på skrittene sine på de slitsomme vaktene. En hovmester teller skritt hver vakt og har hatt en rekord på 25 000 skritt.',
-        regi: 'Tre merker øverst til venstre (fotspor, kassalapp, snakkeboble) viser hvilket av de tre funnene dere er på. Fotsporet og kassalappen kommer igjen på ringene i Ideate. Funn 1: åpningsfilmen – Emma går gjennom kvelden og sporet vokser bak henne – med skritteller som går til 15 000.',
+        regi: 'Tre merker øverst til venstre (fotspor, kassalapp, snakkeboble) viser hvilket av de tre funnene dere er på. Fotsporet og kassalappen kommer igjen på ringene i Ideate. Funn 1: åpningsfilmen – Emma går gjennom kvelden og sporet vokser bak henne – med skritteller som går til 15 000, og to målere for puls og stress som svinger gjennom vakten (uten tall).',
       },
       {
         hvem: 'A',
@@ -97,7 +98,7 @@ export const manus: Scene[] = [
         regi: 'SYKEFRAVÆR snur seg bokstav for bokstav og blir MOTIVASJON. Problemstillingen skrives ut på en bong under.',
       },
     ],
-    overgang: 'B klikker. Filmen starter.',
+    overgang: 'B klikker. De to første brukerreisene legges frem. Neste klikk starter filmen.',
     kilder: ['V2', 'A1', 'A3'],
   },
   {
@@ -107,12 +108,17 @@ export const manus: Scene[] = [
     tema: 'mork',
     fase: 'define',
     diamant: 'define',
-    varighet: 50,
+    varighet: 58,
     takter: [
+      {
+        hvem: 'B',
+        sier: 'Brukerreisen tegnet vi først på papir og deretter digitalt. Til slutt animerte vi den.',
+        regi: 'FORSLAG TIL REPLIKK – bytt gjerne ut med egne ord. To bilder fra arbeidet legges frem: brukerreisen på gråpapir med lapper, og den digitale brukerreisen fra arbeidskravet (personaen het Theodora den gangen; personabildet er tatt ut). Ikke forklar dem – de viser bare arbeidet før animasjonen.',
+      },
       {
         hvem: 'stille',
         anim: 50,
-        regi: 'Ingen snakker. Brukerreisen for Emma (tenkt vakt): fire faser nederst, klokkeslett, og følelseskurven som tegnes mens filmen går – grønn med pluss der det løfter, rød med minus der det tynger. Lysringen under Emma viser det samme. Før: hun stempler inn, og lederen kommer bort og ber henne ta stasjonen til en kollega som er syk (snakkeboble). Under: ingen pause, en gjest takker (snakkeboble fra gjesten), en kollega tar et bord. Etter: kassarapportene sammenlignes, krølles og kastes, lysene slukkes. Dagene etter: bare sporet står igjen – «Hva sitter hun igjen med?». B lar spørsmålet stå i to sekunder før neste del.',
+        regi: 'Ingen snakker. Brukerreisen for Emma (tenkt vakt): fire faser nederst, klokkeslett, og følelseskurven som tegnes mens filmen går – grønn med pluss der det løfter, rød med minus der det tynger. Hver årsak kommer først stort øverst til venstre og legger seg så på kurven, der den blir stående: dobbel stasjon, ingen pause, gjesten takker, godt lag, salg sammenlignes, lappen kastes. Lysringen under Emma viser det samme. Før: hun stempler inn, og lederen kommer bort og ber henne ta stasjonen til en kollega som er syk (snakkeboble). Under: ingen pause, en gjest takker (snakkeboble fra gjesten), en kollega tar et bord. Etter: kassarapportene sammenlignes, krølles og kastes, lysene slukkes. Dagene etter: sporet og hele kurven med årsakene står igjen – «Hva sitter Emma igjen med?». B lar spørsmålet stå i to sekunder før neste del.',
       },
     ],
     overgang: 'B klikker. Kula i ikonet glir ut i Ideate.',
@@ -158,7 +164,7 @@ export const manus: Scene[] = [
       {
         hvem: 'C',
         sier: 'Først tegnet vi appen på et ark. Men vi skjønte at det ville være lettere å teste ideen hvis servitørene kunne trykke på den selv. Så vi bygde en digital prototype.',
-        regi: 'Ikonet: kula glir til Prototype. Papirskissen (bildet i foto.js, plassen papirskisse – ellers en strekskisse) glir til side, og det ekte skjermbildet av appen kommer frem.',
+        regi: 'Ikonet: kula glir til Prototype. Bildet av den ekte papirskissen (seks skjermer med tusj; plassen papirskisse i foto.js) glir til side, og det ekte skjermbildet av appen kommer frem.',
       },
       {
         hvem: 'stille',
@@ -196,7 +202,7 @@ export const manus: Scene[] = [
       {
         hvem: 'C',
         sier: 'Prototypen ligger på nett, så vi kunne dele den med en lenke. Da var det lett å få mange testere, også når vi ikke var til stede. Servitører og ledere fra blant annet Noode Sky, Park 29, Frenchie, Olivia og The Thief har prøvd den.',
-        regi: 'Ikonet: kula glir til Test, og buen tilbake til Empathize tegnes – testene ga ny innsikt. Lenken til prototypen sendes ut, og telefon etter telefon lyser opp med appen.',
+        regi: 'Ikonet: kula glir til Test, og buen tilbake til Empathize tegnes – testene ga ny innsikt. Lenken til prototypen sendes ut (forkortet på skjermen til github.io/vaktlogg, uten brukernavn), og telefon etter telefon lyser opp med appen.',
       },
       {
         hvem: 'C',
@@ -245,6 +251,6 @@ export const manus: Scene[] = [
 ]
 
 /** Planlagt total: manuset (10:00) og prototypen slik talen faktisk tar. */
-export const PLAN_TOTAL = 610
+export const PLAN_TOTAL = 618
 /** Den harde grensen for fremføringen. */
 export const MAKS_TOTAL = 720

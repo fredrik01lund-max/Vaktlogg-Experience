@@ -8,6 +8,19 @@ import { sendStatus } from './sync.ts'
 
 export type FilmNavn = string
 
+// Hvilken fil hver film bruker. Nye versjoner av Blender-filmene får eget filnavn (de gamle ligger urørt), så
+// å gå tilbake til en gammel film er å ta bort linjen her.
+const FIL: Record<string, string> = {
+  intervju: 'intervju2',
+  ringer: 'ringer2',
+  kilder: 'kilder2',
+  kassa: 'kassa2',
+  apning: 'apning2',
+  reise: 'reise2',
+  hopping: 'hopping2',
+}
+const filSti = (navn: FilmNavn) => `film/${FIL[navn] ?? navn}.mp4`
+
 function brukteFilmer(): FilmNavn[] {
   const navn: FilmNavn[] = []
   for (const s of manus) {
@@ -21,10 +34,10 @@ function brukteFilmer(): FilmNavn[] {
   return [...new Set(navn)]
 }
 const NAVN = brukteFilmer()
-const url: Record<string, string> = Object.fromEntries(NAVN.map((n) => [n, `film/${n}.mp4`]))
+const url: Record<string, string> = Object.fromEntries(NAVN.map((n) => [n, filSti(n)]))
 const klar: Record<string, 'laster' | 'klar' | 'feil'> = Object.fromEntries(NAVN.map((n) => [n, 'laster']))
 
-export const filmUrl = (navn: FilmNavn = 'telefon') => url[navn] ?? `film/${navn}.mp4`
+export const filmUrl = (navn: FilmNavn = 'telefon') => url[navn] ?? filSti(navn)
 
 /** Samlet status til presentatørvinduet: klar når alle filmene er lastet. */
 export const filmTilstand = (): 'laster' | 'klar' | 'feil' => (NAVN.some((n) => klar[n] === 'feil') ? 'feil' : NAVN.every((n) => klar[n] === 'klar') ? 'klar' : 'laster')
@@ -33,7 +46,7 @@ export const filmTilstand = (): 'laster' | 'klar' | 'feil' => (NAVN.some((n) => 
 export const filmerSomMangler = () => NAVN.filter((n) => klar[n] === 'feil')
 
 async function last(navn: FilmNavn) {
-  const sti = `film/${navn}.mp4`
+  const sti = filSti(navn)
   try {
     // Fra fil (dobbeltklikk) kan nettleseren ikke hente med fetch – gå rett til videoelementet
     if (location.protocol === 'file:') throw new Error('fil')

@@ -44,7 +44,11 @@ window.VAKTLOGG_FOTO = {
     'innsikt-park29-1': { fil: 'park29-1.jpg', fokus: [0.55, 0.55], tekst: '', kreditering: '', samtykke: { eksamen: true, offentlig: true }, identifiserbar: false, beskrivelse: 'Del 2: Park 29, salen med skinnstoler' },
     'innsikt-park29-2': { fil: 'park29-2.jpg', fokus: [0.45, 0.45], tekst: '', kreditering: '', samtykke: { eksamen: true, offentlig: true }, identifiserbar: false, beskrivelse: 'Del 2: Park 29, selskapsrommet med lysekrone' },
     // ── Manus v2, del 7 Prototypen: et bilde av papirskissen av appen (ingen personer) ──
-    'papirskisse': { fil: '', fokus: [0.5, 0.5], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: false, beskrivelse: 'Del 7: bilde av papirskissen av appen' },
+    'papirskisse': { fil: 'papirskisse.jpg', fokus: [0.5, 0.5], tekst: '', kreditering: '', samtykke: { eksamen: true, offentlig: true }, identifiserbar: false, justering: { metning: 1, varme: 0.02, kontrast: 1.12, lysstyrke: 1.14 }, beskrivelse: 'Del 7: papirskissen av appen (seks skjermer med tusj), beskåret til arket. Fra brukeren 11.11' },
+    // ── Manus v2, del 5 Brukerreisen: de to første brukerreisene, vist før den animerte (11.11, fra brukeren) ──
+    // Ingen personer. I den digitale er personabildet (et ansikt) malt over med bakgrunnsfargen.
+    'reise-utkast-1': { fil: 'brukerreise-papir.jpg', fokus: [0.5, 0.5], tekst: '', kreditering: '', samtykke: { eksamen: true, offentlig: true }, identifiserbar: false, justering: { metning: 0.95, varme: 0.04, kontrast: 1.04, lysstyrke: 1 }, beskrivelse: 'Del 5: brukerreisen på gråpapir med lapper (første utkast)' },
+    'reise-utkast-2': { fil: 'brukerreise-digital.jpg', fokus: [0.5, 0.5], tekst: '', kreditering: '', samtykke: { eksamen: true, offentlig: true }, identifiserbar: false, justering: { metning: 1, varme: 0, kontrast: 1, lysstyrke: 1 }, beskrivelse: 'Del 5: den digitale brukerreisen fra arbeidskrav 2 (uten personabildet)' },
     'innsikt-2': { fil: '', fokus: [0.5, 0.45], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: true, beskrivelse: 'Del 2: bilde 2 fra innsiktsarbeidet (intervju eller observasjon)' },
     // ── Menneskene bak innsikten: mosaikk (blandet stående og liggende går fint) ──
     'mennesker-1': { fil: '', fokus: [0.5, 0.35], tekst: '', kreditering: '', samtykke: { eksamen: false, offentlig: false }, identifiserbar: true, beskrivelse: 'Servitør (portrett)' },

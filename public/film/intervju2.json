@@ -1,0 +1,55 @@
+{
+  "fps": 30,
+  "varighet": 9.0,
+  "hode": [
+    0.438,
+    0.3789
+  ],
+  "film": "film/intervju2.mp4",
+  "skjerm": {
+    "start": {
+      "hode": [
+        0.4995,
+        0.4158
+      ],
+      "radius": 65.1,
+      "intervjuer": [
+        0.2795,
+        0.4598
+      ]
+    },
+    "boble": {
+      "hode": [
+        0.3937,
+        0.4083
+      ],
+      "radius": 136.8,
+      "intervjuer": [
+        0.0534,
+        0.472
+      ]
+    },
+    "rolig": {
+      "hode": [
+        0.3722,
+        0.4159
+      ],
+      "radius": 146.4,
+      "intervjuer": [
+        0.0458,
+        0.4738
+      ]
+    },
+    "slutt": {
+      "hode": [
+        0.3517,
+        0.4299
+      ],
+      "radius": 152.3,
+      "intervjuer": [
+        0.0389,
+        0.4745
+      ]
+    }
+  }
+}

@@ -3,14 +3,13 @@ import { AnimatePresence, motion } from 'motion/react'
 import { filmUrl } from '../lib/film.ts'
 import ringer from '../lib/ringer.json'
 import apningMeta from '../lib/apning.json'
-import intervju from '../lib/intervju.json'
+import intervju from '../lib/intervju2.json'
 import kassaMeta from '../lib/kassa.json'
 import reise from '../lib/reise.json'
 import { manus } from '../content/manus.ts'
 import { Flipp } from '../ui/Deler.tsx'
 import { Foto } from '../ui/Foto.tsx'
 import { foto as hentFoto } from '../lib/foto.ts'
-import { oppsett } from '../lib/oppsett.ts'
 import kilder from '../lib/kilder.json'
 import { Inn, MYK, settIkonSkjult, Studio, useLys, useSek, type SceneProps } from './felles.tsx'
 
@@ -190,12 +189,29 @@ export function Innsikt(_: SceneProps) {
      som går til 15 000 i takt med vakten (apning.json: vaktStart → vaktSlutt).
    2 Salg: tre servitører ved disken etter stengetid sammenligner kassarapportene (Emmas kan leses over skulderen,
      tenkte tall), krøller dem, kaster dem i bøtta og går ut mens lysene slukkes (Blender, kassa-*). «Illustrasjon».
-   3 Det som lå under: Emma blir intervjuet ved et vindusbord (Blender, intervju-*), og sitatet kommer i en snakkeboble
-     ved henne, ord for ord. Sitatet er ordrett fra manuset; kildelinjen sier at figuren er en illustrasjon.
-   Ord: «15 000», «skritt», «Illustrasjon» og «Empathize» = 4 (sitatet og kildelinjen telles ikke;
-   teksten på lappen i filmen er en del av bildet). */
+   3 Det som lå under: Emma blir intervjuet ved et vindusbord (Blender, blender/intervju2.py), og sitatet kommer i en
+     snakkeboble ved henne, ord for ord. Sitatet er ordrett fra manuset. Kildelinjen under («språklig bearbeidet …
+     illustrasjon») er tatt bort (10.11, brukeren: unødvendig).
+   Ord: «15 000», «skritt», «Puls», «Stress» og «Empathize» = 5 (sitatet telles ikke; teksten på lappen i filmen er
+   en del av bildet). */
 // Skritt på en vakt, fra et av intervjuene
 const SKRITT = 15000
+// Puls og stress gjennom vakten (11.11): to målere under skrittelleren som går opp og ned mens Emma går gjennom
+// kvelden. Nivå 0–1 etter hvor langt vakten er kommet. Ingen tall – det er en illustrasjon av at kroppen
+// svinger i løpet av en vakt, ikke målinger.
+const PULS_FORLOP: [number, number][] = [[0, 0.3], [0.08, 0.5], [0.2, 0.66], [0.32, 0.52], [0.45, 0.84], [0.55, 0.93], [0.66, 0.68], [0.77, 0.88], [0.9, 0.58], [1, 0.36]]
+const STRESS_FORLOP: [number, number][] = [[0, 0.14], [0.1, 0.24], [0.24, 0.5], [0.36, 0.36], [0.5, 0.8], [0.6, 0.9], [0.7, 0.56], [0.8, 0.76], [0.92, 0.4], [1, 0.18]]
+function niva(forlop: [number, number][], u: number) {
+  for (let i = 1; i < forlop.length; i++) {
+    const [u0, v0] = forlop[i - 1]
+    const [u1, v1] = forlop[i]
+    if (u <= u1) {
+      const k = Math.min(1, Math.max(0, (u - u0) / Math.max(0.001, u1 - u0)))
+      return v0 + (v1 - v0) * k * k * (3 - 2 * k)
+    }
+  }
+  return forlop[forlop.length - 1][1]
+}
 const SITAT = 'Jeg jobber veldig mye og får veldig lite tilbake, og da mister jeg motivasjonen.'
 
 // Tegnene for funnene (24 × 24): de samme i Nøkkelfunn og på ringene i Ideate, så sensor ser hva ideen kobler
@@ -247,6 +263,9 @@ export function Funn({ takt }: SceneProps) {
   const iv = useFilm(takt === 2)
   const andel = Math.min(1, Math.max(0, (a.t - apningMeta.vaktStart) / (apningMeta.vaktSlutt - apningMeta.vaktStart)))
   const antall = Math.round((andel * SKRITT) / 50) * 50
+  // Pulsen flimrer litt rundt nivået sitt (som en måler som leser av), stresset beveger seg roligere
+  const puls = Math.min(1, niva(PULS_FORLOP, andel) + (andel > 0 && andel < 1 ? 0.025 * Math.sin(a.t * 7.3) : 0))
+  const stress = niva(STRESS_FORLOP, andel)
   const ord = SITAT.split(' ')
   const [hx, hy] = intervju.hode
   return (
@@ -268,8 +287,28 @@ export function Funn({ takt }: SceneProps) {
       </div>
 
       <motion.div className="fu-teller" initial={false} animate={{ opacity: takt === 0 ? 1 : 0 }} transition={{ duration: 0.6 }}>
-        <b data-ord={SKRITT.toLocaleString('nb-NO')}>{antall.toLocaleString('nb-NO')}</b>
-        <span>skritt</span>
+        <div className="fu-skritt">
+          <b data-ord={SKRITT.toLocaleString('nb-NO')}>{antall.toLocaleString('nb-NO')}</b>
+          <span>skritt</span>
+        </div>
+        <div className="fu-maaler puls">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20.5s-7.5-4.6-7.5-10.1A4.2 4.2 0 0 1 12 8a4.2 4.2 0 0 1 7.5 2.4c0 5.5-7.5 10.1-7.5 10.1z" />
+          </svg>
+          <span>Puls</span>
+          <i>
+            <u style={{ width: `${puls * 100}%` }} />
+          </i>
+        </div>
+        <div className="fu-maaler stress">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2.5 13h4l2-6 3.5 11 3-8 1.5 3h5" />
+          </svg>
+          <span>Stress</span>
+          <i>
+            <u style={{ width: `${stress * 100}%` }} />
+          </i>
+        </div>
       </motion.div>
 
       {takt === 2 && (
@@ -290,9 +329,6 @@ export function Funn({ takt }: SceneProps) {
               </motion.span>
             ))}
           </motion.div>
-          <motion.p className="fu-kilde" data-tekst="kilde" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 2.4 + ord.length * 0.32 }}>
-            Sitat fra et intervju med en servitør, språklig bearbeidet. Figuren er en illustrasjon.
-          </motion.p>
         </>
       )}
     </div>
@@ -319,13 +355,13 @@ const FASER_REISE = [
   { navn: 'Etter', fra: REISE, til: SLUTT_START },
   { navn: 'Dagene etter', fra: SLUTT_START, til: TOTAL },
 ]
+// Klokka øverst til venstre: bare klokkeslett og det nøytrale (stempler inn og ut). Det som løfter og tynger,
+// står på lappene under (ARSAKER), så det ikke sies to ganger.
 type Tekst = { fra: number; til: number; tekst: string; sitat?: boolean }
 const TEKSTER: Tekst[] = [
-  { fra: 3.0, til: 5.6, tekst: '16:00 Stempler inn' }, // etter at «Emma · Tenkt vakt» har tont ut (høyst 8 ord samtidig)
-  { fra: 12.3, til: H.takk - 0.3, tekst: '19:30 Ingen pause' },
-  { fra: H.hjelp + 0.2, til: REISE - 0.2, tekst: 'Godt lag' },
-  { fra: REISE + 0.3, til: REISE + kassaMeta.sammenlign + 1.2, tekst: '23:40 Salg sammenlignes' },
-  { fra: REISE + kassaMeta.sammenlign + 1.4, til: REISE + kassaMeta.krell + 0.2, tekst: '21 400 skritt' },
+  { fra: 3.0, til: 5.6, tekst: '16:00 Stempler inn' }, // etter at «Emma» har tont ut
+  { fra: 12.3, til: H.takk - 0.3, tekst: '19:30' },
+  { fra: REISE + 0.3, til: REISE + kassaMeta.krell - 0.2, tekst: '23:40' },
   { fra: REISE + kassaMeta.gar - 0.6, til: SLUTT_START - 0.2, tekst: '00:10 Stempler ut' },
 ]
 // Snakkeboblene følger hodet til den som snakker i filmen (reise.json: bobler.*.spor = [tid, x, y] fra Blender).
@@ -353,19 +389,26 @@ const KURVE: [number, number][] = [
   [0, 0.05], [5, 0.05], [H.syk, -0.2], [H.venter, -0.5], [15, -0.72], [H.takk - 0.4, -0.8], [H.takk + 0.6, 0.35], [H.servert, 0.62], [REISE, 0.5],
   [REISE + kassaMeta.sammenlign + 0.8, 0.55], [REISE + kassaMeta.krell, 0.25], [REISE + kassaMeta.kast + 0.4, -0.45], [SLUTT_START, -0.62], [TOTAL, -0.62],
 ]
-// Lyspunkter (+) og smertepunkter (−) på kurven
-const MERKER: { t: number; godt: boolean }[] = [
-  { t: H.venter, godt: false },
-  { t: 15, godt: false },
-  { t: H.takk + 0.6, godt: true },
-  { t: H.servert, godt: true },
-  { t: REISE + kassaMeta.sammenlign + 0.8, godt: true },
-  { t: REISE + kassaMeta.kast + 0.4, godt: false },
+// Lyspunkter (+) og smertepunkter (−) på kurven, med årsaken skrevet ut (11.11: det gikk for fort til at publikum
+// fikk med seg hva som løftet og hva som tynget). Hver årsak kommer først stort øverst til venstre mens det skjer i
+// filmen (fra «vis»), og flytter seg så ned til merket sitt på kurven (ved «t») og blir stående. Når filmen er
+// ferdig, står hele reisen igjen med årsakene på. Ordene er de samme som i gruppens egne brukerreiser (dobbel
+// stasjon, ingen pause, godt lag). «side» = hvilken vei lappen går ut fra merket, så naboer ikke dekker hverandre.
+type Arsak = { t: number; vis: number; godt: boolean; tekst: string; side: 'midt' | 'hoyre' | 'venstre' }
+const MERKER: Arsak[] = [
+  { t: H.venter, vis: H.syk + 0.5, godt: false, tekst: 'Dobbel stasjon', side: 'midt' },
+  { t: 15, vis: 12.6, godt: false, tekst: 'Ingen pause', side: 'hoyre' },
+  { t: H.takk + 0.6, vis: H.takk, godt: true, tekst: 'Gjesten takker', side: 'venstre' },
+  { t: H.servert, vis: H.hjelp + 0.3, godt: true, tekst: 'Godt lag', side: 'hoyre' },
+  { t: REISE + kassaMeta.sammenlign + 0.8, vis: REISE + kassaMeta.les, godt: true, tekst: 'Salg sammenlignes', side: 'hoyre' },
+  { t: REISE + kassaMeta.kast + 0.4, vis: REISE + kassaMeta.krell, godt: false, tekst: 'Lappen kastes', side: 'hoyre' },
 ]
+/** Så lenge står årsaken stort øverst før den flytter seg ned til kurven (minst). */
+const ARSAK_STOR = 2.4
 const KX0 = 96
 const KX1 = 1824
-const KY0 = 862 // grunnlinja
-const KH = 74
+const KY0 = 836 // grunnlinja
+const KH = 66
 const kx = (t: number) => KX0 + ((KX1 - KX0) * t) / TOTAL
 const ky = (v: number) => KY0 - v * KH
 function humorVed(t: number) {
@@ -382,8 +425,31 @@ const KURVE_STI = (() => {
   return d.join(' ')
 })()
 
-export function Reise(_: SceneProps) {
+/* Takt 0 (11.11): de to første brukerreisene gruppen laget – på gråpapir med lapper, og digitalt i arbeidskravet –
+   vises som to ark før den animerte. De skal bare vises, ikke forklares. Ingen ord på skjermen. */
+export function Reise({ takt }: SceneProps) {
   useLys(0)
+  return (
+    <div className="scene v2 re">
+      <Studio vis={takt === 0} fase="mint" />
+      <AnimatePresence>
+        {takt === 0 && (
+          <motion.div key="utkast" className="re-utkast" exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.6, ease: MYK }}>
+            <motion.div className="re-ark re-ark-1" initial={{ opacity: 0, y: 70, rotate: -7 }} animate={{ opacity: 1, y: 0, rotate: -2.5 }} transition={{ duration: 1.0, delay: 0.3, ease: MYK }}>
+              <Foto id="reise-utkast-1" kamera="stille" />
+            </motion.div>
+            <motion.div className="re-ark re-ark-2" initial={{ opacity: 0, y: 70, rotate: 6 }} animate={{ opacity: 1, y: 0, rotate: 2 }} transition={{ duration: 1.0, delay: 1.3, ease: MYK }}>
+              <Foto id="reise-utkast-2" kamera="stille" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {takt >= 1 && <ReiseFilm />}
+    </div>
+  )
+}
+
+function ReiseFilm() {
   const r = useRef<HTMLVideoElement>(null)
   const k = useRef<HTMLVideoElement>(null)
   const [del, setDel] = useState<0 | 1 | 2>(0)
@@ -426,10 +492,10 @@ export function Reise(_: SceneProps) {
   // «Dagene etter»: de andre fasene toner ut før spørsmålet kommer (tom skjerm, bare sporet står igjen)
   const tom = t >= SLUTT_START
   return (
-    <div className="scene v2 re">
+    <motion.div className="re-del" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
       <motion.video ref={r} className="re-film" src={filmUrl('reise')} muted playsInline preload="auto" onTimeUpdate={(e) => e.currentTarget.currentTime >= REISE - 0.05 && del === 0 && setDel(1)} onEnded={() => del === 0 && setDel(1)} onError={() => setDel(1)} initial={false} animate={{ opacity: del === 0 ? 1 : 0 }} transition={{ duration: 0.6 }} />
       <motion.video ref={k} className="re-film" src={filmUrl('kassa')} muted playsInline preload="auto" onEnded={() => setDel(2)} onError={() => setDel(2)} initial={false} animate={{ opacity: del === 1 ? 1 : 0 }} transition={{ duration: 0.6 }} />
-      <motion.img className="re-film" src="film/apning-slutt.png" alt="" initial={false} animate={{ opacity: del === 2 ? 1 : 0 }} transition={{ duration: 1.4 }} />
+      <motion.img className="re-film" src="film/apning2-slutt.png" alt="" initial={false} animate={{ opacity: del === 2 ? 1 : 0 }} transition={{ duration: 1.4 }} />
       <div className="re-skygge" />
 
       <AnimatePresence>
@@ -442,7 +508,7 @@ export function Reise(_: SceneProps) {
 
       <AnimatePresence mode="wait">
         {!intro && tekst && (
-          <motion.div key={tekst.tekst} className={`re-tekst ${tekst.sitat ? 'sitat' : ''}`} data-tekst={tekst.sitat ? 'sitat' : undefined} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.45, ease: MYK }}>
+          <motion.div key={tekst.tekst} className={`re-tekst ${tekst.sitat ? 'sitat' : ''} ${tekst.tekst.length === 5 ? 'bare-klokke' : ''}`} data-tekst={tekst.sitat ? 'sitat' : undefined} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.45, ease: MYK }}>
             {tekst.tekst.match(/^\d\d:\d\d/) ? (
               <>
                 <b>{tekst.tekst.slice(0, 5)}</b> {tekst.tekst.slice(6)}
@@ -466,7 +532,7 @@ export function Reise(_: SceneProps) {
       <AnimatePresence>
         {sporsmal && (
           <motion.p key="sp" className="re-sporsmal stor-serif" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, ease: MYK }}>
-            Hva sitter hun igjen med?
+            Hva sitter Emma igjen med?
           </motion.p>
         )}
       </AnimatePresence>
@@ -502,6 +568,28 @@ export function Reise(_: SceneProps) {
         </svg>
       )}
 
+      {/* Årsakene: stort øverst til venstre mens det skjer, så ned til merket på kurven, der de blir stående */}
+      {MERKER.filter((m) => t >= m.vis).map((m) => {
+        const stor = t < Math.max(m.vis + ARSAK_STOR, m.t)
+        const mx = kx(m.t)
+        const my = ky(humorVed(m.t))
+        const oppe = { left: 96, top: tekst ? 176 : 72, x: '0%', scale: 1.7 }
+        const nede = {
+          left: m.side === 'midt' ? mx : m.side === 'hoyre' ? mx - 24 : mx + 24,
+          top: m.godt ? my - 72 : my + 28,
+          x: m.side === 'midt' ? '-50%' : m.side === 'hoyre' ? '0%' : '-100%',
+          scale: 1,
+        }
+        return (
+          <motion.div key={m.tekst} className={`re-arsak ${m.godt ? 'godt' : 'tungt'}`} initial={{ opacity: 0, ...oppe, scale: 1.3 }} animate={{ opacity: 1, ...(stor ? oppe : nede) }} transition={{ duration: stor ? 0.45 : 0.9, ease: MYK }}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d={m.godt ? 'M5 12h14M12 5v14' : 'M5 12h14'} />
+            </svg>
+            {m.tekst}
+          </motion.div>
+        )
+      })}
+
       {/* Fasene står fast nederst; fasen hun er i, lyser. Til slutt står bare «Dagene etter» igjen. */}
       {!intro && (
         <div className="re-faser">
@@ -514,7 +602,7 @@ export function Reise(_: SceneProps) {
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   )
 }
 
@@ -622,7 +710,7 @@ export function Ideate({ takt }: SceneProps) {
   const my = (a0.y + b0.y) / 2
   return (
     <div className="scene v2 id">
-      <motion.img className="id-bilde" src="film/kassa-sammenlign.png" alt="" initial={false} animate={{ opacity: takt === 0 ? 1 : 0, scale: takt === 0 ? 1 : 1.04 }} transition={{ duration: 0.9 }} />
+      <motion.img className="id-bilde" src="film/kassa2-sammenlign.png" alt="" initial={false} animate={{ opacity: takt === 0 ? 1 : 0, scale: takt === 0 ? 1 : 1.04 }} transition={{ duration: 0.9 }} />
       {takt === 0 && (
         <svg className="id-tegning" viewBox="0 0 1920 1080" aria-hidden="true">
           <motion.circle cx={L.x} cy={L.y} r={L.r} className="id-ring salg" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.1, delay: 0.9, ease: MYK }} />
@@ -699,8 +787,8 @@ export function Ideate({ takt }: SceneProps) {
 }
 
 /* ── 7. Prototypen: papirskissen før telefonfilmen (Demo.tsx tar over etterpå) ──
-   Har vi et bilde av papirskissen (plassen papirskisse i public/foto/foto.js), vises det. Ellers tegnes en enkel
-   strekskisse av startskjermen (merket «Illustrasjon»). Skissen glir over i det ekte skjermbildet av appen. */
+   Bildet av den ekte papirskissen (plassen papirskisse i public/foto/foto.js, lagt inn 11.11) vises. Mangler
+   bildet, tegnes en enkel strekskisse av startskjermen i stedet. Skissen glir over i det ekte skjermbildet av appen. */
 export function Skisse() {
   const harFoto = hentFoto('papirskisse').status === 'ok'
   const t = useSek()
@@ -708,9 +796,9 @@ export function Skisse() {
   return (
     <div className="scene v2 sk">
       <Studio fase="fersken" />
-      <motion.div className="sk-ark" initial={{ opacity: 0, y: 40, rotate: -4 }} animate={{ opacity: 1, y: 0, rotate: digital ? -6 : -3, x: digital ? -330 : 0, scale: digital ? 0.82 : 1 }} transition={{ duration: 1.1, ease: MYK }}>
+      <motion.div className={`sk-ark ${harFoto ? 'har-foto' : ''}`} initial={{ opacity: 0, y: 40, rotate: -4 }} animate={{ opacity: 1, y: 0, rotate: digital ? -6 : -3, x: digital ? -330 : 0, scale: digital ? 0.82 : 1 }} transition={{ duration: 1.1, ease: MYK }}>
         {harFoto ? (
-          <Foto id="papirskisse" kamera="drift" tid={20} />
+          <Foto id="papirskisse" kamera="stille" />
         ) : (
           <svg viewBox="0 0 300 560" className="sk-strek" aria-hidden="true">
             {[
@@ -773,7 +861,9 @@ const MANED = 2
 export function Test({ takt }: SceneProps) {
   useLys(0)
   const h = useFilm(takt === 3)
-  const lenke = oppsett.prototypeUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')
+  // Lenken på skjermen er forkortet (11.11): den ekte adressen har brukernavnet i seg og var for stor. QR-koden på
+  // sluttkortet og oppsett.prototypeUrl peker fortsatt til den ekte adressen.
+  const lenke = 'github.io/vaktlogg'
   const t = useSek()
   const fokus = takt === 2 ? MANED : -1
   // Loopen starter fra første side (gjestene) når kortet med forslaget kommer
@@ -791,7 +881,7 @@ export function Test({ takt }: SceneProps) {
         <>
           <svg className="te-linjer" viewBox="0 0 1920 1080" aria-hidden="true">
             {TELEFONER.map((p, i) => (
-              <motion.line key={i} x1={960} y1={330} x2={p.x} y2={p.y - 80} initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 0.6, delay: p.d - 0.5 }} />
+              <motion.line key={i} x1={960} y1={292} x2={p.x} y2={p.y - 80} initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 0.6, delay: p.d - 0.5 }} />
             ))}
           </svg>
           <motion.div className="te-lenke" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: MYK }}>
@@ -892,9 +982,9 @@ export function Videre({ takt }: SceneProps) {
   return (
     <div className="scene v2 vi">
       <motion.div className="vi-pilot" initial={false} animate={{ opacity: takt === 0 ? 1 : 0 }} transition={{ duration: 0.9 }}>
-        <img className="vi-kilder" src="film/kilder-slutt.png" alt="" />
+        <img className="vi-kilder" src="film/kilder2-slutt.png" alt="" />
         <motion.div className="vi-restaurant" initial={{ opacity: 0, y: -30, rotate: -3 }} animate={{ opacity: takt === 0 ? 1 : 0, y: 0, rotate: -3 }} transition={{ duration: 0.9, delay: 0.5, ease: MYK }}>
-          <img src="film/apning-frys.png" alt="" />
+          <img src="film/apning2-frys.png" alt="" />
         </motion.div>
         {/* «Én restaurant, én kasse og én klokke koblet til telefonen»: tre stiplede linjer inn til telefonen i midten
             (sluttbildet fra kildefilmen: kassa til venstre, telefonen i midten, klokka til høyre) */}
