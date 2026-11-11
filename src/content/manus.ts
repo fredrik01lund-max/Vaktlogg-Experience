@@ -44,7 +44,7 @@ export const manus: Scene[] = [
       {
         hvem: 'A',
         sier: 'Vi gjorde ti dybdeintervjuer med servitører, hovmestere og ledere. Vi observerte også arbeidsdagen til noen servitører på to restauranter, Noode Sky og Frenchie.',
-        regi: 'Ikonet: kula glir inn i Empathize. Ti bonger merket INTERVJU henges på innsiktsknaggen én etter én, tettere og tettere som bestillinger på et kjøkken, med rollen på: 6 servitører (rosa), 2 hovmestere (mint), 2 daglige ledere (fersken), gruppert per restaurant (seks steder, uten navn), og til slutt en mørk bong for egen erfaring. Under kommer bildet fra Noode Sky (observasjon) og bildet av en servitør vi intervjuet. Stedene sies, de står ikke på skjermen.',
+        regi: 'Ikonet: kula glir inn i Empathize. Ti bonger merket INTERVJU henges på innsiktsknaggen én etter én, tettere og tettere som bestillinger på et kjøkken, med rollen på: 6 servitører (rosa), 2 hovmestere (mint), 2 daglige ledere (fersken), gruppert per restaurant (seks steder, uten navn), så to gule bonger for observasjonene og til slutt en mørk bong for egen erfaring. En liten kokk går bortover skinna og henger dem opp, hopper ned og henger opp de fem bildene fra stedene vi besøkte på vei tilbake, og går ut til venstre. Alt henger etter ca. fem sekunder. Stedene sies, de står ikke på skjermen.',
       },
     ],
     overgang: 'A klikker videre til nøkkelfunnene: bongene faller av knaggen, og nøkkelfunnene kommer.',

@@ -129,66 +129,146 @@
   object-fit: cover;
 }
 
-/* ── 2. Innsiktsarbeidet: én bong per intervju på skinna, og to fotografier under ── */
+/* ── 2. Innsiktsarbeidet (ny 11.11): stålskinne med bonger for intervjuene, observasjonene og egen erfaring,
+   og fem bilder i en ryddig rad under ── */
 .in-skinne {
-  top: 250px;
-  left: 90px;
-  right: 300px;
+  top: 314px;
+  left: 70px;
+  right: 70px;
+  height: 20px;
+  border-radius: 10px;
   transform-origin: 0 50%;
+  background: linear-gradient(180deg, #f6f3ef 0%, #c9c3bd 20%, #9a948e 52%, #5d5752 100%);
+  box-shadow: 0 14px 22px -8px rgba(60, 45, 35, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+}
+.in-skinne::before,
+.in-skinne::after {
+  content: '';
+  position: absolute;
+  top: -7px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fbf9f6, #a8a29c 55%, #4f4a46);
+  box-shadow: 0 8px 14px -6px rgba(60, 45, 35, 0.6);
+}
+.in-skinne::before {
+  left: -12px;
+}
+.in-skinne::after {
+  right: -12px;
 }
 .in-bonger {
   position: absolute;
-  left: 110px;
-  top: 258px;
+  left: 104px;
+  top: 328px;
+  z-index: 3;
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 .in-bong {
   position: relative;
-  width: 108px;
-  height: 178px;
-  padding: 30px 3px 0;
-  background-color: #f7f2ea;
+  width: 110px;
+  transform-origin: 50% 0;
+  filter: drop-shadow(0 16px 14px rgba(60, 45, 35, 0.3));
+}
+.in-bong.nytt-sted {
+  margin-left: 22px;
+}
+.in-papir {
+  height: 196px;
+  background: linear-gradient(180deg, #fffdf9, #f9f3ea);
   color: #1b1816;
   font-family: var(--bong);
-  font-size: 15px;
   line-height: 1.2;
-  letter-spacing: -0.02em;
   text-align: center;
-  transform-origin: 50% 0;
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.55);
-  background-image: linear-gradient(0deg, var(--rolle) 0 46px, transparent 46px);
+  border-radius: 5px 5px 0 0;
   clip-path: polygon(0 0, 100% 0, 100% 95%, 88% 100%, 75% 95%, 62% 100%, 50% 95%, 38% 100%, 25% 95%, 12% 100%, 0 95%);
 }
-.in-bong b {
-  display: block;
-  font-weight: 700;
-  word-break: break-word;
+.in-topp {
+  display: grid;
+  place-items: center;
+  height: 50px;
+  background: var(--rolle);
 }
-.in-bong.egen {
-  margin-left: 34px;
-  width: 132px;
-  background-color: #2a2522;
+.in-topp svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: #1b1816;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.in-papir small {
+  display: block;
+  margin: 14px 8px 10px;
+  padding-bottom: 9px;
+  border-bottom: 1.5px dashed #b9aea3;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.in-papir b {
+  display: block;
+  padding: 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #4a423c;
+}
+/* Observasjonene: gul bong med øye, bare ordet OBSERVASJON */
+.in-bong.t-observasjon .in-papir b {
+  margin-top: 22px;
+  font-size: 14.500px;
+  letter-spacing: -0.03em;
+  color: #1b1816;
+}
+/* Egen erfaring: mørkt papir, litt bredere */
+.in-bong.t-egen {
+  width: 128px;
+}
+.in-bong.t-egen .in-papir {
+  background: linear-gradient(180deg, #2f2a27, #231f1d);
+}
+.in-bong.t-egen .in-topp svg {
+  stroke: #f4ede4;
+}
+.in-bong.t-egen .in-papir b {
+  margin-top: 22px;
+  font-size: 16px;
   color: #f4ede4;
 }
+/* Klypa som holder bongen på skinna */
 .in-klype {
   position: absolute;
   left: 50%;
-  top: -6px;
-  width: 26px;
-  height: 14px;
-  margin-left: -13px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #9a948d, #4a4642);
+  top: -12px;
+  z-index: 1;
+  width: 30px;
+  height: 20px;
+  margin-left: -15px;
+  border-radius: 4px 4px 6px 6px;
+  background: linear-gradient(180deg, #d9d4ce, #8a847e 55%, #4a4642);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 3px 5px rgba(40, 30, 25, 0.35);
 }
-.in-bong.nytt-sted {
-  margin-left: 34px;
-}
+/* Bildene: fem i en rad, like høye, med smal hvit kant og en bit tape øverst */
 .in-bilde {
   position: absolute;
-  background: #f4efe6;
-  padding: 12px 12px 54px;
-  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  background: #fffdf9;
+  box-shadow: 0 30px 50px -20px rgba(60, 40, 30, 0.5), 0 2px 6px rgba(60, 40, 30, 0.12);
+}
+.in-bilde::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -15px;
+  width: 96px;
+  height: 30px;
+  margin-left: -48px;
+  background: rgba(255, 226, 168, 0.75);
+  box-shadow: 0 2px 4px rgba(60, 40, 30, 0.12);
+  transform: rotate(-3deg);
 }
 .in-bilde .foto {
   position: relative;
@@ -196,56 +276,11 @@
   height: 100%;
   overflow: hidden;
 }
-/* Fem bilder i en løs bunke under knaggen (9.11): liggende, stående, liggende, liggende, stående */
-.in-b1 {
-  left: 110px;
-  top: 560px;
-  width: 440px;
-  height: 330px;
-}
-.in-b2 {
-  left: 500px;
-  top: 500px;
-  width: 320px;
-  height: 450px;
-}
-.in-b3 {
-  left: 780px;
-  top: 580px;
-  width: 420px;
-  height: 370px;
-}
-.in-b4 {
-  left: 1150px;
-  top: 520px;
-  width: 440px;
-  height: 330px;
-}
-.in-b5 {
-  left: 1530px;
-  top: 560px;
-  width: 300px;
-  height: 420px;
-}
-.in-merke {
-  position: absolute;
-  left: 16px;
-  bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--bong);
-  font-size: 22px;
-  font-weight: 700;
-  color: #2a8a5f;
-}
-.in-merke svg {
-  width: 30px;
-  height: 30px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-}
+.in-b1 { left: 69px; top: 620px; width: 410px; height: 311px; }
+.in-b2 { left: 497px; top: 642px; width: 240px; height: 311px; }
+.in-b3 { left: 755px; top: 614px; width: 410px; height: 311px; }
+.in-b4 { left: 1183px; top: 638px; width: 410px; height: 311px; }
+.in-b5 { left: 1611px; top: 618px; width: 240px; height: 311px; }
 
 /* ── 3. Nøkkelfunn: filmene i fullskjerm, telleren og sitatet ── */
 .fu-film {
@@ -1394,15 +1429,8 @@
 .studio-paa .flipp-celle {
   box-shadow: 0 18px 30px -8px rgba(70, 40, 30, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
-.studio-paa .in-bong {
-  box-shadow: 0 18px 30px -10px rgba(60, 45, 35, 0.4);
-}
-.studio-paa .in-bilde,
 .studio-paa .sk-ark {
   box-shadow: 0 30px 60px -18px rgba(60, 40, 30, 0.45), 0 2px 6px rgba(60, 40, 30, 0.12);
-}
-.studio-paa .in-bong:not(.egen) {
-  background-color: #fffdf9;
 }
 .studio-paa .ps-skriver span {
   box-shadow: 0 2px 0 rgba(255, 255, 255, 0.6), inset 0 3px 6px rgba(0, 0, 0, 0.8);
@@ -1506,50 +1534,64 @@
   width: 120px;
 }
 
-/* Innsikt (9.11): skiltet på knaggen og «INTERVJU» på bongene */
+/* Kokken som henger opp bongene og bildene: liten, og han vugger lett mens han går */
+.in-kokk {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  width: 66px;
+  height: 110px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 6px rgba(60, 45, 35, 0.3));
+}
+.in-kokk span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+  animation: in-kokk-gaa 0.24s ease-in-out infinite alternate;
+}
+.in-kokk svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+@keyframes in-kokk-gaa {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
+}
+/* Innsikt: skiltet som henger på skinna */
 .in-knagg-navn {
   position: absolute;
-  left: 90px;
-  top: 198px;
-  padding: 8px 18px 7px;
-  border-radius: 6px;
-  background: #2a2725;
+  left: 104px;
+  top: 246px;
+  padding: 9px 22px 8px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #34302d, #231f1d);
   color: #f7f2ea;
   font-family: var(--bong);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
-  letter-spacing: 0.18em;
-  box-shadow: 0 8px 18px -8px rgba(40, 30, 25, 0.5);
+  letter-spacing: 0.2em;
+  box-shadow: 0 10px 18px -8px rgba(40, 30, 25, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
+.in-knagg-navn::before,
 .in-knagg-navn::after {
   content: '';
   position: absolute;
-  left: 50%;
-  bottom: -14px;
+  bottom: -22px;
   width: 4px;
-  height: 14px;
-  margin-left: -2px;
+  height: 22px;
   background: #4a4642;
 }
-.in-bong small {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #8a7f75;
+.in-knagg-navn::before {
+  left: 22px;
 }
-/* «INTERVJU» er overskriften på bongen (som «BORD 12» på en bestilling), rollen står under */
-.in-bong small {
-  margin: -8px 4px 8px;
-  padding-bottom: 7px;
-  border-bottom: 1.5px dashed #b9aea3;
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  color: #1b1816;
-}
-.in-bong:not(.egen) b {
-  font-size: 13px;
-  font-weight: 700;
-  color: #5a514b;
+.in-knagg-navn::after {
+  right: 22px;
 }

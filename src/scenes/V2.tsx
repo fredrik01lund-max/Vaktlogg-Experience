@@ -95,68 +95,114 @@ export function Problem(_: SceneProps) {
    Bongene henger i grupper, én gruppe per restaurant (seks steder), med luft imellom – uten navn og uten tall, så
    informantene er anonyme og ordene ikke blir flere. «sted» brukes bare til grupperingen (navnene står her i koden,
    aldri på skjermen): 1 Frenchie, 2 Noode Sky, 3 Park 29, 4 Olivia, 5 Den glade gris, 6 en restaurant i Drammen. */
-type Intervju = { rolle: 'SERVITØR' | 'HOVMESTER' | 'DAGLIG LEDER'; sted: number }
-const INTERVJUER: Intervju[] = [
-  { rolle: 'SERVITØR', sted: 1 },
-  { rolle: 'SERVITØR', sted: 1 },
-  { rolle: 'SERVITØR', sted: 2 },
-  { rolle: 'SERVITØR', sted: 2 },
-  { rolle: 'DAGLIG LEDER', sted: 2 },
-  { rolle: 'DAGLIG LEDER', sted: 3 },
-  { rolle: 'HOVMESTER', sted: 4 },
-  { rolle: 'HOVMESTER', sted: 5 },
-  { rolle: 'SERVITØR', sted: 6 },
-  { rolle: 'SERVITØR', sted: 6 },
+type Rolle = 'SERVITØR' | 'HOVMESTER' | 'DAGLIG LEDER'
+type Bong = { type: 'intervju'; rolle: Rolle; sted: number } | { type: 'observasjon'; sted: number } | { type: 'egen'; sted: number }
+const BONGER: Bong[] = [
+  { type: 'intervju', rolle: 'SERVITØR', sted: 1 },
+  { type: 'intervju', rolle: 'SERVITØR', sted: 1 },
+  { type: 'intervju', rolle: 'SERVITØR', sted: 2 },
+  { type: 'intervju', rolle: 'SERVITØR', sted: 2 },
+  { type: 'intervju', rolle: 'DAGLIG LEDER', sted: 2 },
+  { type: 'intervju', rolle: 'DAGLIG LEDER', sted: 3 },
+  { type: 'intervju', rolle: 'HOVMESTER', sted: 4 },
+  { type: 'intervju', rolle: 'HOVMESTER', sted: 5 },
+  { type: 'intervju', rolle: 'SERVITØR', sted: 6 },
+  { type: 'intervju', rolle: 'SERVITØR', sted: 6 },
+  // Observasjonene henger på samme skinne (11.11): arbeidsdagen til servitører på to restauranter (manuset)
+  { type: 'observasjon', sted: 7 },
+  { type: 'observasjon', sted: 7 },
+  { type: 'egen', sted: 8 },
 ]
-const ROLLEFARGE: Record<Intervju['rolle'], string> = { SERVITØR: '#F08FB0', HOVMESTER: '#A8E6DA', 'DAGLIG LEDER': '#FFD9B3' }
-// Når hver bong henges opp: som bestillinger i en travel kveld – først rolig, så tettere og tettere (9.11)
+const ROLLEFARGE: Record<Rolle, string> = { SERVITØR: '#F08FB0', HOVMESTER: '#A8E6DA', 'DAGLIG LEDER': '#FFD9B3' }
+const bongFarge = (b: Bong) => (b.type === 'intervju' ? ROLLEFARGE[b.rolle] : b.type === 'observasjon' ? '#FFD97A' : '#4A4440')
+// Tegnet øverst på bongen: snakkeboble (intervju), øye (observasjon), stjerne (egen erfaring)
+const BONG_TEGN: Record<Bong['type'], string> = {
+  intervju: 'M4 5.5h16v10H11l-4.5 4v-4H4z',
+  observasjon: 'M2 12s3.800-6.500 10-6.500S22 12 22 12s-3.800 6.500-10 6.500S2 12 2 12zM12 9a3 3 0 1 1 0 6a3 3 0 0 1 0-6z',
+  egen: 'M12 3.500l2.600 5.300 5.900.800-4.300 4.100 1 5.800-5.200-2.800-5.200 2.800 1-5.800-4.300-4.100 5.900-.800z',
+}
+// Når hver bong henges opp: som bestillinger i en travel kveld – tettere og tettere. Raskere enn før (11.11):
+// alle bongene henger etter ca. tre sekunder, og bildene kommer mens de siste henges opp.
 const BONG_TID = (() => {
-  const t = [1.0]
-  for (let i = 1; i < INTERVJUER.length; i++) t.push(t[i - 1] + 0.62 - (0.44 * (i - 1)) / (INTERVJUER.length - 2))
-  t.push(t[t.length - 1] + 0.7) // egen erfaring til slutt, litt etter
+  const t = [0.45]
+  for (let i = 1; i < BONGER.length; i++) t.push(t[i - 1] + 0.26 - (0.14 * (i - 1)) / (BONGER.length - 2))
   return t
 })()
-const BONG_SLUTT = BONG_TID[BONG_TID.length - 1] + 0.4
-// Bildene fra stedene vi besøkte (9.11): Park 29 og Noode Sky, blandet så de ligger som en bunke på bordet.
-// Ingen stedsnavn på skjermen. innsikt-2 (servitør vi intervjuet) mangler fortsatt og vises ikke.
+// Kokken (11.11): en liten kokk går bortover skinna og henger opp bongene, hopper ned i enden, henger opp bildene
+// på vei tilbake og går ut til venstre. Liten og rolig, så han ikke tar oppmerksomheten fra det A sier.
+// Bongenes og bildenes midtpunkt (x) følger målene i v2.css (.in-bonger, .in-b1 … .in-b5).
+const BONG_X = (() => {
+  let x = 104
+  return BONGER.map((b, i) => {
+    if (i > 0) x += 8 + (b.sted !== BONGER[i - 1].sted ? 22 : 0)
+    const bredde = b.type === 'egen' ? 128 : 110
+    const midt = x + bredde / 2
+    x += bredde
+    return midt
+  })
+})()
+const BILDE_X = [274, 617, 960, 1388, 1731]
+const SKINNE_Y = 316 // oversiden av skinna, der kokken går
+const BILDE_Y = 606 // rett over bildene
+const KOKK_NED = BONG_TID[BONG_TID.length - 1] + 0.3
+// Bildene henges opp fra høyre mot venstre, når kokken går forbi
+const BILDE_TID = BILDE_X.map((_, i) => KOKK_NED + 0.5 + (4 - i) * 0.22)
+const KOKK = (() => {
+  const p: [number, number, number][] = [[0.2, BONG_X[0] - 30, SKINNE_Y]]
+  BONGER.forEach((_, i) => p.push([BONG_TID[i], BONG_X[i], SKINNE_Y]))
+  p.push([KOKK_NED, 1846, SKINNE_Y], [KOKK_NED + 0.14, 1840, SKINNE_Y - 46], [KOKK_NED + 0.36, 1800, BILDE_Y])
+  for (let i = 4; i >= 0; i--) p.push([BILDE_TID[i], BILDE_X[i], BILDE_Y])
+  p.push([BILDE_TID[0] + 0.45, -90, BILDE_Y])
+  const start = p[0][0]
+  const varighet = p[p.length - 1][0] - start
+  return { start, varighet, tider: p.map((q) => (q[0] - start) / varighet), x: p.map((q) => q[1] - 33), y: p.map((q) => q[2] - 110), snu: (KOKK_NED + 0.2 - start) / varighet }
+})()
+// Bildene fra stedene vi besøkte (9.11): Park 29 og Noode Sky. Ingen stedsnavn på skjermen.
+// innsikt-2 (servitør vi intervjuet) mangler fortsatt og vises ikke.
 const INNSIKT_BILDER = [
-  { id: 'innsikt-park29-1', r: -4 },
-  { id: 'innsikt-1', r: 2.5 },
-  { id: 'innsikt-noode-2', r: -2 },
-  { id: 'innsikt-park29-2', r: 3.5 },
-  { id: 'innsikt-noode-3', r: -3 },
+  { id: 'innsikt-park29-1', r: -2.5 },
+  { id: 'innsikt-1', r: 2 },
+  { id: 'innsikt-noode-2', r: -1.5 },
+  { id: 'innsikt-park29-2', r: 2.5 },
+  { id: 'innsikt-noode-3', r: -2 },
 ]
 
 export function Innsikt(_: SceneProps) {
   useLys(0)
-  const bonger = [...INTERVJUER.map((iv) => ({ ...iv, egen: false })), { rolle: 'EGEN ERFARING', sted: 0, egen: true }]
   return (
     <div className="scene v2 in">
       <Studio fase="mint" />
-      <motion.div className="skinne in-skinne" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.1, ease: MYK }} />
+      <motion.div className="skinne in-skinne" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.6, ease: MYK }} />
       {/* Skiltet på knaggen: dette er innsiktsknaggen, som bongskinnen på et kjøkken */}
-      <motion.div className="in-knagg-navn" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.6, ease: MYK }}>
+      <motion.div className="in-knagg-navn" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25, ease: MYK }}>
         INNSIKT
       </motion.div>
       <div className="in-bonger">
-        {bonger.map((b, i) => {
+        {BONGER.map((b, i) => {
           const d = BONG_TID[i]
           const r = ((i * 37) % 7) - 3
           return (
             <motion.div
               key={i}
-              className={`in-bong ${b.egen ? 'egen' : ''} ${i > 0 && !b.egen && b.sted !== bonger[i - 1].sted ? 'nytt-sted' : ''}`}
-              style={{ ['--rolle' as string]: b.egen ? '#4A4440' : ROLLEFARGE[b.rolle as Intervju['rolle']] }}
+              className={`in-bong t-${b.type} ${i > 0 && b.sted !== BONGER[i - 1].sted ? 'nytt-sted' : ''}`}
+              style={{ ['--rolle' as string]: bongFarge(b) }}
               // Henges opp på knaggen som en bestilling: dyttes inn ovenfra, svinger litt og blir hengende
               initial={{ opacity: 0, y: -90, x: 26, rotate: r + 14 }}
               animate={{ opacity: 1, y: 0, x: 0, rotate: [r + 14, r - 7, r + 3.5, r - 1.2, r] }}
-              transition={{ duration: 1.0, delay: d, ease: 'easeOut', opacity: { duration: 0.15, delay: d }, y: { duration: 0.32, delay: d, ease: [0.2, 0, 0.3, 1] }, x: { duration: 0.32, delay: d, ease: [0.2, 0, 0.3, 1] } }}
+              transition={{ duration: 0.8, delay: d, ease: 'easeOut', opacity: { duration: 0.12, delay: d }, y: { duration: 0.26, delay: d, ease: [0.2, 0, 0.3, 1] }, x: { duration: 0.26, delay: d, ease: [0.2, 0, 0.3, 1] } }}
               // Neste side: bongene faller av knaggen
               exit={{ y: 980, rotate: r + (i % 2 ? 26 : -22), x: (i % 3) * 14 - 14, transition: { duration: 0.75, delay: ((i * 5) % 7) * 0.035, ease: [0.55, 0, 1, 0.5] } }}
             >
               <span className="in-klype" />
-              {!b.egen && <small>INTERVJU</small>}
-              <b>{b.rolle}</b>
+              <div className="in-papir">
+                <span className="in-topp">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d={BONG_TEGN[b.type]} />
+                  </svg>
+                </span>
+                {b.type === 'intervju' && <small>INTERVJU</small>}
+                <b>{b.type === 'intervju' ? b.rolle : b.type === 'observasjon' ? 'OBSERVASJON' : 'EGEN ERFARING'}</b>
+              </div>
             </motion.div>
           )
         })}
@@ -165,22 +211,49 @@ export function Innsikt(_: SceneProps) {
         <motion.div
           key={b.id}
           className={`in-bilde in-b${i + 1}`}
-          initial={{ opacity: 0, y: 50, rotate: b.r * 2 }}
-          animate={{ opacity: 1, y: 0, rotate: b.r }}
+          initial={{ opacity: 0, y: 60, rotate: b.r * 2.5, scale: 0.94 }}
+          animate={{ opacity: 1, y: 0, rotate: b.r, scale: 1 }}
           exit={{ opacity: 0, y: 40, transition: { duration: 0.5 } }}
-          transition={{ duration: 1.2, delay: BONG_SLUTT + 0.3 + i * 0.22, ease: MYK }}
+          transition={{ duration: 0.7, delay: BILDE_TID[i], ease: MYK }}
         >
           <Foto id={b.id} kamera="drift" tid={22 + i * 2} />
-          {i === 0 && (
-            <span className="in-merke">
-              <svg viewBox="0 0 34 34">
-                <path d="M2.5 17S8 8 17 8s14.5 9 14.5 9-5.5 9-14.5 9S2.5 17 2.5 17z M17 13a4 4 0 1 1 0 8a4 4 0 0 1 0-8z" />
-              </svg>
-              Observasjon
-            </span>
-          )}
         </motion.div>
       ))}
+      <motion.div
+        className="in-kokk"
+        aria-hidden="true"
+        initial={{ x: KOKK.x[0], y: KOKK.y[0], opacity: 0 }}
+        animate={{ x: KOKK.x, y: KOKK.y, opacity: [0, 1, 1, 0] }}
+        exit={{ opacity: 0, transition: { duration: 0.2 } }}
+        transition={{
+          x: { duration: KOKK.varighet, delay: KOKK.start, times: KOKK.tider, ease: 'linear' },
+          y: { duration: KOKK.varighet, delay: KOKK.start, times: KOKK.tider, ease: 'linear' },
+          opacity: { duration: KOKK.varighet, delay: KOKK.start, times: [0, 0.03, 0.97, 1] },
+        }}
+      >
+        <span>
+          <motion.svg viewBox="0 0 90 150" initial={{ scaleX: 1 }} animate={{ scaleX: [1, 1, -1, -1] }} transition={{ duration: KOKK.varighet, delay: KOKK.start, times: [0, KOKK.snu, KOKK.snu + 0.002, 1] }}>
+            <rect x="18" y="70" width="54" height="78" rx="24" fill="#fffdf9" stroke="#d9cfc8" strokeWidth="1.5" />
+            <path d="M32 71h26l-13 13z" fill="#94284c" />
+            <circle cx="39" cy="100" r="2.4" fill="#b9aea8" />
+            <circle cx="51" cy="100" r="2.4" fill="#b9aea8" />
+            <circle cx="39" cy="116" r="2.4" fill="#b9aea8" />
+            <circle cx="51" cy="116" r="2.4" fill="#b9aea8" />
+            <circle cx="45" cy="48" r="24" fill="#f4d6c2" />
+            <circle cx="46" cy="51" r="3" fill="#2b1f1c" />
+            <circle cx="59" cy="51" r="3" fill="#2b1f1c" />
+            <circle cx="40" cy="59" r="4" fill="#f2a9a0" opacity="0.6" />
+            <g fill="#fffdf9" stroke="#d9cfc8" strokeWidth="1.5">
+              <circle cx="30" cy="16" r="11" />
+              <circle cx="60" cy="16" r="11" />
+              <circle cx="45" cy="11" r="13" />
+              <rect x="23" y="18" width="44" height="16" rx="3" />
+            </g>
+            <path d="M62 88L80 72" stroke="#fffdf9" strokeWidth="10" strokeLinecap="round" />
+            <circle cx="82" cy="70" r="6.5" fill="#f4d6c2" />
+          </motion.svg>
+        </span>
+      </motion.div>
     </div>
   )
 }
