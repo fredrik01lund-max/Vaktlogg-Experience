@@ -9,7 +9,7 @@ import type { Scene } from './types.ts'
    • Diamant-ikonet øverst til høyre viser fasen (scene.diamant); når fasen skifter, glir kula dit (ui/Diamant.tsx).
    • «anim» = sekunder animasjon når takten starter (presentatørvisningen sier «vent»).
    • Manuset er planlagt til 10:00. Litt lengre tid til prototypen enn manuset regner med gir 10:10, og
-     klikket med de to første brukerreisene (11.11) gir 10:18.
+     klikket med de to første brukerreisene og spillet om forretningsmodellen (11.11) gir 10:33.
      Kjør `npm run sjekk`.
    • Manus v1 (ti scener, 4.11) ligger urørt i manus-v1.ts og vises under «Lagt til side» (O).
    ════════════════════════════════════════════════════════════════════════════════ */
@@ -229,21 +229,20 @@ export const manus: Scene[] = [
     del: 'Refleksjon og videre',
     tema: 'mork',
     diamant: 'helhet',
-    varighet: 80,
+    varighet: 95,
     takter: [
       {
         hvem: 'C',
-        sier: 'Neste steg er å teste med ekte data i stedet for simulerte. Vi vil samarbeide med en eller to restauranter som har et kassasystem der vi kan få ut salgsdata på forespørsel. Skritt og puls kan vi først hente fra Android-klokker, som har et åpent grensesnitt for helsedata. Da kan vi teste det som betyr mest: Åpner servitørene rapporten etter vakten når det er deres egne tall? Og oppleves det som motivasjon eller som kontroll? Puls er helsedata, så hver enkelt må samtykke. Og vi fortsetter på samme måte: teste, lære og justere.',
-        regi: 'Ikonet: kula ruller langs buen tilbake til Empathize, og alle feltene lyser – en ny runde. Én restaurant, én kasse og én klokke koblet til telefonen. Bongen skrives ut: «Pilot med ekte data».',
+        sier: 'Her er vi nå: en prototype som servitører har prøvd. Veien videre starter med en gratis pilot hos et par restauranter. Vi kobler oss til dataene deres og lar ekte servitører bruke appen, mens vi bygger videre. Da ser vi om de faktisk bruker den, eller bare sier at de vil. Alt dette kan vi gjøre uten mye penger. Med det beviset er det lettere å få kunder og investorer. Servitøren bruker appen, men arbeidsgiveren betaler, så vi selger abonnement til restaurantgrupper. Senere kan Vaktlogg bygges inn i systemene restaurantene allerede har.',
+        regi: 'FORSLAG TIL REPLIKK – bytt gjerne ut med egne ord. Forretningsmodellen som et lite spill: tre figurer (dere) går veien videre. Piltaster eller A/D = gå, mellomrom = hopp. PageDown (klikkeren) = gå til neste stopp av seg selv: et par restauranter, koblet til dataene, ekte servitører bruker den, vi bygger videre, beviset, restaurantgruppene, plattformen. Ett kort nederst viser bare det som gjelder der figurene står. Etter siste stopp går PageDown videre til avslutningen. Firmalogoene er merket «mulig kunde» og «mulig partner» – det finnes ingen avtaler. Ikonet er skjult mens spillet står.',
       },
-      { hvem: 'A', sier: 'Vi startet med sykefravær.', regi: 'Svart. SYKEFRAVÆR kommer tilbake på flipptavla.' },
+      { hvem: 'A', sier: 'Vi startet med sykefravær.', regi: 'Spillet tones bort. SYKEFRAVÆR kommer tilbake på flipptavla.' },
       { hvem: 'B', sier: 'Vi endte med motivasjon, og med spørsmålet fra filmen: Hva sitter servitøren igjen med etter vakten?', regi: 'Flipptavla snur: SYKEFRAVÆR blir MOTIVASJON.' },
       {
         hvem: 'C',
         sier: 'Med Vaktlogg kan hun se hva hun fikk til. Om det faktisk motiverer, er det neste vi må teste. Takk.',
-        regi: 'Sluttbongen skrives ut med QR-kode til prototypen (lag ny med npm run qr hvis lenken endres).',
+        regi: 'MOTIVASJON blir stående mens dere tar spørsmål. Siden med QR-koden er tatt bort (11.11).',
       },
-      { hvem: 'alle', regi: 'Sluttkortet med QR-kode til prototypen står mens dere tar spørsmål.' },
     ],
     overgang: 'Slutt. Spørsmål.',
     kilder: ['V2', 'A10', 'A12'],
@@ -251,6 +250,6 @@ export const manus: Scene[] = [
 ]
 
 /** Planlagt total: manuset (10:00) og prototypen slik talen faktisk tar. */
-export const PLAN_TOTAL = 618
+export const PLAN_TOTAL = 633
 /** Den harde grensen for fremføringen. */
 export const MAKS_TOTAL = 720

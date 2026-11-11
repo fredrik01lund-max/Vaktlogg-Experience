@@ -1162,6 +1162,17 @@
 }
 
 /* ── 9. Veien videre: piloten, flipptavla og sluttbongen med QR-kode ── */
+/* Spillet har sin egen topplinje: diamant-ikonet skjules mens det står */
+.lerret:has(.vi-spill) .diamant-ikon {
+  visibility: hidden;
+}
+.vi-spill {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  border: 0;
+}
 .vi-pilot {
   position: absolute;
   inset: 0;

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ComponentType } from 'react'
+import { brukSpilltaster } from '../lib/spill.ts'
 import { AnimatePresence, motion } from 'motion/react'
 import { lagtTilSide } from '../content/arkiv.ts'
 import { manus } from '../content/manus.ts'
@@ -122,6 +123,7 @@ export function Salen() {
   }, [])
 
   // ── Tastatur og klikker ──
+  useEffect(() => brukSpilltaster(), [])
   useEffect(() => {
     const ned = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey) return

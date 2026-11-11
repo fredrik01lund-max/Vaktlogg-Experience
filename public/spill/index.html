@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vaktlogg – veien videre</title>
+<style>
+  /* Forretningsmodellen som et lite spill (11.11). Vises i en ramme i «Veien videre» (src/scenes/V2.tsx, Spill).
+     Tastene kommer fra presentasjonen som meldinger (src/lib/spill.ts), så de virker også fra presentatørvinduet.
+     Nytt i denne: ett infokort om gangen (bare det som gjelder der figurene står), pilotfasen i fire stopp
+     (et par restauranter → koblet til dataene → ekte servitører bruker den → vi bygger videre), «Her er vi nå» som
+     start, to jenter og en gutt, og de ekte logoene på skiltene.
+     ← → eller A D = gå · mellomrom, W eller ↑ = hopp · PageDown, Enter eller klikk = gå til neste stopp av seg selv. */
+  @font-face { font-family: 'Besley'; src: url('fonter/besley-latin-wght-normal.woff2') format('woff2'); font-weight: 400 900; }
+  @font-face { font-family: 'Schibsted Grotesk'; src: url('fonter/schibsted-grotesk-latin-wght-normal.woff2') format('woff2'); font-weight: 400 900; }
+  :root { --serif: 'Besley', Georgia, serif; --sans: 'Schibsted Grotesk', system-ui, 'Segoe UI', sans-serif; --blekk: #2b1f1c; --vin: #94284c; }
+  html, body { margin: 0; height: 100%; background: #fbdcd8; overflow: hidden; }
+  .ramme { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  .lerret { position: absolute; inset: 0; overflow: hidden; color: var(--blekk); font-family: var(--sans);
+    background: linear-gradient(180deg, #fbe7df 0%, #fbdcd8 52%, #f6cfd0 76%, #f6cfd0 100%); }
+  .sol { position: absolute; left: 1180px; top: 230px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, #fff8ef 0%, rgba(255, 244, 236, 0.6) 40%, transparent 70%); }
+
+  /* ── Verden: tre lag som glir i ulik fart ── */
+  .lag { position: absolute; left: 0; top: 0; height: 1080px; transform-origin: 0 820px; will-change: transform; }
+  .hus { position: absolute; bottom: 260px; border-radius: 10px 10px 0 0; }
+  #lagFjern .hus { background: #f3cbcc; }
+  #lagMidt .hus { background: #f8dbd3; }
+  #lagMidt .hus::after { content: ''; position: absolute; left: 18%; right: 18%; top: 14%; bottom: 20%; background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0 12px, transparent 12px 34px); }
+  .bakke { position: absolute; left: -400px; top: 820px; height: 400px; background: linear-gradient(180deg, #fffaf6 0, #f8e8df 120px, #f3dcd3 400px); box-shadow: 0 -3px 0 rgba(255, 255, 255, 0.9); }
+  .terreng { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+  .kabel { fill: none; stroke: #94284c; stroke-width: 6; stroke-linecap: round; }
+  .datapuls { fill: none; stroke: #ffcf6b; stroke-width: 18; stroke-linecap: round; opacity: 0; }
+
+  /* Restaurantene: grå til de er med, så tennes de */
+  .fasade { position: absolute; background: #e9e0db; border-radius: 12px 12px 0 0; box-shadow: 0 -4px 0 #d5cbc6 inset, 14px 0 30px -18px rgba(90, 50, 40, 0.4); }
+  .fasade i { position: absolute; display: block; }
+  .fasade .tak { left: -8px; right: -8px; top: -12px; height: 20px; border-radius: 8px; background: #cfc5c0; }
+  .fasade .markise { left: 6%; right: 6%; top: 34%; height: 13%; border-radius: 6px 6px 14px 14px; background: #d5cbc6; }
+  .fasade .vindu { top: 10%; width: 22%; height: 18%; border-radius: 8px; background: #cfc6c1; }
+  .fasade .v1 { left: 12%; } .fasade .v2 { right: 12%; }
+  .fasade .rute { left: 10%; width: 38%; top: 54%; bottom: 0; border-radius: 8px 8px 0 0; background: #cfc6c1; }
+  .fasade .dor { right: 12%; width: 26%; top: 54%; bottom: 0; border-radius: 10px 10px 0 0; background: #b9aea8; }
+  .fasade.paa { background: #fbeee6; box-shadow: 0 -4px 0 #efd9cc inset, 14px 0 30px -18px rgba(90, 50, 40, 0.5); }
+  .fasade.paa .tak { background: #e9cfc1; }
+  .fasade.paa .markise { background: var(--farge); }
+  .fasade.paa .vindu, .fasade.paa .rute { background: #ffd98a; box-shadow: 0 0 22px rgba(255, 205, 120, 0.85); }
+  .fasade.paa .dor { background: var(--vin); }
+
+  /* Skilt på stolpe */
+  .stolpeskilt { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%); }
+  .stolpeskilt .stolpe { width: 7px; background: #2b1f1c; border-radius: 4px; opacity: 0.7; }
+  .skilt { padding: 12px 24px 14px; border-radius: 18px; background: #fffdf9; text-align: center; white-space: nowrap; box-shadow: 0 16px 30px -12px rgba(60, 40, 30, 0.5), 0 0 0 3px rgba(43, 31, 28, 0.06); }
+  .skilt small { display: block; font-size: 15px; font-weight: 650; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(43, 31, 28, 0.5); }
+  .skilt b { display: block; font-size: 32px; font-weight: 700; line-height: 1.15; }
+  .skilt.logo { padding: 10px 14px 12px; }
+  .skilt.logo img { display: block; margin: 4px auto 0; border-radius: 8px; }
+  .skilt.niva { display: flex; align-items: center; gap: 12px; padding: 10px 22px 10px 12px; border-radius: 999px; font-family: var(--serif); font-size: 34px; font-weight: 600; }
+  .skilt.niva i { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; color: #fffdf9; font-style: normal; font-size: 26px; font-weight: 700; background: var(--farge); }
+  .skilt.pil { display: flex; align-items: center; gap: 12px; padding: 12px 20px 12px 26px; border-radius: 999px; background: #2b1f1c; color: #fffdf9; font-size: 30px; font-weight: 650; }
+  .skilt.pil svg { width: 34px; height: 34px; fill: none; stroke: #f08fb0; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .skilt.na { padding: 10px 24px 12px; background: #94284c; color: #fffdf9; }
+  .skilt.port { padding: 12px 24px 14px; background: #2b1f1c; color: #ffe2a8; }
+  .skilt.port b { font-size: 30px; }
+  .bom { position: absolute; width: 250px; height: 22px; border-radius: 11px; transform-origin: 239px 11px; background: repeating-linear-gradient(90deg, #ff6a4e 0 34px, #fffdf9 34px 68px); box-shadow: 0 6px 14px -4px rgba(60, 40, 30, 0.5); }
+  .bomfot { position: absolute; width: 34px; height: 130px; border-radius: 10px 10px 0 0; background: #2b1f1c; }
+  .flagg { position: absolute; width: 8px; height: 260px; background: #2b1f1c; border-radius: 4px; }
+  .flagg::after { content: ''; position: absolute; left: 8px; top: 6px; width: 120px; height: 78px; background: conic-gradient(#2b1f1c 25%, #fffdf9 0 50%, #2b1f1c 0 75%, #fffdf9 0) 0 0 / 40px 39px; border-radius: 0 6px 6px 0; }
+
+  /* Telefoner med ekte skjermbilder fra prototypen */
+  .telefon { position: absolute; box-sizing: border-box; padding: 5px; border-radius: 20px; background: #2b1f1c; box-shadow: 0 18px 30px -12px rgba(60, 40, 30, 0.55); transform-origin: 50% 100%; }
+  .telefon img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 15px; background: #4a3f3a; }
+  .telefon.av img { opacity: 0.08; }
+  .sokkel { position: absolute; border-radius: 14px 14px 0 0; background: linear-gradient(180deg, #fffdf9, #f3e2d9); box-shadow: 0 -4px 0 #e7c9b3 inset, 12px 0 26px -16px rgba(90, 50, 40, 0.5); }
+  .stang { position: absolute; width: 8px; background: #2b1f1c; border-radius: 4px; opacity: 0.7; }
+  .merke { position: absolute; display: grid; place-items: center; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%; background: #fffdf9; box-shadow: 0 14px 26px -12px rgba(60, 40, 30, 0.5), 0 0 0 4px rgba(148, 40, 76, 0.18); }
+  .merke svg { width: 52px; height: 52px; fill: none; stroke: #2b1f1c; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .merke.av { opacity: 0.45; }
+  /* Servitørene som bruker appen, og måleren som viser hvor mange */
+  .npc { position: absolute; width: 74px; height: 123px; }
+  .npc svg { width: 74px; height: 123px; overflow: visible; }
+  .npc .mob { position: absolute; left: 54px; top: 58px; width: 20px; height: 34px; border-radius: 5px; background: #b9aea8; box-shadow: 0 0 0 2px #2b1f1c; }
+  .npc.paa .mob { background: #7cc9a1; box-shadow: 0 0 0 2px #2b1f1c, 0 0 18px 4px rgba(124, 201, 161, 0.9); }
+  .maaler { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 999px; background: #fffdf9; box-shadow: 0 16px 30px -12px rgba(60, 40, 30, 0.5); }
+  .maaler svg { width: 30px; height: 30px; fill: none; stroke: #2b1f1c; stroke-width: 2; stroke-linecap: round; }
+  .maaler i { display: block; width: 38px; height: 18px; border-radius: 9px; background: #e2d8d2; }
+  .maaler i.paa { background: #4fa27a; }
+  .benk { position: absolute; height: 160px; }
+  .benk::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 20px; border-radius: 8px; background: #e7c9b3; box-shadow: 0 8px 16px -8px rgba(90, 50, 40, 0.5); }
+  .benk::after { content: ''; position: absolute; left: 26px; right: 26px; top: 20px; bottom: 0; border-left: 14px solid #d9b59c; border-right: 14px solid #d9b59c; }
+  .versjon { position: absolute; padding: 3px 12px; border-radius: 999px; background: #2b1f1c; color: #fffdf9; font-size: 20px; font-weight: 700; transform: translateX(-50%); }
+
+  /* Figurene */
+  .figur { position: absolute; left: 0; top: 0; width: 90px; height: 150px; will-change: transform; }
+  .figur svg { position: absolute; inset: 0; width: 90px; height: 150px; overflow: visible; transform-origin: 45px 148px; }
+  .skygge { position: absolute; left: 0; top: 0; width: 80px; height: 18px; border-radius: 50%; background: rgba(90, 50, 40, 0.22); will-change: transform; }
+  .mynt, .hake, .nokkel { position: absolute; left: 0; top: 0; }
+  .mynt { width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff1c2, #ffcf6b 60%, #f0a93a); box-shadow: 0 0 0 4px rgba(255, 207, 107, 0.35), 0 6px 14px -4px rgba(120, 70, 20, 0.5); }
+  .hake { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #4fa27a; box-shadow: 0 0 0 5px rgba(79, 162, 122, 0.3), 0 8px 16px -6px rgba(30, 80, 50, 0.6); }
+  .hake svg { width: 30px; height: 30px; fill: none; stroke: #fffdf9; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+  .nokkel svg { width: 84px; height: 84px; filter: drop-shadow(0 8px 12px rgba(120, 70, 20, 0.45)); }
+
+  /* ── Øverst: bare hvor vi er på veien ── */
+  .hud { position: absolute; left: 60px; top: 30px; width: 1800px; height: 96px; box-sizing: border-box; padding: 0 30px 0 26px; display: flex; align-items: center; gap: 34px; border-radius: 34px; background: #f4f6f2;
+    box-shadow: 0 26px 50px -22px rgba(60, 40, 30, 0.5), 0 2px 6px rgba(60, 40, 30, 0.1); }
+  .hud-merke { flex: none; padding: 6px 16px; border-radius: 999px; background: #fbd9d6; color: var(--vin); font-size: 19px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .hud-tittel { flex: none; margin: 0 0 0 -14px; font-size: 44px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; min-width: 300px; }
+  .hud-tittel em { font-style: normal; color: var(--vin); }
+  .kart { flex: 1; position: relative; height: 40px; }
+  .kart::before { content: ''; position: absolute; left: 0; right: 0; top: 17px; height: 6px; border-radius: 3px; background: #e2d8d2; }
+  .kart .gatt { position: absolute; left: 0; top: 17px; height: 6px; border-radius: 3px; background: #f08fb0; }
+  .kart i { position: absolute; top: 9px; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: #cfc5c0; box-shadow: 0 0 0 4px #f4f6f2; }
+  .kart i.paa { background: var(--farge); }
+  .kart .kr { position: absolute; top: 6px; width: 28px; height: 28px; margin-left: -14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff1c2, #ffcf6b 60%, #f0a93a); box-shadow: 0 0 0 4px #f4f6f2; }
+  .kart .her { position: absolute; top: 2px; width: 36px; height: 36px; margin-left: -18px; border-radius: 50%; background: #fffdf9; box-shadow: 0 0 0 5px var(--vin), 0 6px 12px -4px rgba(60, 40, 30, 0.5); }
+  .hud-ting { flex: none; display: flex; gap: 10px; }
+  .hud-ting span { display: flex; align-items: center; gap: 8px; padding: 6px 16px 6px 10px; border-radius: 999px; background: #fffdf9; font-size: 22px; font-weight: 650; box-shadow: 0 1px 0 rgba(43, 31, 28, 0.08); opacity: 0.35; }
+  .hud-ting span.har { opacity: 1; }
+  .hud-ting svg { width: 28px; height: 28px; }
+  .hud-ting .m { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff1c2, #ffcf6b 60%, #f0a93a); }
+
+  /* ── Nederst: ett kort om gangen, bare om der figurene står ── */
+  .info { position: absolute; left: 0; right: 0; top: 880px; display: flex; justify-content: center; pointer-events: none; }
+  .info > div { min-width: 620px; max-width: 1400px; padding: 20px 46px 24px; border-radius: 30px; background: #fffdf9; text-align: center; box-shadow: 0 26px 50px -20px rgba(60, 40, 30, 0.5), 0 2px 6px rgba(60, 40, 30, 0.1); }
+  .info h3 { margin: 0 0 6px; font-family: var(--serif); font-weight: 600; font-size: 46px; line-height: 1.12; }
+  .info p { margin: 0; font-size: 30px; font-weight: 500; color: rgba(43, 31, 28, 0.78); }
+  .taster { position: absolute; right: 64px; top: 142px; display: flex; gap: 14px; font-size: 19px; font-weight: 600; color: rgba(43, 31, 28, 0.6); }
+  .taster kbd { display: inline-block; min-width: 20px; padding: 3px 9px; margin-right: 4px; border-radius: 8px; background: #fffdf9; box-shadow: 0 2px 0 rgba(43, 31, 28, 0.2); font: inherit; text-align: center; color: var(--blekk); }
+</style>
+</head>
+<body>
+<div class="ramme" id="ramme">
+  <div class="lerret">
+    <div class="sol"></div>
+    <div class="lag" id="lagFjern"></div>
+    <div class="lag" id="lagMidt"></div>
+    <div class="lag" id="verden"></div>
+
+    <div class="hud">
+      <span class="hud-merke" id="hudMerke">Start</span>
+      <h2 class="hud-tittel" id="hudTittel"></h2>
+      <div class="kart" id="kart"></div>
+      <div class="hud-ting">
+        <span id="tingNokkel"><svg viewBox="0 0 24 24" fill="none" stroke="#b9862a" stroke-width="2.4" stroke-linecap="round"><circle cx="8" cy="12" r="4" /><path d="M12 12h9M18 12v4M15 12v3" /></svg>Bevis</span>
+        <span id="tingMynt"><i class="m"></i><b id="myntTall">0</b></span>
+      </div>
+    </div>
+    <div class="taster" id="taster"><span><kbd>←</kbd><kbd>→</kbd>gå</span><span><kbd>mellomrom</kbd>hopp</span><span><kbd>PageDown</kbd>neste stopp</span></div>
+    <div class="info"><div id="info"><h3 id="iTittel"></h3><p id="iTekst"></p></div></div>
+  </div>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+  // ── Verden ──
+  var W = 8500, BAKKE = 820, PLATT = 660, RAMPE0 = 6200, RAMPE1 = 6500, PORT = 3980, FART = 540
+  // Der figurene stopper når man trykker PageDown: de fire stoppene i piloten, beviset, gruppene og plattformen
+  var STOPP = [1640, 2140, 2960, 3470, 3760, 6030, 8080]
+  var NIVA = [
+    { fra: 0, merke: 'Start', tittel: 'Veien <em>videre</em>' },
+    { fra: 900, merke: 'Nivå 1 av 3', tittel: '<em>Bevise</em>', farge: '#4fa27a' },
+    { fra: 4020, merke: 'Nivå 2 av 3', tittel: '<em>Selge</em>', farge: '#d98a55' },
+    { fra: 6150, merke: 'Nivå 3 av 3', tittel: '<em>Skalere</em>', farge: '#b83a6c' },
+  ]
+  // Ett kort om gangen: det som gjelder akkurat der figurene står
+  var KORT = [
+    { fra: 0, tittel: 'Her er vi nå', tekst: 'En prototype som servitører har prøvd.' },
+    { fra: 900, tittel: 'Et par restauranter', tekst: 'De blir med på en gratis pilot.' },
+    { fra: 1860, tittel: 'Koblet til dataene deres', tekst: 'Ekte salg fra kassa. Skritt og puls fra klokka.' },
+    { fra: 2330, tittel: 'Ekte servitører bruker den', tekst: 'Bruker de appen, eller sier de det bare?' },
+    { fra: 3000, tittel: 'Vi bygger videre underveis', tekst: 'Alt dette kan lages uten mye penger.' },
+    { fra: 3560, tittel: 'Beviset', tekst: 'Nå er det lettere å få kunder og penger.' },
+    { fra: 4060, tittel: 'Servitøren bruker. Arbeidsgiveren betaler.', tekst: 'Abonnement per restaurant, solgt til restaurantgrupper.' },
+    { fra: 6150, tittel: 'Inn i systemene de allerede har', tekst: 'Lisens til plattformene restaurantene bruker.' },
+  ]
+  var verden = document.getElementById('verden'), lagFjern = document.getElementById('lagFjern'), lagMidt = document.getElementById('lagMidt')
+  ;[verden, lagFjern, lagMidt].forEach(function (l) { l.style.width = W + 'px' })
+  function bakkeY(x) { return x < RAMPE0 ? BAKKE : x < RAMPE1 ? BAKKE - ((x - RAMPE0) / (RAMPE1 - RAMPE0)) * (BAKKE - PLATT) : PLATT }
+  function legg(html) { var d = document.createElement('div'); d.innerHTML = html; var e = d.firstElementChild; verden.appendChild(e); return e }
+
+  // Bakgrunnen: to rekker med hus (samme hver gang)
+  var fro = 7
+  function tilf() { fro = (fro * 16807) % 2147483647; return fro / 2147483647 }
+  function skyline(lag, antall, minH, maxH) {
+    var x = -200, h = ''
+    for (var i = 0; i < antall; i++) {
+      var b = 110 + tilf() * 150, hh = minH + tilf() * (maxH - minH)
+      h += '<div class="hus" style="left:' + x.toFixed(0) + 'px;width:' + b.toFixed(0) + 'px;height:' + hh.toFixed(0) + 'px"></div>'
+      x += b + 14 + tilf() * 70
+    }
+    lag.innerHTML = h
+  }
+  skyline(lagFjern, 40, 200, 420)
+  skyline(lagMidt, 48, 110, 260)
+
+  // Bakken, rampen og plattformen
+  legg('<div class="bakke" style="width:' + (W + 800) + 'px"></div>')
+  legg('<svg class="terreng" width="' + W + '" height="1080" viewBox="0 0 ' + W + ' 1080">' +
+    '<defs><linearGradient id="pl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9ee"/><stop offset="1" stop-color="#f3c3cf"/></linearGradient></defs>' +
+    '<path d="M' + RAMPE0 + ' ' + BAKKE + 'L' + RAMPE1 + ' ' + PLATT + 'H' + (W + 400) + 'V' + (BAKKE + 4) + 'Z" fill="url(#pl)"/>' +
+    '<path d="M' + RAMPE0 + ' ' + BAKKE + 'L' + RAMPE1 + ' ' + PLATT + 'H' + (W + 400) + '" fill="none" stroke="#fffdf9" stroke-width="6"/>' +
+    '<path d="M120 ' + (BAKKE + 34) + 'H' + RAMPE0 + '" fill="none" stroke="#f08fb0" stroke-width="9" stroke-linecap="round" stroke-dasharray="2 26"/>' +
+    '<path d="M' + (RAMPE1 + 40) + ' ' + (PLATT + 34) + 'H' + (W - 260) + '" fill="none" stroke="#f08fb0" stroke-width="9" stroke-linecap="round" stroke-dasharray="2 26"/>' +
+    '</svg>')
+
+  function fasade(x, b, h, farge, bunn) {
+    return legg('<div class="fasade" style="left:' + x + 'px;top:' + ((bunn || BAKKE) - h) + 'px;width:' + b + 'px;height:' + h + 'px;--farge:' + farge + '"><i class="tak"></i><i class="vindu v1"></i><i class="vindu v2"></i><i class="markise"></i><i class="rute"></i><i class="dor"></i></div>')
+  }
+  function skilt(x, topp, innhold, bunn) {
+    var e = legg('<div class="stolpeskilt" style="left:' + x + 'px;top:' + topp + 'px"><div class="del">' + innhold + '</div><div class="stolpe"></div></div>')
+    e.querySelector('.stolpe').style.height = Math.max(0, (bunn || BAKKE) - topp - e.querySelector('.del').offsetHeight) + 'px'
+    return e
+  }
+  function telefon(xMidt, bunn, bredde, bilde, av) {
+    var h = Math.round(bredde * 2.164)
+    return legg('<div class="telefon' + (av ? ' av' : '') + '" style="left:' + (xMidt - bredde / 2) + 'px;top:' + (bunn - h) + 'px;width:' + bredde + 'px;height:' + h + 'px"><img src="skjerm-' + bilde + '.jpg" alt=""></div>')
+  }
+  var nivaskilt = function (n, navn, farge) { return '<div class="skilt niva" style="--farge:' + farge + '"><i>' + n + '</i>' + navn + '</div>' }
+  var logoskilt = function (merke, fil, b, h, bakgrunn) { return '<div class="skilt logo" style="background:' + bakgrunn + '"><small>' + merke + '</small><img src="logo-' + fil + '.png" width="' + b + '" height="' + h + '" alt=""></div>' }
+
+  // ── Start: her er vi nå ──
+  legg('<div class="sokkel" style="left:220px;top:' + (BAKKE - 84) + 'px;width:220px;height:84px"></div>')
+  telefon(330, BAKKE - 84, 150, 'start')
+  skilt(330, 318, '<div class="skilt na"><b>Her er vi nå</b></div>', BAKKE - 84 - 325)
+  skilt(840, 560, '<div class="skilt pil">Veien videre<svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>')
+
+  // ── Nivå 1: piloten, i fire stopp ──
+  skilt(985, 440, nivaskilt(1, 'Bevise', '#4fa27a'))
+  // 1) Et par restauranter blir med
+  var PILOTER = [{ e: fasade(1130, 290, 330, '#7cc9a1'), x: 1275, y: BAKKE }, { e: fasade(1450, 270, 290, '#7cc9a1'), x: 1585, y: BAKKE }]
+  // 2) Koblet til dataene deres: kassa i restaurantene og klokka, inn i appen
+  legg('<div class="stang" style="left:2076px;top:560px;height:260px"></div>')
+  var dataTelefon = telefon(2080, 560, 120, 'rapport', true)
+  var merkeKasse = legg('<div class="merke av" style="left:1950px;top:430px"><svg viewBox="0 0 24 24"><path d="M6 2.500h12v19l-2-1.400-2 1.400-2-1.400-2 1.400-2-1.400-2 1.400z"/><path d="M9 7.500h6M9 11.500h6M9 15.500h3.500"/></svg></div>')
+  var merkeKlokke = legg('<div class="merke av" style="left:2210px;top:430px"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="3"/><path d="M9 7l.7-4h4.600l.7 4M9 17l.7 4h4.600l.7-4M12 10v2.300l1.400 1"/></svg></div>')
+  legg('<svg class="terreng" width="' + W + '" height="1080" viewBox="0 0 ' + W + ' 1080">' +
+    '<path class="kabel" id="k1" d="M1275 478C1450 250 1790 280 1912 398"/><path class="kabel" id="k2" d="M1585 518C1680 380 1820 390 1904 424"/>' +
+    '<path class="kabel" id="k3" d="M1998 430H2022"/><path class="kabel" id="k4" d="M2162 430H2138"/>' +
+    '<path class="datapuls" id="p1" d="M1275 478C1450 250 1790 280 1912 398"/><path class="datapuls" id="p2" d="M1585 518C1680 380 1820 390 1904 424"/></svg>')
+  // 3) Ekte servitører bruker den
+  function npc(x, haar) {
+    return legg('<div class="npc" style="left:' + (x - 37) + 'px;top:' + (BAKKE - 123) + 'px"><svg viewBox="0 0 90 150"><rect x="17" y="62" width="56" height="86" rx="25" fill="#fffdf9"/><rect x="17" y="100" width="56" height="48" rx="20" fill="#3a302c"/>' +
+      '<circle cx="45" cy="40" r="28" fill="#f4d6c2"/><path d="M17 40a28 28 0 0 1 56 0c-9-10-20-14-31-13-11 1-19 5-25 13z" fill="' + haar + '"/>' +
+      '<circle cx="40" cy="45" r="3.200" fill="#2b1f1c"/><circle cx="56" cy="45" r="3.200" fill="#2b1f1c"/></svg><span class="mob"></span></div>')
+  }
+  var BRUKERE = [{ e: npc(2380, '#2b1f1c'), x: 2380 }, { e: npc(2475, '#c9925a'), x: 2475 }, { e: npc(2570, '#5a3528'), x: 2570 }, { e: npc(2665, '#8c5a3c'), x: 2665 }]
+  var maaler = skilt(2522, 470, '<div class="maaler"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.500"/><path d="M11 18h2"/></svg><i></i><i></i><i></i><i></i></div>')
+  // 4) Vi bygger videre underveis: tre versjoner av appen på arbeidsbenken
+  legg('<div class="benk" style="left:3070px;top:' + (BAKKE - 160) + 'px;width:380px"></div>')
+  var VERSJONER = [
+    { e: telefon(3140, BAKKE - 160, 62, 'start'), x: 3140, h: 134 },
+    { e: telefon(3255, BAKKE - 160, 76, 'helse'), x: 3255, h: 164 },
+    { e: telefon(3380, BAKKE - 160, 92, 'live'), x: 3380, h: 199 },
+  ]
+  VERSJONER.forEach(function (v, i) { v.tag = legg('<div class="versjon" style="left:' + v.x + 'px;top:' + (BAKKE - 160 - v.h - 44) + 'px">v' + (i + 1) + '</div>') })
+  // Beviset står på en sokkel foran porten
+  legg('<div class="sokkel" style="left:3595px;top:' + (BAKKE - 104) + 'px;width:90px;height:104px"></div>')
+  var nokkelEl = legg('<div class="nokkel"><svg viewBox="0 0 24 24" fill="none" stroke="#e0a93a" stroke-width="2.600" stroke-linecap="round"><circle cx="8" cy="12" r="4.200" fill="#ffe2a8"/><path d="M12 12h9M18 12v4M15 12v3"/></svg></div>')
+
+  // ── Porten: her hentes pengene ──
+  var bom = legg('<div class="bom" style="left:' + (PORT - 239) + 'px;top:' + (BAKKE - 141) + 'px"></div>')
+  legg('<div class="bomfot" style="left:' + (PORT - 17) + 'px;top:' + (BAKKE - 130) + 'px"></div>')
+  skilt(PORT, 350, '<div class="skilt port"><b>Her henter vi penger</b></div>', BAKKE - 130)
+
+  // ── Nivå 2: restaurantgruppene ──
+  var FASADER = []
+  skilt(4200, 560, nivaskilt(2, 'Selge', '#d98a55'))
+  ;[4380, 4630, 4880].forEach(function (x, i) { FASADER.push({ e: fasade(x, 220, 300 + (i % 2) * 44, '#7cc9a1'), x: x + 110, y: BAKKE }) })
+  ;[5230, 5480, 5730].forEach(function (x, i) { FASADER.push({ e: fasade(x, 220, 330 - (i % 2) * 50, '#f0a878'), x: x + 110, y: BAKKE }) })
+  skilt(4740, 262, logoskilt('Mulig kunde', 'noho', 190, 121, '#f6f5ea'), BAKKE - 344)
+  skilt(5590, 262, logoskilt('Mulig kunde', 'friends', 250, 124, '#fefff8'), BAKKE - 280)
+
+  // ── Nivå 3: plattformen – mange små restauranter koblet på samtidig ──
+  skilt(6610, 420, nivaskilt(3, 'Skalere', '#b83a6c'), PLATT)
+  for (var m = 0; m < 9; m++) FASADER.push({ e: fasade(6780 + m * 142, 116, 150 + (m % 3) * 22, '#f08fb0', PLATT), x: 6838 + m * 142, y: PLATT })
+  skilt(7122, 250, logoskilt('Mulig partner', 'planday', 280, 107, '#ffffff'), PLATT - 194)
+  skilt(7690, 264, logoskilt('Mulig partner', 'favrit', 210, 81, '#ffffff'), PLATT - 194)
+  legg('<div class="flagg" style="left:8170px;top:' + (PLATT - 260) + 'px"></div>')
+
+  // ── Figurene: to jenter og en gutt ──
+  function lagFigur(kropp, haar, type) {
+    var s = legg('<div class="skygge"></div>')
+    var bak = type === 'lang' ? '<path d="M14 44c0-21 13-33 31-33s31 12 31 33v30c0 7-7 9-11 4V46H25v32c-4 5-11 3-11-4z" fill="' + haar + '"/>'
+      : type === 'hale' ? '<path d="M22 26c-14 1-20 16-17 32 1 7 8 8 10 1 2-9 3-17 11-23z" fill="' + haar + '"/><circle cx="20" cy="30" r="4.500" fill="#fffdf9"/>' : ''
+    var f = legg('<div class="figur"><svg viewBox="0 0 90 150">' + bak + '<rect x="17" y="62" width="56" height="86" rx="25" fill="' + kropp + '"/><rect x="17" y="112" width="56" height="36" rx="18" fill="rgba(43,31,28,0.12)"/>' +
+      '<circle cx="45" cy="40" r="28" fill="#f4d6c2"/><path d="M17 40a28 28 0 0 1 56 0c-9-10-20-14-31-13-11 1-19 5-25 13z" fill="' + haar + '"/>' +
+      '<circle cx="42" cy="45" r="3.200" fill="#2b1f1c"/><circle cx="58" cy="45" r="3.200" fill="#2b1f1c"/><circle cx="36" cy="54" r="4.500" fill="#f2a9a0" opacity="0.6"/><circle cx="63" cy="54" r="4.500" fill="#f2a9a0" opacity="0.6"/></svg></div>')
+    return { e: f, svg: f.querySelector('svg'), skygge: s }
+  }
+  var FIG = [lagFigur('#f08fb0', '#5a3528', 'lang'), lagFigur('#7cc9a1', '#2b1f1c', 'kort'), lagFigur('#f0a878', '#c9925a', 'hale')]
+
+  // Veien i miniatyr øverst: nivåene, porten der pengene hentes, og hvor vi er
+  var kart = document.getElementById('kart')
+  var pst = function (x) { return (((x - 300) / (W - 700)) * 100).toFixed(2) + '%' }
+  kart.innerHTML = '<span class="gatt" id="kartGatt"></span>' + NIVA.slice(1).map(function (n, i) { return '<i id="kartN' + (i + 1) + '" style="left:' + pst(n.fra) + ';--farge:' + n.farge + '"></i>' }).join('') +
+    '<span class="kr" style="left:' + pst(PORT) + '"></span><span class="her" id="kartHer"></span>'
+
+  // ── Spillet ──
+  var L = { x: 640, j: 0, vy: 0, dir: 1 }
+  var spor = [], fase = 0, tast = { v: false, h: false }, hoppKo = false, mal = null
+  var kam = 0, zoom = 1, stille = 9, niva = -1, kortNr = -1, harNokkel = false, port = { a: 0, startet: false }, mynter = 0, T = 0, data = false, flyttetNoe = false
+  for (var s = 0; s < 80; s++) spor.push({ x: L.x - (79 - s) * 6, j: 0 })
+  ;['k1', 'k2', 'k3', 'k4'].forEach(function (id) { var p = document.getElementById(id), l = p.getTotalLength(); p.dataset.l = l; gsap.set(p, { strokeDasharray: l, strokeDashoffset: l, opacity: 0 }) })
+  ;['p1', 'p2'].forEach(function (id) { var p = document.getElementById(id), l = p.getTotalLength(); p.dataset.l = l; gsap.set(p, { strokeDasharray: '2 ' + (l + 40), strokeDashoffset: 0 }) })
+  VERSJONER.forEach(function (v) { gsap.set([v.e, v.tag], { scale: 0, opacity: 0 }) })
+
+  function sisteFor(liste, x) { var n = 0; for (var i = 0; i < liste.length; i++) if (x >= liste[i].fra) n = i; return n }
+  function settNiva(n) {
+    if (n === niva) return
+    niva = n
+    document.getElementById('hudMerke').textContent = NIVA[n].merke
+    document.getElementById('hudTittel').innerHTML = NIVA[n].tittel
+    gsap.fromTo('#hudTittel', { x: -18, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: 'power3.out' })
+    for (var i = 1; i <= 3; i++) document.getElementById('kartN' + i).classList.toggle('paa', n >= i)
+  }
+  function settKort(n) {
+    if (n === kortNr) return
+    var forste = kortNr < 0
+    kortNr = n
+    var bytt = function () {
+      document.getElementById('iTittel').textContent = KORT[n].tittel
+      document.getElementById('iTekst').textContent = KORT[n].tekst
+      gsap.fromTo('#info', { opacity: 0, y: 26, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.5)' })
+    }
+    if (forste) bytt()
+    else gsap.to('#info', { opacity: 0, y: -14, duration: 0.18, ease: 'power2.in', onComplete: bytt })
+  }
+  function sprett(klasse, innhold, x, y) {
+    var e = legg('<div class="' + klasse + '">' + (innhold || '') + '</div>')
+    gsap.fromTo(e, { x: x, y: y, scale: 0.3, opacity: 1 }, { y: y - 180, scale: 1, duration: 0.5, ease: 'back.out(2)' })
+    gsap.to(e, { y: y - 270, opacity: 0, duration: 0.45, delay: 0.6, ease: 'power2.in', onComplete: function () { e.remove() } })
+  }
+  var HAKE = '<svg viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>'
+  function mynt(f) {
+    f.e.classList.add('paa')
+    sprett('mynt', '', f.x - 22, f.y - 150)
+    mynter++
+    document.getElementById('myntTall').textContent = String(mynter)
+    document.getElementById('tingMynt').classList.add('har')
+    gsap.fromTo('#tingMynt', { scale: 1.25 }, { scale: 1, duration: 0.35, ease: 'power2.out' })
+  }
+  function kobleData() {
+    data = true
+    gsap.set('.kabel', { opacity: 1 })
+    gsap.to('#k1', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' })
+    gsap.to('#k2', { strokeDashoffset: 0, duration: 0.7, delay: 0.15, ease: 'power2.inOut' })
+    gsap.delayedCall(0.8, function () { merkeKasse.classList.remove('av'); gsap.fromTo(merkeKasse, { scale: 0.7 }, { scale: 1, duration: 0.45, ease: 'back.out(2.4)' }) })
+    gsap.to('#k3', { strokeDashoffset: 0, duration: 0.25, delay: 1.0 })
+    gsap.delayedCall(1.05, function () { merkeKlokke.classList.remove('av'); gsap.fromTo(merkeKlokke, { scale: 0.7 }, { scale: 1, duration: 0.45, ease: 'back.out(2.4)' }) })
+    gsap.to('#k4', { strokeDashoffset: 0, duration: 0.25, delay: 1.2 })
+    gsap.delayedCall(1.4, function () { dataTelefon.classList.remove('av'); gsap.fromTo(dataTelefon, { scale: 0.9 }, { scale: 1, duration: 0.5, ease: 'back.out(2.2)' }) })
+    ;['p1', 'p2'].forEach(function (id, i) {
+      var l = Number(document.getElementById(id).dataset.l)
+      gsap.to('#' + id, { opacity: 1, duration: 0.15, delay: 1.3 + i * 0.25 })
+      gsap.to('#' + id, { strokeDashoffset: -l, duration: 1.1, ease: 'none', repeat: 3, delay: 1.3 + i * 0.25 })
+      gsap.to('#' + id, { opacity: 0, duration: 0.2, delay: 1.3 + i * 0.25 + 4.4 })
+    })
+  }
+  function nokkel() {
+    harNokkel = true
+    gsap.to(nokkelEl, { y: '-=150', scale: 1.4, duration: 0.5, ease: 'back.out(2)' })
+    gsap.to(nokkelEl, { y: '-=120', scale: 0.6, opacity: 0, duration: 0.5, delay: 0.8, ease: 'power2.in' })
+    gsap.delayedCall(1.0, function () {
+      document.getElementById('tingNokkel').classList.add('har')
+      gsap.fromTo('#tingNokkel', { scale: 1.35 }, { scale: 1, duration: 0.45, ease: 'back.out(2)' })
+    })
+  }
+  function neste() {
+    for (var i = 0; i < STOPP.length; i++) if (STOPP[i] > L.x + 20) { mal = STOPP[i]; return true }
+    return false
+  }
+
+  function steg(dt) {
+    dt = Math.min(dt, 0.05)
+    var inn = (tast.h ? 1 : 0) - (tast.v ? 1 : 0)
+    if (inn) mal = null
+    if (mal !== null) {
+      if (Math.abs(mal - L.x) <= FART * dt + 1) { L.x = mal; mal = null } else inn = mal > L.x ? 1 : -1
+    }
+    var ny = L.x + inn * FART * dt
+    if (port.a < 0.9 && L.x <= PORT - 64 && ny > PORT - 64) ny = PORT - 64 // porten er stengt
+    ny = Math.max(520, Math.min(W - 300, ny))
+    var flyttet = ny - L.x
+    L.x = ny
+    if (inn) L.dir = inn
+    if (hoppKo && L.j >= 0) L.vy = -940
+    hoppKo = false
+    L.vy += 2700 * dt
+    L.j += L.vy * dt
+    if (L.j >= 0) { L.j = 0; L.vy = 0 }
+    stille = Math.abs(flyttet) > 0.5 ? 0 : stille + dt
+    var sist = spor[spor.length - 1]
+    while (Math.abs(L.x - sist.x) >= 6) { sist = { x: sist.x + (L.x > sist.x ? 6 : -6), j: L.j }; spor.push(sist); if (spor.length > 400) spor.shift() }
+    fase += Math.abs(flyttet) * 0.034
+    if (!flyttetNoe && Math.abs(flyttet) > 0.5) { flyttetNoe = true; gsap.to('#taster', { opacity: 0, duration: 0.6, delay: 0.8 }) }
+
+    // Det som skjer langs veien
+    var i
+    for (i = 0; i < PILOTER.length; i++) if (!PILOTER[i].paa && L.x >= PILOTER[i].x - 40) { PILOTER[i].paa = true; PILOTER[i].e.classList.add('paa'); sprett('hake', HAKE, PILOTER[i].x - 27, BAKKE - 170) }
+    if (!data && L.x >= 1950) kobleData()
+    for (i = 0; i < BRUKERE.length; i++) if (!BRUKERE[i].paa && L.x >= BRUKERE[i].x - 50) {
+      BRUKERE[i].paa = true
+      BRUKERE[i].e.classList.add('paa')
+      gsap.fromTo(BRUKERE[i].e, { y: 0 }, { y: -22, duration: 0.18, yoyo: true, repeat: 1, ease: 'power2.out' })
+      maaler.querySelectorAll('i')[i].classList.add('paa')
+      sprett('hake', HAKE, BRUKERE[i].x - 27, BAKKE - 190)
+    }
+    for (i = 0; i < VERSJONER.length; i++) if (!VERSJONER[i].paa && L.x >= VERSJONER[i].x - 60) {
+      VERSJONER[i].paa = true
+      gsap.to([VERSJONER[i].e, VERSJONER[i].tag], { scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(2)', stagger: 0.12 })
+    }
+    if (!harNokkel) gsap.set(nokkelEl, { x: 3598, y: BAKKE - 104 - 96 + Math.sin(T * 3) * 8 })
+    if (!harNokkel && L.x >= 3600) nokkel()
+    if (harNokkel && !port.startet && L.x > PORT - 190) { port.startet = true; gsap.to(port, { a: 1, duration: 0.8, ease: 'back.out(1.4)' }) }
+    bom.style.transform = 'rotate(' + (port.a * 82).toFixed(1) + 'deg)'
+    for (i = 0; i < FASADER.length; i++) if (!FASADER[i].paa && L.x >= FASADER[i].x - 30) { FASADER[i].paa = true; mynt(FASADER[i]) }
+    settNiva(sisteFor(NIVA, L.x))
+    settKort(sisteFor(KORT, L.x))
+    document.getElementById('kartHer').style.left = pst(L.x)
+    document.getElementById('kartGatt').style.width = pst(L.x)
+
+    // Figurene: de to bak følger sporet til den første
+    for (var k = 0; k < 3; k++) {
+      var p = k === 0 ? L : spor[Math.max(0, spor.length - 1 - k * 17)]
+      var x = k === 0 ? L.x : p.x, hopp = k === 0 ? L.j : p.j
+      var y = bakkeY(x)
+      var gaar = stille === 0
+      var vipp = gaar ? Math.sin(fase + k * 1.3) * 5 : 0
+      var dupp = gaar ? Math.abs(Math.sin(fase + k * 1.3)) * 9 : Math.sin(T * 2.2 + k) * 1.5
+      FIG[k].e.style.transform = 'translate3d(' + (x - 45).toFixed(1) + 'px,' + (y - 150 + hopp - dupp).toFixed(1) + 'px,0)'
+      FIG[k].svg.style.transform = 'scaleX(' + L.dir + ') rotate(' + vipp.toFixed(1) + 'deg)'
+      FIG[k].skygge.style.transform = 'translate3d(' + (x - 40).toFixed(1) + 'px,' + (y - 9).toFixed(1) + 'px,0) scale(' + (1 + hopp / 500).toFixed(2) + ')'
+    }
+
+    // Kameraet: tett på når de går, trekker seg ut når de står stille
+    var zMal = stille > 0.45 ? 0.78 : 1
+    zoom += (zMal - zoom) * Math.min(1, dt * 2.6)
+    var anker = 0.36 + ((1 - zoom) / 0.22) * 0.3
+    var kMal = Math.max(0, Math.min(W - 1920 / zoom, L.x - (anker * 1920) / zoom))
+    kam += (kMal - kam) * Math.min(1, dt * 7)
+    verden.style.transform = 'translate3d(' + (-kam * zoom).toFixed(1) + 'px,0,0) scale(' + zoom.toFixed(4) + ')'
+    lagMidt.style.transform = 'translate3d(' + (-kam * 0.55 * zoom).toFixed(1) + 'px,0,0) scale(' + zoom.toFixed(4) + ')'
+    lagFjern.style.transform = 'translate3d(' + (-kam * 0.28 * zoom).toFixed(1) + 'px,0,0) scale(' + zoom.toFixed(4) + ')'
+  }
+
+  // ── Taster ──
+  addEventListener('keydown', function (e) {
+    var k = e.key
+    if (k === 'ArrowLeft' || k === 'a' || k === 'A') tast.v = true
+    else if (k === 'ArrowRight' || k === 'd' || k === 'D') tast.h = true
+    else if (k === ' ' || k === 'ArrowUp' || k === 'w' || k === 'W') hoppKo = true
+    else if (k === 'PageDown' || k === 'Enter') nesteEllerVidere()
+    else return
+    e.preventDefault()
+  })
+  addEventListener('keyup', function (e) {
+    var k = e.key
+    if (k === 'ArrowLeft' || k === 'a' || k === 'A') tast.v = false
+    if (k === 'ArrowRight' || k === 'd' || k === 'D') tast.h = false
+  })
+  addEventListener('click', function () { nesteEllerVidere() })
+  function nesteEllerVidere() { if (!neste() && parent !== window) parent.postMessage({ spill: 'videre' }, '*') }
+  // Taster sendt fra presentasjonen (hovedskjermen eller presentatørvinduet)
+  addEventListener('message', function (e) {
+    var m = e.data || {}
+    if (m.spill === 'neste') nesteEllerVidere()
+    else if (m.spill === 'tast') {
+      if (m.tast === 'v') tast.v = !!m.ned
+      else if (m.tast === 'h') tast.h = !!m.ned
+      else if (m.tast === 'hopp' && m.ned) hoppKo = true
+    }
+  })
+
+  function skaler() {
+    var k = Math.min(innerWidth / 1920, innerHeight / 1080)
+    document.getElementById('ramme').style.transform = 'scale(' + k + ') translate(-50%, -50%)'
+  }
+  addEventListener('resize', skaler)
+  skaler()
+  steg(0)
+  if (new URLSearchParams(location.search).has('opptak')) {
+    // Opptak: ett bilde om gangen, styrt utenfra
+    gsap.ticker.remove(gsap.updateRoot)
+    window.__spill = { steg: function (dt) { T += dt; steg(dt); gsap.updateRoot(T) }, neste: neste, hopp: function () { hoppKo = true }, x: function () { return L.x } }
+  } else {
+    gsap.ticker.add(function (tid, delta) { T += delta / 1000; steg(delta / 1000) })
+  }
+</script>
+</body>
+</html>

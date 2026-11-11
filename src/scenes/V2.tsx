@@ -10,6 +10,7 @@ import { manus } from '../content/manus.ts'
 import { Flipp } from '../ui/Deler.tsx'
 import { Foto } from '../ui/Foto.tsx'
 import { foto as hentFoto } from '../lib/foto.ts'
+import { spillFerdig, taImotSpilltaster } from '../lib/spill.ts'
 import kilder from '../lib/kilder.json'
 import { Inn, MYK, settIkonSkjult, Studio, useLys, useSek, type SceneProps } from './felles.tsx'
 
@@ -976,43 +977,38 @@ export function Test({ takt }: SceneProps) {
    1 Svart. Flipptavla med SYKEFRAVÆR kommer tilbake (A).  2 Den snur til MOTIVASJON (B).
    3–4 Sluttbongen skrives ut med QR-kode til prototypen (C), og blir stående mens dere tar spørsmål.
    Ord: «Pilot med ekte data», SYKEFRAVÆR, MOTIVASJON og VAKTLOGG = 7. */
+/* Spillet «Veien videre» (11.11): forretningsmodellen som et lite spill i en ramme (public/spill/index.html).
+   Tastene kommer fra lib/spill.ts (piltaster, A/D/W, mellomrom; PageDown = neste stopp), også fra presentatørvinduet.
+   Når spillet ikke har flere stopp, sier det fra, og presentasjonen går videre. Ikonet skjules mens spillet står. */
+function Spill() {
+  const ramme = useRef<HTMLIFrameElement>(null)
+  useEffect(() => {
+    settIkonSkjult(true)
+    const til = taImotSpilltaster((m) => ramme.current?.contentWindow?.postMessage(m, '*'))
+    const fra = (e: MessageEvent) => {
+      if (e.source === ramme.current?.contentWindow && e.data?.spill === 'videre') spillFerdig()
+    }
+    window.addEventListener('message', fra)
+    return () => {
+      settIkonSkjult(false)
+      til()
+      window.removeEventListener('message', fra)
+    }
+  }, [])
+  return <motion.iframe ref={ramme} className="vi-spill" title="Veien videre" src="spill/index.html" tabIndex={-1} data-tekst="app" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.7 }} />
+}
+
 export function Videre({ takt }: SceneProps) {
   useLys(0)
-  const t = useSek(takt >= 3)
-  const skriv = takt >= 3 && t > 0.6
   return (
     <div className="scene v2 vi">
-      <motion.div className="vi-pilot" initial={false} animate={{ opacity: takt === 0 ? 1 : 0 }} transition={{ duration: 0.9 }}>
-        <img className="vi-kilder" src="film/kilder2-slutt.png" alt="" />
-        <motion.div className="vi-restaurant" initial={{ opacity: 0, y: -30, rotate: -3 }} animate={{ opacity: takt === 0 ? 1 : 0, y: 0, rotate: -3 }} transition={{ duration: 0.9, delay: 0.5, ease: MYK }}>
-          <img src="film/apning2-frys.png" alt="" />
-        </motion.div>
-        {/* «Én restaurant, én kasse og én klokke koblet til telefonen»: tre stiplede linjer inn til telefonen i midten
-            (sluttbildet fra kildefilmen: kassa til venstre, telefonen i midten, klokka til høyre) */}
-        <svg className="vi-kobling" viewBox="0 0 1920 1080" aria-hidden="true">
-          {['M452 150 C 640 150, 790 190, 858 282', 'M418 446 C 560 446, 700 480, 826 480', 'M1596 505 C 1430 505, 1250 480, 1096 480'].map((d, i) => (
-            <motion.path key={d} d={d} initial={{ pathLength: 0 }} animate={{ pathLength: takt === 0 ? 1 : 0 }} transition={{ duration: 0.8, delay: 1.2 + i * 0.3 }} />
-          ))}
-        </svg>
-        <div className="vi-bongrad">
-          <motion.div className="bong vi-bong" initial={{ y: '-105%' }} animate={{ y: takt === 0 ? '0%' : '-105%' }} transition={{ duration: 1.6, delay: 2.0, ease: (x: number) => Math.floor(x * 7) / 7 + (x * 7 - Math.floor(x * 7)) ** 3 / 7 }}>
-            <p>PILOT MED EKTE DATA</p>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      <Studio vis={takt >= 1} fase="rosa" />
+      <Studio fase="rosa" />
+      <AnimatePresence>{takt === 0 && <Spill key="spill" />}</AnimatePresence>
       {takt >= 1 && (
         <div className="ps-midt vi-slutt">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, y: takt >= 3 ? -60 : 0, scale: takt >= 3 ? 0.8 : 1 }} transition={{ duration: 0.9, ease: MYK }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, ease: MYK }}>
             <Flipp fra="SYKEFRAVÆR" til="MOTIVASJON" start={takt >= 2} />
           </motion.div>
-          <div className="vi-utskrift">
-            <motion.div className="bong vi-sluttbong" initial={false} animate={{ y: skriv ? '0%' : '-102%' }} transition={{ duration: 2.4, ease: (x: number) => Math.floor(x * 9) / 9 + (x * 9 - Math.floor(x * 9)) ** 3 / 9 }}>
-              <b>VAKTLOGG</b>
-              <img src="qr-prototype.svg" alt="QR-kode til prototypen" />
-            </motion.div>
-          </div>
         </div>
       )}
     </div>

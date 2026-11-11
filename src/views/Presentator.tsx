@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { brukSpilltaster } from '../lib/spill.ts'
 import { kilder } from '../content/kilder.ts'
 import { manus, PLAN_TOTAL } from '../content/manus.ts'
 import { mmss, planTid, sceneStart, taktPlan } from '../content/tid.ts'
@@ -62,6 +63,7 @@ export function Presentator() {
   const nesteTakt = sisteTakt ? nesteScene?.takter[0] : scene.takter[t.takt + 1]
   const bytter = nesteTakt && nesteTakt.hvem !== takt.hvem
 
+  useEffect(() => brukSpilltaster(), [])
   useEffect(() => {
     const ned = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey) return
