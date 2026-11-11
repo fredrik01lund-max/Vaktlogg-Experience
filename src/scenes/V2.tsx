@@ -399,9 +399,10 @@ const MERKER: Arsak[] = [
   { t: H.venter, vis: H.syk + 0.5, godt: false, tekst: 'Dobbel stasjon', side: 'midt' },
   { t: 15, vis: 12.6, godt: false, tekst: 'Ingen pause', side: 'hoyre' },
   { t: H.takk + 0.6, vis: H.takk, godt: true, tekst: 'Gjesten takker', side: 'venstre' },
-  { t: H.servert, vis: H.hjelp + 0.3, godt: true, tekst: 'Godt lag', side: 'hoyre' },
+  { t: H.servert, vis: H.hjelp + 0.3, godt: true, tekst: 'Godt team på jobb', side: 'hoyre' },
   { t: REISE + kassaMeta.sammenlign + 0.8, vis: REISE + kassaMeta.les, godt: true, tekst: 'Salg sammenlignes', side: 'hoyre' },
-  { t: REISE + kassaMeta.kast + 0.4, vis: REISE + kassaMeta.krell, godt: false, tekst: 'Lappen kastes', side: 'hoyre' },
+  { t: REISE + kassaMeta.kast + 0.4, vis: REISE + kassaMeta.krell, godt: false, tekst: 'Kassalappen kastes og prestasjonene havner i glemmeboken', side: 'venstre' },
+  { t: SLUTT_START + 3.5, vis: SLUTT_START + 0.6, godt: false, tekst: 'Sliten etter kvelden før', side: 'venstre' },
 ]
 /** Så lenge står årsaken stort øverst før den flytter seg ned til kurven (minst). */
 const ARSAK_STOR = 2.4
@@ -581,7 +582,7 @@ function ReiseFilm() {
           scale: 1,
         }
         return (
-          <motion.div key={m.tekst} className={`re-arsak ${m.godt ? 'godt' : 'tungt'}`} initial={{ opacity: 0, ...oppe, scale: 1.3 }} animate={{ opacity: 1, ...(stor ? oppe : nede) }} transition={{ duration: stor ? 0.45 : 0.9, ease: MYK }}>
+          <motion.div key={m.tekst} className={`re-arsak ${m.godt ? 'godt' : 'tungt'} ${m.tekst.length > 30 ? 'lang' : ''}`} initial={{ opacity: 0, ...oppe, scale: 1.3 }} animate={{ opacity: 1, ...(stor ? oppe : nede) }} transition={{ duration: stor ? 0.45 : 0.9, ease: MYK }}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d={m.godt ? 'M5 12h14M12 5v14' : 'M5 12h14'} />
             </svg>

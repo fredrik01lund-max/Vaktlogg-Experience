@@ -588,6 +588,11 @@
   stroke-width: 3.2;
   stroke-linecap: round;
 }
+.re-arsak.lang {
+  white-space: normal;
+  width: 560px;
+  border-radius: 26px;
+}
 .re-arsak.godt {
   background: #7cc9a1;
 }
