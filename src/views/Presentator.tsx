@@ -97,7 +97,7 @@ export function Presentator() {
         </div>
         <div className="pv-knapper">
           {!hovedTilkoblet && <button onClick={() => apneVindu('hoved')}>Åpne hovedskjerm</button>}
-          <button onClick={(e) => { e.currentTarget.blur(); lydtest() }} title="Hovedskjermen spiller Sir Domeos første replikk">Test lyd</button>
+          <button onClick={(e) => { e.currentTarget.blur(); lydtest() }} title="Hovedskjermen sier «Fungerer lyden bra?» med Sir Domeos stemme">Test lyd</button>
           <button onClick={(e) => { e.currentTarget.blur(); nyDemo() }} title="Last prototypen på nytt med rene data (også på sensors mobil)">Nullstill demo</button>
           <button onClick={(e) => { e.currentTarget.blur(); if (!t.startet || confirm('Presentasjonen er i gang. Tilbake til startskjermen og klokka på 0:00?')) nullstill() }} title="Tilbake til den svarte startskjermen med klokka på 0:00. Presentasjonen starter først når dere trykker Start.">Start på nytt</button>
         </div>

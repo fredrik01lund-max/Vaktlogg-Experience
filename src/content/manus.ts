@@ -174,7 +174,7 @@ export const manus: Scene[] = [
       {
         hvem: 'C',
         sier: 'Emma og restauranten er fiktive, og tallene er simulert. Værsågod, prøv selv. Sir Domeo viser deg rundt.',
-        regi: 'C gir mobilen til sensor. Storskjermen viser det samme som mobilen, og Sir Domeo snakker fra høyttalerne.',
+        regi: 'C gir mobilen til sensor. Mobilen og storskjermen viser forsiden med logoen og knappen «Åpne Vaktlogg». Når sensor trykker på den, åpner appen seg, presentasjonen går selv videre til sensors del, og Sir Domeo begynner å snakke fra høyttalerne.',
       },
       {
         hvem: 'sensor',

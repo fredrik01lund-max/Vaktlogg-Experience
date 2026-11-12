@@ -12,7 +12,7 @@ import { Skisse } from './V2.tsx'
 export const DEMO_FILM = Math.max(0, manus.find((s) => s.id === 'demo')?.takter.findIndex((t) => t.hvem === 'stille') ?? 0)
 
 /* ══ 10. Prøv selv: prototype reveal + sensors omvisning ═════════════════════════
-   Blender-filmen (public/film/telefon2.mp4) ender med skjermen midt i bildet, SKJERM_ANDEL
+   Blender-filmen (public/film/telefon3.mp4) ender med skjermen midt i bildet, SKJERM_ANDEL
    av bildehøyden. Den ekte prototypen ligger klar i en iframe nøyaktig der og tones inn
    over siste bilde – og blir stående midt på skjermen. Ingen tekst ved siden av: sensor
    trykker selv (på en mobil vi gir sensor, speilet hit), og Sir Domeo forklarer med stemmen. */
@@ -145,8 +145,10 @@ export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { v
       const forrige = sisteReplikk.current
       sisteReplikk.current = id
       if (sensorNa.current) si(id)
-      // Sensor har trykket seg videre mens C fortsatt står på overleveringen: gå videre til sensors takt
-      else if (overleveringNa.current && id && forrige && id !== forrige && id !== 'sensor-0') {
+      // Sensor har trykket «Åpne Vaktlogg» (eller seg videre) mens C fortsatt står på overleveringen: gå videre til
+      // sensors takt, så Sir Domeo begynner å snakke med en gang. (Fra 12.11 starter første replikk først når sensor
+      // trykker på forsiden, ikke når prototypen lastes.)
+      else if (overleveringNa.current && id && id !== forrige) {
         const t = hent()
         if (manus[t.scene]?.id === 'demo' && t.takt === DEMO_FILM + 1) neste()
       }
@@ -279,7 +281,7 @@ export function Demo({ takt, onVisning }: SceneProps & { onVisning: (v: Visning)
   if (takt < 0) return <Skisse />
   return (
     <div className="scene demo">
-      <img className="demo-film" src="film/telefon2-slutt.png" alt="" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
+      <img className="demo-film" src="film/telefon3-slutt.png" alt="" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
       <motion.video
         ref={video}
         className="demo-film"

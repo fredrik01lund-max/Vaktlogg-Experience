@@ -28,7 +28,7 @@ if (path.basename(MAPPE) === 'dist-eksamen-trygg' && fs.existsSync(path.join(ROT
   console.warn('\n  ⚠ dist-eksamen er nyere enn den frosne kopien. Vil dere bruke det nye bygget: node server/eksamen.mjs dist-eksamen')
 }
 // Filene scenene trenger – mangler noe, skal det sies nå og ikke midt i fremføringen
-const TRENGS = ['film/apning2.mp4', 'film/apning2-slutt.png', 'film/apning2-frys.png', 'film/pakket.mp4', 'film/telefon2.mp4', 'film/telefon2-slutt.png', 'film/hopping2.mp4', 'film/hopping2-slutt.png', 'film/maned-anim.webm', 'demo/vaktlogg.html', ...['0', '1-duell', '1-makker', '1-laget', '1-rolig', '2', '3', '4', '5', '6', '7'].map((i) => `demo/domeo/sensor-${i}.mp3`), ...['salg', 'helse', 'live', 'rapport', 'sjef', 'start', 'domeo', 'tilbakemelding-skjema'].map((n) => `skjerm/${n}.png`),
+const TRENGS = ['film/apning2.mp4', 'film/apning2-slutt.png', 'film/apning2-frys.png', 'film/pakket.mp4', 'film/telefon3.mp4', 'film/telefon3-slutt.png', 'demo/domeo/lydtest.mp3', 'film/hopping2.mp4', 'film/hopping2-slutt.png', 'film/maned-anim.webm', 'demo/vaktlogg.html', ...['0', '1-duell', '1-makker', '1-laget', '1-rolig', '2', '3', '4', '5', '6', '7'].map((i) => `demo/domeo/sensor-${i}.mp3`), ...['salg', 'helse', 'live', 'rapport', 'sjef', 'start', 'domeo', 'tilbakemelding-skjema'].map((n) => `skjerm/${n}.png`),
   // Manus v2: filmene, stillbildene og diamant-ikonet
   ...['kassa2.mp4', 'kassa3.mp4', 'intervju2.mp4', 'reise2.mp4', 'kilder2.mp4', 'kilder2-slutt.png', 'kassa2-sammenlign.png'].map((f) => `film/${f}`), 'qr-prototype.svg',
   ...['start', 'empathize', 'define', 'ideate', 'prototype', 'test', 'helhet'].map((s) => `film/ikon-${s}.png`), ...[1, 2, 3, 4, 5, 6].map((i) => `film/ikon-${i}.webm`)]

@@ -18,7 +18,7 @@ const FIL: Record<string, string> = {
   reise: 'reise2',
   hopping: 'hopping2',
   kassafunn: 'kassa3', // 12.11: funn 2 – kameraet glir inn på søppelbøtta mens lappene kastes (brukerreisen bruker kassa2)
-  telefon: 'telefon2', // 12.11: uten vaktlista på brettet, og med Sir Domeos nye første replikk på skjermen
+  telefon: 'telefon3', // 12.11: uten vaktlista på brettet, og med forsiden i sensor-demoen («Åpne Vaktlogg») på skjermen
 }
 const filSti = (navn: FilmNavn) => `film/${FIL[navn] ?? navn}.mp4`
 

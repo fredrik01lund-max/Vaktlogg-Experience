@@ -206,11 +206,11 @@ export function Salen() {
       mobil.mobil > 0 ? <>Sensors mobil er koblet til.</> : <>Sensors mobil: åpne <b>http://&lt;IP&gt;:8080/s</b> (adressen står i terminalen)</>
     ) : null
 
-  // ── «Test lyd» fra presentatørvisningen: hovedskjermen spiller Sir Domeos første replikk ──
+  // ── «Test lyd» fra presentatørvisningen: hovedskjermen spiller en egen testreplikk («Fungerer lyden bra?») ──
   useEffect(
     () =>
       paLydtest(() => {
-        new Audio('demo/domeo/sensor-0.mp3').play().catch(() => {})
+        new Audio('demo/domeo/lydtest.mp3').play().catch(() => {})
       }),
     [],
   )
