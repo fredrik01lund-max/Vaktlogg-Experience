@@ -9,7 +9,7 @@ import type { Scene } from './types.ts'
    • Diamant-ikonet øverst til høyre viser fasen (scene.diamant); når fasen skifter, glir kula dit (ui/Diamant.tsx).
    • «anim» = sekunder animasjon når takten starter (presentatørvisningen sier «vent»).
    • Manuset er planlagt til 10:00. Litt lengre tid til prototypen enn manuset regner med gir 10:10, og
-     klikket med de to første brukerreisene og spillet om forretningsmodellen (11.11) gir 10:33. Brukerreisen spilles fortere fra 12.11 (rask i dødtiden, rolig rundt hendelsene): 10:17.
+     klikket med de to første brukerreisene og spillet om forretningsmodellen (11.11) gir 10:33. Brukerreisen spilles fortere fra 12.11 (rask i dødtiden, rolig rundt hendelsene): 10:17. Sensorene får 30 s mer til å utforske prototypen selv (12.11): 10:47.
      Kjør `npm run sjekk`.
    • Manus v1 (ti scener, 4.11) ligger urørt i manus-v1.ts og vises under «Lagt til side» (O).
    ════════════════════════════════════════════════════════════════════════════════ */
@@ -159,7 +159,7 @@ export const manus: Scene[] = [
     tema: 'mork',
     fase: 'prototype',
     diamant: 'prototype',
-    varighet: 158,
+    varighet: 188,
     takter: [
       {
         hvem: 'C',
@@ -178,8 +178,8 @@ export const manus: Scene[] = [
       },
       {
         hvem: 'sensor',
-        sek: 120,
-        regi: 'Sensor prøver selv. Sir Domeo forklarer starten og viser én funksjon. Etter det trykker sensor selv. Ikke forklar underveis. Hjelp bare hvis sensor står fast. Ved 1:30: står sensor ikke på sluttrapporten, sier C «Trykk Avslutt vakt nederst». Ved 2:00 tar C over, uansett hvor sensor er. To sensorer: bestem på forhånd hvem som får mobilen. Virker ikke mobilen: C styrer med musen, og sensor sier hva hun vil trykke på.',
+        sek: 150,
+        regi: 'Sensor prøver selv. Sir Domeo viser rundt i åtte stopp (ca. 1:45), uten tekstbobler: stemmen forklarer, og han flyr til det han snakker om og setter seg på boksen. Velg spill, start vakten, helse og konkurranse, salg, kudos (kan spammes), avslutt, sluttrapporten (åpner seg selv og står i fem sekunder) – og til slutt sier han at de kan utforske selv, men må kjappe seg. De to siste stoppene går av seg selv. Ikke forklar underveis. Hjelp bare hvis sensor står fast. Etter omvisningen får sensorene ca. 45 sekunder til å trykke seg rundt og stille spørsmål om prototypen. Står sensor ikke på sluttrapporten ved 1:45, sier C «Trykk Avslutt vakt nederst». Ved 2:30 runder C av muntlig («Da går vi videre») og tar mobilen tilbake, uansett hvor sensor er. To sensorer: bestem på forhånd hvem som får mobilen. Virker ikke mobilen: C styrer med musen, og sensor sier hva hun vil trykke på.',
       },
       {
         hvem: 'C',
@@ -248,6 +248,6 @@ export const manus: Scene[] = [
 ]
 
 /** Planlagt total: manuset (10:00) og prototypen slik talen faktisk tar. */
-export const PLAN_TOTAL = 617
+export const PLAN_TOTAL = 647
 /** Den harde grensen for fremføringen. */
 export const MAKS_TOTAL = 720

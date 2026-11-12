@@ -678,3 +678,11 @@ body.vis-foto {
   font-weight: 400;
   opacity: 0.7;
 }
+
+/* Forenklet presentatørvisning (12.11): én kolonne, større manus */
+.pv-midt.pv-enkel {
+  grid-template-columns: minmax(0, 1fr);
+}
+.pv-enkel .pv-takt.na .pv-sier {
+  font-size: 30px;
+}

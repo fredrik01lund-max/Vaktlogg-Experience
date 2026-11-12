@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react'
 import { brukSpilltaster } from '../lib/spill.ts'
 import { tallTast } from '../lib/hurtigtast.ts'
-import { kilder } from '../content/kilder.ts'
 import { manus, PLAN_TOTAL } from '../content/manus.ts'
 import { mmss, planTid, sceneStart, taktPlan } from '../content/tid.ts'
-import type { Ordet, Stopp } from '../content/types.ts'
-import ikon from '../lib/ikon.json'
+import type { Ordet } from '../content/types.ts'
 import { mobilAdresse, romkode, speilmodus } from '../lib/mobil.ts'
-import { FARGE, medNavn, navnMangler, oppsett } from '../lib/oppsett.ts'
+import { FARGE, medNavn, oppsett } from '../lib/oppsett.ts'
 import { apneVindu, forrige, gaTil, lydtest, neste, nullstill, nyDemo, svart, useStatus, useTilstand, velg } from '../lib/sync.ts'
 import { VALG } from '../scenes/Del2.tsx'
 
-// Presentatørvisningen: eget vindu på bærbar-skjermen. Viser hvem som snakker, manus,
-// regi, nedtelling for animasjoner, tid mot plan, neste overgang og kildene.
-
-const DIAMANT_NAVN: Record<Stopp, string> = { start: 'startpunktet', empathize: 'Empathize', define: 'Define', ideate: 'Ideate', prototype: 'Prototype', test: 'Test, pilen tilbake lyser', helhet: 'hele diamanten' }
+// Presentatørvisningen: eget vindu på bærbar-skjermen. Forenklet 12.11 etter ønske: bare hvem som snakker, manus,
+// tid (mot plan, per del og nedtelling for animasjoner), hvor i presentasjonen man er, og knappene. Regi, neste,
+// overgang og kilder står i manusvisningen (M), ikke her.
 
 function hvemTekst(h: Ordet) {
   if (h === 'stille') return 'STILLE'
@@ -62,7 +59,6 @@ export function Presentator() {
   const sisteTakt = t.takt >= scene.takter.length - 1
   const nesteScene = sisteTakt ? manus[t.scene + 1] : scene
   const nesteTakt = sisteTakt ? nesteScene?.takter[0] : scene.takter[t.takt + 1]
-  const bytter = nesteTakt && nesteTakt.hvem !== takt.hvem
 
   useEffect(() => brukSpilltaster(), [])
   useEffect(() => {
@@ -107,7 +103,6 @@ export function Presentator() {
         </div>
       </header>
 
-      {navnMangler && <div className="pv-varsel">Navnene er fortsatt «Presentatør A/B/C» – skriv dem inn i oppsett.js.</div>}
       {mobilKode && (
         <div className={`pv-mobil ${status.mobil && hovedTilkoblet ? 'ok' : ''}`}>
           {status.rele === false && hovedTilkoblet
@@ -118,7 +113,7 @@ export function Presentator() {
         </div>
       )}
 
-      <main className="pv-midt">
+      <main className="pv-midt pv-enkel">
         <section className="pv-na">
           <div className="pv-hvem" style={{ color: hvemFarge(takt.hvem) }}>
             <span className="pv-prikk" style={{ background: hvemFarge(takt.hvem) }} />
@@ -126,10 +121,8 @@ export function Presentator() {
           </div>
           <div className="pv-scene">
             <span>
-              {String(t.scene + 1).padStart(2, '0')} / {manus.length} · {scene.del}
-              {scene.diamant && ` · diamanten: ${DIAMANT_NAVN[scene.diamant]}`}
+              Del {t.scene + 1} av {manus.length}
             </span>
-            {scene.diamant && <img className="pv-diamant" src={(ikon.stopp as Record<string, string>)[scene.diamant]} alt="" />}
             <b>{scene.tittel}</b>
             <span className="pv-scenetid">
               {mmss(iScene)} / {mmss(scene.varighet)}
@@ -149,10 +142,10 @@ export function Presentator() {
           ) : null}
 
           {takt.hvem === 'sensor' && scene.id !== 'sensor' && (
-            <div className={`pv-sensortid ${iTakt > 150 ? 'over' : iTakt > (takt.sek ?? 130) ? 'snart' : ''}`}>
+            <div className={`pv-sensortid ${iTakt > (takt.sek ?? 130) ? 'over' : iTakt > (takt.sek ?? 130) - 30 ? 'snart' : ''}`}>
               <b>Sensor prøver selv: {mmss(iTakt)}</b>
-              <span>{iTakt > 150 ? 'Ta over nå.' : `Planlagt ${mmss(takt.sek ?? 130)} – C tar over senest ved 2:30.`}</span>
-              <i style={{ width: `${Math.min(100, (iTakt / 150) * 100)}%` }} />
+              <span>{iTakt > (takt.sek ?? 130) ? 'Rund av muntlig og gå videre.' : `C runder av ved ${mmss(takt.sek ?? 130)}.`}</span>
+              <i style={{ width: `${Math.min(100, (iTakt / (takt.sek ?? 130)) * 100)}%` }} />
             </div>
           )}
 
@@ -172,57 +165,15 @@ export function Presentator() {
                 <div className="pv-takt-hode">
                   <span style={{ color: hvemFarge(k.hvem) }}>{hvemTekst(k.hvem)}</span>
                   <small>
-                    klikk {i + 1} · ca. {Math.round(plan[i])} s{k.anim ? ` · animasjon ${k.anim} s` : ''}
-                    {k.auto ? ' · går videre selv' : ''}
+                    klikk {i + 1} av {scene.takter.length} · ca. {Math.round(plan[i])} s
                   </small>
                 </div>
                 {k.sier && <p className="pv-sier">{medNavn(k.sier)}</p>}
-                {k.regi && <p className="pv-regi">{k.regi}</p>}
               </div>
             ))}
           </div>
         </section>
 
-        <aside className="pv-side">
-          <div className="pv-boks">
-            <h3>Neste</h3>
-            {nesteTakt ? (
-              <>
-                <div className="pv-neste-hvem" style={{ color: hvemFarge(nesteTakt.hvem) }}>
-                  {bytter ? '↪ ' : ''}
-                  {hvemTekst(nesteTakt.hvem)}
-                  {sisteTakt && <small> · {nesteScene.tittel}</small>}
-                </div>
-                {nesteTakt.sier && <p className="pv-sier liten">{medNavn(nesteTakt.sier).slice(0, 160)}{medNavn(nesteTakt.sier).length > 160 ? ' …' : ''}</p>}
-                {nesteTakt.regi && !nesteTakt.sier && <p className="pv-regi">{nesteTakt.regi}</p>}
-              </>
-            ) : (
-              <p>Slutt – spørsmål.</p>
-            )}
-          </div>
-          <div className="pv-boks">
-            <h3>Overgang</h3>
-            <p>{scene.overgang}</p>
-          </div>
-          {status.demo && scene.id === 'demo' && (
-            <div className="pv-boks">
-              <h3>I prototypen nå</h3>
-              <p>{status.demo}</p>
-            </div>
-          )}
-          <div className="pv-boks">
-            <h3>Kilder</h3>
-            {scene.kilder.length ? (
-              <ul>
-                {scene.kilder.map((k) => (
-                  <li key={k}>{kilder[k]}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>–</p>
-            )}
-          </div>
-        </aside>
       </main>
 
       <footer className="pv-bunn">
