@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { filmUrl } from '../lib/film.ts'
-import ringer from '../lib/ringer.json'
 import apningMeta from '../lib/apning.json'
 import intervju from '../lib/intervju2.json'
 import kassaMeta from '../lib/kassa.json'
@@ -20,66 +19,98 @@ import { Inn, MYK, settIkonSkjult, Studio, useLys, useSek, type SceneProps } fro
    Diamanten i hjørnet og overgangene ligger i ui/Diamant.tsx og styres fra salen. */
 
 /* ── 1. Problemområdet (A, før diamanten) ──
-   Åpningen (Blender, ringer-* i hopping_spor.py): svart, den rosa kula faller ned der flipptavla skal stå, og ringer
-   av lys brer seg utover – ringvirkninger, det A snakker om. I treffet slår tavla seg opp bokstav for bokstav til
-   SYKEFRAVÆR. Kula spretter videre i en bue og legger seg der startpunktet i diamant-ikonet står, og ikonet tones inn
-   rundt den. Filmen tones bort mot svart, og linjen kommer. Samme tavle snur i del 4 og kommer tilbake i del 9.
-   1 + 4 ord. */
+   (12.11) Double diamond-modellen kommer først, stort midt på mørk bakgrunn, med «Design Thinking» under. Så flytter
+   den seg opp i høyre hjørne og blir ikonet som står der resten av presentasjonen – så publikum ser både modellen
+   og hvor den havner. Lyset kommer på, flipptavla slår seg opp til SYKEFRAVÆR, linjen kommer, og under tegnes
+   ringvirkningene: stråler ut fra ett punkt til mange – sykefravær gir følger for restauranten og for kollegene.
+   Figuren står stille når den er tegnet. (Blender-filmen med de rosa ringene er tatt ut: den distraherte.)
+   Samme tavle snur i del 4. 2 + 1 + 4 ord, pluss S og fire stikkord på strålene som brukeren ba om (unntak i
+   scripts/sjekk-tekst.ts). */
+const PR_STOR = 2.94 // modellen midt på skjermen er så mange ganger større enn ikonet i hjørnet
+const PR_FLY = 0.45 // sekunder: modellen begynner å bevege seg mot hjørnet med en gang (brukeren 12.11: den skal ikke stå stille i midten)
+const PR_IKON = PR_FLY + 2.0 // det ekte ikonet tar over (ligger nøyaktig der kopien landet)
+const PR_TAVLE = PR_FLY + 1.3
+const PR_LINJE = PR_TAVLE + 2.8
+const PR_VIRKNING = PR_TAVLE + 3.6
+// Ringvirkningene: 24 stråler fra midten, til prikker i tre avstander (annenhver ytterst, de andre vekselvis
+// innerst og i midten). «ring» styrer rekkefølgen: de nærmeste først, så de neste, så de ytterste.
+const STRALER = Array.from({ length: 24 }, (_, i) => {
+  const ring = i % 2 === 0 ? 2 : i % 4 === 1 ? 0 : 1
+  const v = (i / 24) * Math.PI * 2 - Math.PI / 2
+  const r = [112, 164, 220][ring]
+  return { ring, x0: Math.cos(v) * 46, y0: Math.sin(v) * 46, x: Math.cos(v) * r, y: Math.sin(v) * r, d: [10, 12.5, 16][ring], nr: Math.floor(i / 2) }
+})
+// Stikkordene (brukerens egne, 12.11): hva sykefraværet fører til. Hvert står ytterst på sin stråle (nummeret i
+// STRALER), til høyre eller venstre for prikken. S i midten = sykefraværet.
+const STIKKORD: { strale: number; tekst: string }[] = [
+  { strale: 4, tekst: 'Underbemanning' },
+  { strale: 8, tekst: 'Dårligere service' },
+  { strale: 16, tekst: 'Ekstra kostnader' },
+  { strale: 20, tekst: 'Overarbeid med mer sykefravær' },
+  { strale: 6, tekst: 'Oppsigelser' },
+]
 export function Problem(_: SceneProps) {
   useLys(0)
-  const video = useRef<HTMLVideoElement>(null)
-  const [t, setT] = useState(0)
-  const [ferdig, setFerdig] = useState(false)
+  const t = useSek()
+  const [kopi, setKopi] = useState(true)
 
   useEffect(() => {
-    const v = video.current
     settIkonSkjult(true)
-    let id = 0
-    const tikk = () => {
-      if (v) setT(v.currentTime)
-      id = requestAnimationFrame(tikk)
-    }
-    if (v) {
-      v.currentTime = 0
-      v.play().catch(() => setFerdig(true))
-      id = requestAnimationFrame(tikk)
-    }
-    return () => {
-      cancelAnimationFrame(id)
-      settIkonSkjult(false)
-    }
+    return () => settIkonSkjult(false)
   }, [])
-  // Ikonet kommer når kula er på plass (eller med en gang hvis filmen ikke kan spilles)
   useEffect(() => {
-    if (ferdig || t >= ringer.ikon - 0.25) settIkonSkjult(false)
-  }, [t, ferdig])
+    if (t >= PR_IKON) settIkonSkjult(false)
+    if (t >= PR_IKON + 0.9) setKopi(false)
+  }, [t])
 
-  const tavle = ferdig || t >= ringer.treff - 0.05
-  const tonUt = ferdig || t >= ringer.varighet - 0.7
+  const fly = t >= PR_FLY
+  const tavle = t >= PR_TAVLE
+  const virkning = t >= PR_VIRKNING
+  const stor = { x: -710, y: 360, scale: PR_STOR }
   return (
     <div className="scene v2 ps">
-      <Studio vis={tonUt} fase="noytral" />
-      <motion.video
-        ref={video}
-        className="pr-film"
-        src={filmUrl('ringer')}
-        muted
-        playsInline
-        preload="auto"
-        onEnded={() => setFerdig(true)}
-        onError={() => setFerdig(true)}
-        initial={false}
-        animate={{ opacity: tonUt ? 0 : 1 }}
-        transition={{ duration: 0.7, ease: 'easeInOut' }}
-      />
-      <div className="ps-midt">
-        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: tavle ? 1 : 0, scale: tavle ? 1 : 0.96 }} transition={{ duration: 0.45, ease: MYK }}>
+      <Studio vis={fly} fase="noytral" />
+      {kopi && (
+        <motion.div className="diamant-ikon pr-modell" aria-hidden="true" initial={{ opacity: 0, ...stor, scale: PR_STOR * 0.94 }} animate={{ opacity: 1, ...(fly ? { x: 0, y: 0, scale: 1 } : stor) }} transition={{ duration: fly ? 1.9 : 0.45, ease: fly ? [0.5, 0, 0.2, 1] : MYK }}>
+          <img src="film/ikon-start.png" alt="" />
+          <div className="diamant-navn" data-ord="Design Thinking">
+            Design Thinking
+          </div>
+        </motion.div>
+      )}
+      <div className="pr-midt">
+        <motion.div className="pr-tavle" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: tavle ? 1 : 0, scale: tavle ? 0.85 : 0.8 }} transition={{ duration: 0.45, ease: MYK }}>
           <Flipp fra="          " til="SYKEFRAVÆR" start={tavle} />
         </motion.div>
-        <Inn vis={tonUt} d={tonUt && !ferdig ? 0.4 : 0} className="pr-linje stor-serif">
+        <Inn vis={t >= PR_LINJE} className="pr-linje stor-serif">
           Opplevd på nært hold
         </Inn>
       </div>
+      <svg className="pr-virkning" viewBox="-250 -250 500 500" aria-hidden="true">
+        {virkning && (
+          <>
+            <motion.circle r="31" className="pr-v-midt" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, ease: [0.3, 1.5, 0.5, 1] }} />
+            <motion.text className="pr-v-s" textAnchor="middle" y="13" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.3 }}>
+              S
+            </motion.text>
+            {STRALER.map((s, i) => {
+              const d = 0.5 + s.ring * 0.55 + s.nr * 0.025
+              const ord = STIKKORD.find((o) => o.strale === i)
+              return (
+                <g key={i} className={ord ? 'pr-v-med-ord' : undefined}>
+                  <motion.line x1={s.x0} y1={s.y0} x2={s.x} y2={s.y} className="pr-v-strale" initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 0.5, delay: d, ease: 'easeOut' }} />
+                  <motion.circle cx={s.x} cy={s.y} r={s.d} className="pr-v-prikk" initial={{ scale: 0, fill: '#d9577f' }} animate={{ scale: 1, fill: ord ? '#b83a6c' : '#2b1f1c' }} transition={{ scale: { duration: 0.45, delay: d + 0.38, ease: [0.3, 1.6, 0.5, 1] }, fill: { duration: 1.2, delay: d + 0.8 } }} style={{ transformOrigin: `${s.x}px ${s.y}px` }} />
+                  {ord && (
+                    <motion.text className="pr-v-ord" x={s.x + (s.x > 0 ? 30 : -30)} y={s.y + 11} textAnchor={s.x > 0 ? 'start' : 'end'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: d + 0.7 }}>
+                      {ord.tekst}
+                    </motion.text>
+                  )}
+                </g>
+              )
+            })}
+          </>
+        )}
+      </svg>
     </div>
   )
 }
@@ -312,6 +343,8 @@ function MerkeTegn({ type }: { type: Merke }) {
   return <path d="M4 5.5h16v10H11l-4.5 4v-4H4z" className="merke-tegn" />
 }
 
+// Funn 2 (12.11): egen utgave av kassafilmen (blender/kassa_zoom.py → kassa3.mp4). Kameraet glir inn på
+// søppelbøtta mens lappene kastes og de tre går forbi, og filmen slutter på bøtta (siste bilde blir stående).
 function useFilm(aktiv: boolean) {
   const ref = useRef<HTMLVideoElement>(null)
   const [t, setT] = useState(0)
@@ -346,7 +379,7 @@ export function Funn({ takt }: SceneProps) {
   return (
     <div className="scene v2 fu">
       <motion.video ref={a.ref} className="fu-film" src={filmUrl('apning')} muted playsInline preload="auto" initial={false} animate={{ opacity: takt === 0 ? 1 : 0 }} transition={{ duration: 0.9 }} />
-      <motion.video ref={k.ref} className="fu-film" src={filmUrl('kassa')} muted playsInline preload="auto" initial={false} animate={{ opacity: takt === 1 ? 1 : 0 }} transition={{ duration: 0.9 }} />
+      <motion.video ref={k.ref} className="fu-film" src={filmUrl('kassafunn')} muted playsInline preload="auto" initial={false} animate={{ opacity: takt === 1 ? 1 : 0 }} transition={{ duration: 0.9 }} />
       <motion.video ref={iv.ref} className="fu-film" src={filmUrl('intervju')} muted playsInline preload="auto" initial={false} animate={{ opacity: takt === 2 ? 1 : 0 }} transition={{ duration: 0.9 }} />
 
       {/* «Tre ting gikk igjen»: tre merker viser hvilket av funnene vi er på (ingen ord) – fotspor (bevegelse),
@@ -397,7 +430,7 @@ export function Funn({ takt }: SceneProps) {
             transition={{ duration: 0.6, delay: 1.8, ease: MYK }}
           >
             {ord.map((w, i) => (
-              <motion.span key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35, delay: 2.2 + i * 0.32 }}>
+              <motion.span key={i} style={w.startsWith('motivasjon') ? { fontWeight: 750 } : undefined} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35, delay: 2.2 + i * 0.32 }}>
                 {i === 0 ? '«' : ''}
                 {w}
                 {i === ord.length - 1 ? '»' : ''}{' '}
@@ -420,9 +453,26 @@ export function Funn({ takt }: SceneProps) {
    Tekstene og kurven følger tidspunktene i reise.json og kassa.json. Høyst 8 ord synlig samtidig (sjekk-tekst teller
    denne scenen samtidig): fasene (5 ord) + én kort tekst (høyst 3). Sitatet fra gjesten telles ikke. */
 const REISE = reise.varighet ? Math.min(reise.hendelser.slutt, reise.varighet) : 29.2
-const KASSA = kassaMeta.varighet
+// 12.11: kassaklippet kuttes like etter at de har gått ut – de siste
+// sekundene med mørk restaurant ga en lang pause før «Dagene etter». Alle tider under er filmtid.
+// Senere 12.11: farten varierer. Rask der ingenting skjer (hun går mellom bordene), rolig rundt det som betyr noe:
+// lederen som spør, årsakene som kommer, gjesten som takker, kassalappene. ROLIGE = [fra, til] i filmtid.
+const RASK = 2.5
+const ROLIG = 1
+const ROLIGE: [number, number][] = [
+  [4.5, 8.9], // lederen spør – dobbel stasjon
+  [12.4, 15.0], // ingen pause
+  [21.6, 26.9], // gjesten takker, kollegaen hjelper
+  [REISE + 3.2, REISE + 8.6], // kassalappene sammenlignes, krølles og kastes
+]
+function fartVed(t: number) {
+  let w = 0
+  for (const [a, b] of ROLIGE) w = Math.max(w, Math.min(1, (t - (a - 0.5)) / 0.5, (b + 0.5 - t) / 0.5))
+  return RASK + (ROLIG - RASK) * Math.max(0, w)
+}
+const KASSA = Math.min(kassaMeta.varighet, kassaMeta.gar + 2.6)
 const SLUTT_START = REISE + KASSA
-const TOTAL = SLUTT_START + 5.5
+const TOTAL = SLUTT_START + 5
 const H = reise.hendelser
 const FASER_REISE = [
   { navn: 'Før', fra: 0, til: 12 },
@@ -469,7 +519,7 @@ const KURVE: [number, number][] = [
 // filmen (fra «vis»), og flytter seg så ned til merket sitt på kurven (ved «t») og blir stående. Når filmen er
 // ferdig, står hele reisen igjen med årsakene på. Ordene er de samme som i gruppens egne brukerreiser (dobbel
 // stasjon, ingen pause, godt lag). «side» = hvilken vei lappen går ut fra merket, så naboer ikke dekker hverandre.
-type Arsak = { t: number; vis: number; godt: boolean; tekst: string; side: 'midt' | 'hoyre' | 'venstre' }
+type Arsak = { t: number; vis: number; godt: boolean; tekst: string; side: 'midt' | 'hoyre' | 'venstre'; smal?: boolean }
 const MERKER: Arsak[] = [
   { t: H.venter, vis: H.syk + 0.5, godt: false, tekst: 'Dobbel stasjon', side: 'midt' },
   { t: 15, vis: 12.6, godt: false, tekst: 'Ingen pause', side: 'hoyre' },
@@ -477,7 +527,7 @@ const MERKER: Arsak[] = [
   { t: H.servert, vis: H.hjelp + 0.3, godt: true, tekst: 'Godt team på jobb', side: 'hoyre' },
   { t: REISE + kassaMeta.sammenlign + 0.8, vis: REISE + kassaMeta.les, godt: true, tekst: 'Salg sammenlignes', side: 'hoyre' },
   { t: REISE + kassaMeta.kast + 0.4, vis: REISE + kassaMeta.krell, godt: false, tekst: 'Kassalappen kastes og prestasjonene havner i glemmeboken', side: 'venstre' },
-  { t: SLUTT_START + 3.5, vis: SLUTT_START + 0.6, godt: false, tekst: 'Sliten etter kvelden før', side: 'venstre' },
+  { t: SLUTT_START + 1.4, vis: SLUTT_START + 0.3, godt: false, tekst: 'Sliten etter kvelden før', side: 'hoyre', smal: true },
 ]
 /** Så lenge står årsaken stort øverst før den flytter seg ned til kurven (minst). */
 const ARSAK_STOR = 2.4
@@ -535,6 +585,7 @@ function ReiseFilm() {
     const v = r.current
     if (!v) return
     v.currentTime = 0
+    v.playbackRate = fartVed(0)
     v.play().catch(() => setDel(1))
   }, [])
   useEffect(() => {
@@ -542,6 +593,7 @@ function ReiseFilm() {
     const v = k.current
     if (!v) return
     v.currentTime = 0
+    v.playbackRate = fartVed(REISE)
     v.play().catch(() => setDel(2))
   }, [del])
   // Felles klokke: tiden i den filmen som går, pluss det som er spilt før
@@ -549,9 +601,14 @@ function ReiseFilm() {
     let id = 0
     let slutt0 = 0
     const tikk = () => {
-      if (del === 0 && r.current) setT(Math.min(REISE, r.current.currentTime))
-      else if (del === 1 && k.current) setT(REISE + k.current.currentTime)
-      else {
+      if (del === 0 && r.current) {
+        setT(Math.min(REISE, r.current.currentTime))
+        r.current.playbackRate = fartVed(r.current.currentTime)
+      } else if (del === 1 && k.current) {
+        setT(REISE + Math.min(KASSA, k.current.currentTime))
+        k.current.playbackRate = fartVed(REISE + k.current.currentTime)
+        if (k.current.currentTime >= KASSA) setDel(2)
+      } else {
         if (!slutt0) slutt0 = performance.now()
         setT(Math.min(TOTAL, SLUTT_START + (performance.now() - slutt0) / 1000))
       }
@@ -564,7 +621,7 @@ function ReiseFilm() {
   const fase = FASER_REISE.findIndex((f) => t >= f.fra && t < f.til)
   const tekst = TEKSTER.find((x) => t >= x.fra && t < x.til)
   const intro = t < 2.4
-  const sporsmal = t >= SLUTT_START + 0.8
+  const sporsmal = t >= SLUTT_START + 1.6
   // «Dagene etter»: de andre fasene toner ut før spørsmålet kommer (tom skjerm, bare sporet står igjen)
   const tom = t >= SLUTT_START
   return (
@@ -657,7 +714,7 @@ function ReiseFilm() {
           scale: 1,
         }
         return (
-          <motion.div key={m.tekst} className={`re-arsak ${m.godt ? 'godt' : 'tungt'} ${m.tekst.length > 30 ? 'lang' : ''}`} initial={{ opacity: 0, ...oppe, scale: 1.3 }} animate={{ opacity: 1, ...(stor ? oppe : nede) }} transition={{ duration: stor ? 0.45 : 0.9, ease: MYK }}>
+          <motion.div key={m.tekst} className={`re-arsak ${m.godt ? 'godt' : 'tungt'} ${m.tekst.length > 30 ? 'lang' : ''} ${m.smal && !stor ? 'smal' : ''}`} initial={{ opacity: 0, ...oppe, scale: 1.3 }} animate={{ opacity: 1, ...(stor ? oppe : nede) }} transition={{ duration: stor ? 0.45 : 0.9, ease: MYK }}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d={m.godt ? 'M5 12h14M12 5v14' : 'M5 12h14'} />
             </svg>

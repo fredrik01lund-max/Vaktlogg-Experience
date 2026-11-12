@@ -12,20 +12,20 @@ export type FilmNavn = string
 // å gå tilbake til en gammel film er å ta bort linjen her.
 const FIL: Record<string, string> = {
   intervju: 'intervju2',
-  ringer: 'ringer2',
   kilder: 'kilder2',
   kassa: 'kassa2',
   apning: 'apning2',
   reise: 'reise2',
   hopping: 'hopping2',
+  kassafunn: 'kassa3', // 12.11: funn 2 – kameraet glir inn på søppelbøtta mens lappene kastes (brukerreisen bruker kassa2)
+  telefon: 'telefon2', // 12.11: uten vaktlista på brettet, og med Sir Domeos nye første replikk på skjermen
 }
 const filSti = (navn: FilmNavn) => `film/${FIL[navn] ?? navn}.mp4`
 
 function brukteFilmer(): FilmNavn[] {
   const navn: FilmNavn[] = []
   for (const s of manus) {
-    if (s.id === 'problem') navn.push('ringer')
-    if (s.id === 'funn') navn.push('apning', 'kassa', 'intervju')
+    if (s.id === 'funn') navn.push('apning', 'kassafunn', 'intervju')
     if (s.id === 'reise') navn.push('reise', 'kassa')
     if (s.id === 'ideate') navn.push('kilder')
     if (s.id === 'demo') navn.push('telefon')

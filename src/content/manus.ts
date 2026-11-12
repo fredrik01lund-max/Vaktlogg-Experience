@@ -9,7 +9,7 @@ import type { Scene } from './types.ts'
    • Diamant-ikonet øverst til høyre viser fasen (scene.diamant); når fasen skifter, glir kula dit (ui/Diamant.tsx).
    • «anim» = sekunder animasjon når takten starter (presentatørvisningen sier «vent»).
    • Manuset er planlagt til 10:00. Litt lengre tid til prototypen enn manuset regner med gir 10:10, og
-     klikket med de to første brukerreisene og spillet om forretningsmodellen (11.11) gir 10:33.
+     klikket med de to første brukerreisene og spillet om forretningsmodellen (11.11) gir 10:33. Brukerreisen spilles fortere fra 12.11 (rask i dødtiden, rolig rundt hendelsene): 10:17.
      Kjør `npm run sjekk`.
    • Manus v1 (ti scener, 4.11) ligger urørt i manus-v1.ts og vises under «Lagt til side» (O).
    ════════════════════════════════════════════════════════════════════════════════ */
@@ -26,7 +26,7 @@ export const manus: Scene[] = [
       {
         hvem: 'A',
         sier: 'Hei, vi er {A}, {B} og {C}. Vi startet med et problemområde vi har opplevd på nært hold: sykefravær i restaurantbransjen. Ved roller på gulvet og som ledere har vi vært borti ringvirkningene av sykefravær i en utsatt bransje. Vi ville se om vi kunne gjøre noe med det. Men først måtte vi forstå hva som ligger bak. Så vi gikk ut og spurte hvorfor.',
-        regi: 'Ringvirkninger (Blender): kula lander der flipptavla skal stå, ringer av lys brer seg utover, tavla slår seg opp til SYKEFRAVÆR, og kula legger seg i diamant-ikonet («Design Thinking»). Så kommer linjen «Opplevd på nært hold». Ingen tall. «Høyt» er tatt ut av replikken: SSB viser at bransjen ligger litt under snittet (se sjekklisten i manuset).',
+        regi: 'Double diamond-modellen kommer først, stort midt på skjermen («Design Thinking»), og flytter seg etter et par sekunder opp i høyre hjørne, der den står resten av presentasjonen. Så slår flipptavla seg opp til SYKEFRAVÆR, linjen «Opplevd på nært hold» kommer, og under tegnes ringvirkningene: stråler fra en S i midten ut til mange, med fem stikkord: underbemanning, oppsigelser, dårligere service, ekstra kostnader, og overarbeid med mer sykefravær. Alt står etter ca. ti sekunder. Ingen tall. «Høyt» er tatt ut av replikken: SSB viser at bransjen ligger litt under snittet (se sjekklisten i manuset).',
       },
     ],
     overgang: 'A klikker. Kula i diamant-ikonet glir inn i Empathize.',
@@ -67,7 +67,7 @@ export const manus: Scene[] = [
       {
         hvem: 'A',
         sier: 'Det andre var salg. Servitørene er opptatt av eget salg og egne tips. Når vakten er over, skriver de ut kassarapporten og sammenligner med kollegene. Etterpå kaster de lappen, og tallene er borte.',
-        regi: 'Funn 2: tre servitører ved disken sammenligner kassarapportene (salg, tips, vinflasker solgt), krøller dem, kaster dem i bøtta og går ut mens lysene slukkes. Tallene er tenkte.',
+        regi: 'Funn 2: tre servitører ved disken sammenligner kassarapportene (salg, tips, vinflasker solgt), krøller dem og kaster dem i bøtta. Mens de kaster og går, glir kameraet inn på søppelbøtta, og filmen blir stående der når alle tre har gått forbi. Tallene er tenkte.',
       },
       {
         hvem: 'A',
@@ -108,7 +108,7 @@ export const manus: Scene[] = [
     tema: 'mork',
     fase: 'define',
     diamant: 'define',
-    varighet: 58,
+    varighet: 42,
     takter: [
       {
         hvem: 'B',
@@ -117,7 +117,7 @@ export const manus: Scene[] = [
       },
       {
         hvem: 'stille',
-        anim: 50,
+        anim: 34,
         regi: 'Ingen snakker. Brukerreisen for Emma (tenkt vakt): fire faser nederst, klokkeslett, og følelseskurven som tegnes mens filmen går – grønn med pluss der det løfter, rød med minus der det tynger. Hver årsak kommer først stort øverst til venstre og legger seg så på kurven, der den blir stående: dobbel stasjon, ingen pause, gjesten takker, godt team på jobb, salg sammenlignes, kassalappen kastes og prestasjonene havner i glemmeboken, og dagene etter: sliten etter kvelden før. Lysringen under Emma viser det samme. Før: hun stempler inn, og lederen kommer bort og ber henne ta stasjonen til en kollega som er syk (snakkeboble). Under: ingen pause, en gjest takker (snakkeboble fra gjesten), en kollega tar et bord. Etter: kassarapportene sammenlignes, krølles og kastes, lysene slukkes. Dagene etter: sporet og hele kurven med årsakene står igjen – «Hva sitter Emma igjen med?». B lar spørsmålet stå i to sekunder før neste del.',
       },
     ],
@@ -248,6 +248,6 @@ export const manus: Scene[] = [
 ]
 
 /** Planlagt total: manuset (10:00) og prototypen slik talen faktisk tar. */
-export const PLAN_TOTAL = 633
+export const PLAN_TOTAL = 617
 /** Den harde grensen for fremføringen. */
 export const MAKS_TOTAL = 720

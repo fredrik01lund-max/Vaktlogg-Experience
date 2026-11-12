@@ -301,7 +301,8 @@
   // ── Spillet ──
   var L = { x: 640, j: 0, vy: 0, dir: 1 }
   var spor = [], fase = 0, tast = { v: false, h: false }, hoppKo = false, mal = null
-  var kam = 0, zoom = 1, stille = 9, niva = -1, kortNr = -1, harNokkel = false, port = { a: 0, startet: false }, mynter = 0, T = 0, data = false, flyttetNoe = false, iPortal = false, borte = [false, false, false]
+  var ZOOM = 0.86, SONE0 = 0.36, SONE1 = 0.58
+  var kam = 0, kamMal = 0, zoom = ZOOM, stille = 9, niva = -1, kortNr = -1, harNokkel = false, port = { a: 0, startet: false }, mynter = 0, T = 0, data = false, flyttetNoe = false, iPortal = false, borte = [false, false, false]
   for (var s = 0; s < 80; s++) spor.push({ x: L.x - (79 - s) * 6, j: 0 })
   ;['k1', 'k2', 'k3', 'k4'].forEach(function (id) { var p = document.getElementById(id), l = p.getTotalLength(); p.dataset.l = l; gsap.set(p, { strokeDasharray: l, strokeDashoffset: l, opacity: 0 }) })
   ;['p1', 'p2'].forEach(function (id) { var p = document.getElementById(id), l = p.getTotalLength(); p.dataset.l = l; gsap.set(p, { strokeDasharray: '2 ' + (l + 40), strokeDashoffset: 0 }) })
@@ -444,12 +445,14 @@
       FIG[k].skygge.style.transform = 'translate3d(' + (x - 40).toFixed(1) + 'px,' + (y - 9).toFixed(1) + 'px,0) scale(' + (1 + hopp / 500).toFixed(2) + ')'
     }
 
-    // Kameraet: tett på når de går, trekker seg ut når de står stille
-    var zMal = stille > 0.45 ? 0.78 : 1
-    zoom += (zMal - zoom) * Math.min(1, dt * 2.6)
-    var anker = 0.36 + ((1 - zoom) / 0.22) * 0.3
-    var kMal = Math.max(0, Math.min(W - 1920 / zoom, L.x - (anker * 1920) / zoom))
-    kam += (kMal - kam) * Math.min(1, dt * 7)
+    // Kameraet: fast utsnitt, ingen zoom. Figurene har en sone midt i bildet der de kan gå frem og tilbake uten at
+    // kameraet flytter seg; først når de går ut av sonen, følger det rolig etter. (12.11: zoomingen inn og ut ved
+    // hver start og stopp var ubehagelig å se på.)
+    var bredde = 1920 / zoom, fraKam = L.x - kamMal
+    if (fraKam > SONE1 * bredde) kamMal = L.x - SONE1 * bredde
+    else if (fraKam < SONE0 * bredde) kamMal = L.x - SONE0 * bredde
+    kamMal = Math.max(0, Math.min(W - bredde, kamMal))
+    kam += (kamMal - kam) * Math.min(1, dt * 3.2)
     verden.style.transform = 'translate3d(' + (-kam * zoom).toFixed(1) + 'px,0,0) scale(' + zoom.toFixed(4) + ')'
     lagMidt.style.transform = 'translate3d(' + (-kam * 0.55 * zoom).toFixed(1) + 'px,0,0) scale(' + zoom.toFixed(4) + ')'
     lagFjern.style.transform = 'translate3d(' + (-kam * 0.28 * zoom).toFixed(1) + 'px,0,0) scale(' + zoom.toFixed(4) + ')'

@@ -95,9 +95,59 @@
 }
 
 /* ── 1. Problemområdet: linjen og tallet under flipptavla ── */
+/* (12.11) Modellen som først står stort i midten: samme mål og plass som ikonet i hjørnet, forstørret og flyttet
+   med transform, så den lander nøyaktig der ikonet står */
+.pr-modell {
+  z-index: 41;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.pr-midt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 236px;
+}
+/* Ringvirkningene under linjen: stråler fra ett punkt til mange. Står stille når de er tegnet. */
+.pr-virkning {
+  position: absolute;
+  left: 710px;
+  top: 548px;
+  width: 500px;
+  height: 500px;
+  overflow: visible;
+}
+.pr-v-midt {
+  fill: none;
+  stroke: #b83a6c;
+  stroke-width: 9;
+}
+.pr-v-s {
+  font-family: var(--sans);
+  font-size: 38px;
+  font-weight: 700;
+  fill: #b83a6c;
+}
+.pr-v-ord {
+  font-family: var(--sans);
+  font-size: 32px;
+  font-weight: 650;
+  fill: #2b1f1c;
+}
+.pr-v-med-ord .pr-v-strale {
+  stroke: #b83a6c;
+  stroke-width: 3.4;
+}
+.pr-v-strale {
+  stroke: #2b1f1c;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
 .pr-linje {
-  margin-top: 80px;
-  font-size: 60px;
+  margin-top: 24px;
+  font-size: 52px;
   font-style: italic;
   color: rgba(244, 237, 228, 0.92);
 }
@@ -626,6 +676,12 @@
 .re-arsak.lang {
   white-space: normal;
   width: 560px;
+  border-radius: 26px;
+}
+/* På plass ved kurven helt til høyre: to linjer, så den får plass innenfor bildet */
+.re-arsak.smal {
+  white-space: normal;
+  width: 216px;
   border-radius: 26px;
 }
 .re-arsak.godt {
