@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { spillLyd } from '../lib/lyd.ts'
 import { motion } from 'motion/react'
 import meta from '../lib/telefon.json'
 import { filmUrl } from '../lib/film.ts'
@@ -132,11 +133,9 @@ export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { v
     lyd.current?.pause()
     lyd.current = null
     if (!id) return
-    const a = new Audio(`demo/domeo/${id}.mp3`)
+    // Felles lydspiller (lib/lyd.ts): på iPad/iPhone spiller den også når prototypen sier fra uten et trykk
+    const a = spillLyd(`demo/domeo/${id}.mp3`)
     lyd.current = a
-    a.play().catch(() => {
-      /* uten lyd står replikken i boblen */
-    })
   }
   useEffect(() => {
     const ta = (e: MessageEvent) => {

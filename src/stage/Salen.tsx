@@ -19,6 +19,8 @@ import { MYK, useLysNivaa, useStudioPaa, type SceneProps } from '../scenes/felle
 import { Diamant } from '../ui/Diamant.tsx'
 import { vekslePlassholdertekst } from '../ui/Foto.tsx'
 import { Lys } from '../ui/Lys.tsx'
+import { Beroring, BEROERING } from '../ui/Beroring.tsx'
+import { spillLyd } from '../lib/lyd.ts'
 
 // Manus v2: ni scener. Demoen (id «demo») tegnes for seg, med telefonen og prototypen.
 // Scener som har egen ut-animasjon når man klikker videre (se scene-ramme under)
@@ -210,7 +212,7 @@ export function Salen() {
   useEffect(
     () =>
       paLydtest(() => {
-        new Audio('demo/domeo/lydtest.mp3').play().catch(() => {})
+        spillLyd('demo/domeo/lydtest.mp3')
       }),
     [],
   )
@@ -287,7 +289,7 @@ export function Salen() {
   const fremdrift = ((t.scene + (t.takt + 1) / scene.takter.length) / manus.length) * 100
 
   return (
-    <div className={`salen ${peker ? '' : 'skjul-peker'}`} onDoubleClick={fullskjerm}>
+    <div className={`salen ${peker ? '' : 'skjul-peker'} ${BEROERING ? 'beroring' : ''}`} onDoubleClick={fullskjerm}>
       <div className={`lerret tema-${tema} ${studio ? 'studio-paa' : ''}`} style={{ transform: `translate(${skala.x}px, ${skala.y}px) scale(${skala.k})` }}>
         <Lys styrke={t.startet ? lys : 0.25} tema={tema} />
 
@@ -296,7 +298,13 @@ export function Salen() {
             <div>
               <div className="tittel">VAKTLOGG EXPERIENCE</div>
               <p>
-                <kbd>→</kbd> eller klikker for å starte · <kbd>P</kbd> presentatørvisning · <kbd>F</kbd> fullskjerm · <kbd>H</kbd> hjelp
+                {BEROERING ? (
+                  <>Trykk Start, og bla med pilene nederst eller ved å sveipe</>
+                ) : (
+                  <>
+                    <kbd>→</kbd> eller klikker for å starte · <kbd>P</kbd> presentatørvisning · <kbd>F</kbd> fullskjerm · <kbd>H</kbd> hjelp
+                  </>
+                )}
               </p>
               <button className="venter-start" onClick={start}>
                 Start
@@ -413,6 +421,7 @@ export function Salen() {
         )}
       </div>
       {oppsett.lyd.apning && <audio ref={lyd} src={oppsett.lyd.apning} preload="auto" loop />}
+      <Beroring onOversikt={() => setOversikt((v) => !v)} />
     </div>
   )
 }

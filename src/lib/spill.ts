@@ -33,6 +33,11 @@ export function taImotSpilltaster(f: (m: Melding) => void) {
   }
 }
 
+/** «Neste» uten tastatur (knappen eller sveip på iPad/iPhone): figurene går til neste stopp, som PageDown. */
+export function spillNeste() {
+  send({ spill: 'neste' })
+}
+
 /** Spillet sier fra at det ikke er flere stopp: gå videre i presentasjonen. */
 export function spillFerdig() {
   if (spillAktivt()) neste()
