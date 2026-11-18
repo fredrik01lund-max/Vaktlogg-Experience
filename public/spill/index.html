@@ -465,7 +465,11 @@
     else if (k === 'ArrowRight' || k === 'd' || k === 'D') tast.h = true
     else if (k === ' ' || k === 'ArrowUp' || k === 'w' || k === 'W') hoppKo = true
     else if (k === 'PageDown' || k === 'Enter') nesteEllerVidere()
-    else return
+    else {
+      // Tastene spillet ikke bruker selv, hører til presentasjonen (talltastene, O, B, R …) – også når fokus står her
+      if (parent !== window && !e.altKey && !e.ctrlKey && !e.metaKey && k.length === 1) parent.postMessage({ spill: 'tast-ut', key: k }, '*')
+      return
+    }
     e.preventDefault()
   })
   addEventListener('keyup', function (e) {

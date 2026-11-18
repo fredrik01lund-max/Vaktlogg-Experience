@@ -11,7 +11,8 @@
     "sjekk": "node scripts/sjekk-manus.ts",
     "sjekk-tekst": "node scripts/sjekk-tekst.ts",
     "qr": "node scripts/lag-qr.mjs",
-    "eksamen": "node server/eksamen.mjs"
+    "eksamen": "node server/eksamen.mjs",
+    "build:offline": "tsc && vite build --config vite.offline.config.ts && node scripts/pakk-offline.mjs"
   },
   "dependencies": {
     "@fontsource-variable/besley": "^5.3.0",

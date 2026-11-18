@@ -6,6 +6,8 @@ export type Behandling = { metning: number; kontrast: number; lysstyrke: number;
 
 export type FotoPlass = {
   fil?: string
+  /** Samme bilde med fargebehandlingen bakt inn (scripts/bak-foto.mjs). Vises uten CSS-filter – se Foto.tsx. */
+  ferdig?: string
   fokus?: [number, number]
   tekst?: string
   kreditering?: string
@@ -42,6 +44,8 @@ export type Foto = {
   lag: { url: string; dybde: number }[]
   status: FotoStatus
   fokus: [number, number]
+  /** Fargebehandlingen ligger i bildefilen: ikke legg CSS-filter på. */
+  ferdig?: boolean
 }
 
 const sti = (fil: string) => `foto/${fil.split('/').map(encodeURIComponent).join('/')}`
@@ -54,6 +58,8 @@ export function foto(id: string): Foto {
   const klarert = EKSAMEN ? !!(plass.samtykke?.eksamen || plass.samtykke?.offentlig) : !!plass.samtykke?.offentlig
   if (!klarert) return { id, plass, url: null, lag: [], status: 'ikke-klarert', fokus }
   const lag = (plass.lag ?? []).filter((l) => l && typeof l.fil === 'string' && l.fil.trim()).map((l) => ({ url: sti(l.fil.trim()), dybde: Number(l.dybde) || 0 }))
+  const ferdig = (plass.ferdig ?? '').trim()
+  if (ferdig && !lag.length) return { id, plass, url: sti(ferdig), lag, status: 'ok', fokus, ferdig: true }
   return { id, plass, url: sti(fil), lag, status: 'ok', fokus }
 }
 

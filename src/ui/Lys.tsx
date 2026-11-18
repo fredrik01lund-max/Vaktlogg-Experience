@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { erLett } from '../lib/kvalitet.ts'
 
 // Uskarpe, varme lys som i en restaurant om kvelden (bokeh). Tegnes på et lerret
 // og brukes som bakgrunn der vi ikke har – eller ikke trenger – et fotografi.
@@ -38,7 +39,13 @@ export function Lys({ styrke = 1, antall = 34, className = '', tema = 'mork' }: 
     let id = 0
     let naaStyrke = 0
     const t0 = performance.now()
+    let bilde = 0
     const tegn = (naa: number) => {
+      // Lett modus: hvert fjerde bilde holder (lysene beveger seg sakte)
+      if (erLett() && bilde++ % 4) {
+        id = requestAnimationFrame(tegn)
+        return
+      }
       const t = (naa - t0) / 1000
       ctx.clearRect(0, 0, W, H)
       const lyst = temaRef.current === 'lys'

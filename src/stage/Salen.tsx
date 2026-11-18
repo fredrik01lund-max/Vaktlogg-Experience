@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from 'motion/react'
 import { lagtTilSide } from '../content/arkiv.ts'
 import { manus } from '../content/manus.ts'
 import type { Hvem } from '../content/types.ts'
-import { filmTilstand } from '../lib/film.ts'
-import { startMobilvakt, useMobilInfo } from '../lib/mobil.ts'
+import { byttFilmKvalitet, filmTilstand } from '../lib/film.ts'
+import { maalYtelse, nesteKvalitet, useKvalitetValg, useLett } from '../lib/kvalitet.ts'
+import { OFFLINE, startMobilvakt, useMobilInfo } from '../lib/mobil.ts'
 import { FARGE, oppsett } from '../lib/oppsett.ts'
 import { apneVindu, forrige, gaTil, hent, neste, nyDemo, paLydtest, sendStatus, start, svart, useTilstand } from '../lib/sync.ts'
 import { Innsikter, Metode, Portrett, TittelScene } from '../scenes/Del1.tsx'
@@ -105,6 +106,12 @@ export function Salen() {
   const [hjelp, setHjelp] = useState(false)
   const [arkiv, setArkiv] = useState<{ i: number; takt: number; valg: number | null } | null>(null)
   const [peker, setPeker] = useState(true)
+  // Lett modus for eldre maskiner (lib/kvalitet.ts): slår seg på selv hvis bildet hakker, eller velges med K
+  const lett = useLett()
+  const kvalitet = useKvalitetValg()
+  useEffect(() => maalYtelse(), [])
+  // Filmene byttes mellom scenene (og med en gang på startskjermen), så en film som går, ikke starter på nytt
+  useEffect(() => byttFilmKvalitet(), [t.scene, t.startet, t.startet ? null : lett]) // eslint-disable-line react-hooks/exhaustive-deps
   const lyd = useRef<HTMLAudioElement>(null)
 
   // Hold skjermen våken: PC-en får ingen tastetrykk i minuttene sensor bruker mobilen (localhost er en sikker kontekst)
@@ -165,12 +172,24 @@ export function Salen() {
       } else if (k === 'o' || k === 'O') setOversikt((v) => !v)
       else if (k === 'h' || k === 'H' || k === '?') setHjelp((v) => !v)
       else if (k === 'l' || k === 'L') vekslePlassholdertekst()
+      else if (k === 'k' || k === 'K') nesteKvalitet()
       else if (k === 'Home') gaTil(0)
       else if (k === 'r' || k === 'R') nyDemo()
     }
     window.addEventListener('keydown', ned)
     return () => window.removeEventListener('keydown', ned)
   }, [oversikt, hjelp, arkiv])
+
+  // ── Tastaturfokus tilbake til presentasjonen når man blar ──
+  // Har man klikket i prototypen under demoen, blir fokus stående inne i den rammen også etter at demoen er over.
+  // Da gikk piltastene i spillet til «neste side» i stedet for å flytte figurene, og talltastene nådde ikke frem.
+  // (I selve demoen får fokus stå i prototypen.)
+  useEffect(() => {
+    const a = document.activeElement as HTMLElement | null
+    if (a?.tagName !== 'IFRAME' || scene.id === 'demo') return
+    a.blur()
+    window.focus()
+  }, [t.scene, t.takt, scene.id])
 
   // ── Stille sekvenser går videre av seg selv (bare hovedskjermen styrer dette) ──
   useEffect(() => {
@@ -289,7 +308,7 @@ export function Salen() {
   const fremdrift = ((t.scene + (t.takt + 1) / scene.takter.length) / manus.length) * 100
 
   return (
-    <div className={`salen ${peker ? '' : 'skjul-peker'} ${BEROERING ? 'beroring' : ''}`} onDoubleClick={fullskjerm}>
+    <div className={`salen ${peker ? '' : 'skjul-peker'} ${BEROERING ? 'beroring' : ''} ${lett ? 'lett' : ''}`} onDoubleClick={fullskjerm}>
       <div className={`lerret tema-${tema} ${studio ? 'studio-paa' : ''}`} style={{ transform: `translate(${skala.x}px, ${skala.y}px) scale(${skala.k})` }}>
         <Lys styrke={t.startet ? lys : 0.25} tema={tema} />
 
@@ -310,6 +329,10 @@ export function Salen() {
                 Start
               </button>
               {mobilLinje && <p className={`venter-mobil ${mobil.mobil > 0 ? 'ok' : ''}`}>{mobilLinje}</p>}
+              {/* Offline-filen har bare 720p-filmene, så der er det ikke noe å velge */}
+              {!OFFLINE && <button className="venter-kvalitet" onClick={nesteKvalitet} title="Lett modus er for eldre maskiner: filmene i 720p og færre effekter. Auto velger selv.">
+                Kvalitet: {kvalitet === 'auto' ? `Auto (${lett ? 'lett' : 'full'})` : kvalitet === 'lett' ? 'Lett' : 'Full'}
+              </button>}
             </div>
           </div>
         ) : (
@@ -413,6 +436,8 @@ export function Salen() {
               <dd>Oversikt over scenene – hopp dit du vil. Under «Lagt til side» ligger scenene vi tok ut (Esc lukker)</dd>
               <dt><kbd>R</kbd></dt>
               <dd>Last prototypen på nytt med rene data (starter også omvisningen på sensors mobil på nytt)</dd>
+              <dt><kbd>K</kbd></dt>
+              <dd>Kvalitet: auto → lett → full. Lett er for eldre maskiner (filmene i 720p, færre effekter)</dd>
               <dt><kbd>L</kbd></dt>
               <dd>Skjul/vis teksten på fotoplassholdere</dd>
             </dl>

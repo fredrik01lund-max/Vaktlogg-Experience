@@ -574,3 +574,31 @@ html:has(.salen.beroring) body {
     height: 20px;
   }
 }
+
+/* ── Lett modus (lib/kvalitet.ts) for eldre maskiner: det som koster mest å tegne, slås av. Innholdet er det samme. ── */
+.venter .venter-kvalitet {
+  display: block;
+  margin: 34px auto 0;
+  padding: 8px 18px;
+  border: 1px solid var(--linje-2);
+  border-radius: 999px;
+  background: none;
+  color: var(--dempet);
+  font: 500 15px/1.2 var(--sans);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.venter .venter-kvalitet:hover {
+  color: var(--papir);
+}
+/* Fotografiene står stille (ingen sakte kamerabevegelse) */
+.salen.lett .foto-bilde,
+.salen.lett .foto-lag {
+  animation: none;
+  transform: scale(1.06);
+}
+/* Uskarphet bak paneler må regnes ut for hvert bilde */
+.salen.lett * {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}

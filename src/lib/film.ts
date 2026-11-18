@@ -1,5 +1,6 @@
 import { manus } from '../content/manus.ts'
 import { forhandslastIkon } from '../ui/Diamant.tsx'
+import { erLett } from './kvalitet.ts'
 import { sendStatus } from './sync.ts'
 
 // Filmene lastes helt ned når presentasjonen åpnes, så de aldri står og laster midt i fremføringen.
@@ -20,7 +21,13 @@ const FIL: Record<string, string> = {
   kassafunn: 'kassa3', // 12.11: funn 2 – kameraet glir inn på søppelbøtta mens lappene kastes (brukerreisen bruker kassa2)
   telefon: 'telefon3', // 12.11: uten vaktlista på brettet, og med forsiden i sensor-demoen («Åpne Vaktlogg») på skjermen
 }
-const filSti = (navn: FilmNavn) => `film/${FIL[navn] ?? navn}.mp4`
+// Lett modus (lib/kvalitet.ts): de samme filmene i 720p, en seksdel så store. Laget med ffmpeg fra 1080p-filene:
+//   ffmpeg -i film/<fil>.mp4 -vf scale=1280:720:flags=lanczos -c:v libx264 -profile:v main -preset slow -crf 23 -an film/lett/<fil>.mp4
+const LETT = new Set(['intervju2', 'kilder2', 'kassa2', 'kassa3', 'apning2', 'reise2', 'hopping2', 'telefon3'])
+const filSti = (navn: FilmNavn) => {
+  const fil = FIL[navn] ?? navn
+  return erLett() && LETT.has(fil) ? `film/lett/${fil}.mp4` : `film/${fil}.mp4`
+}
 
 function brukteFilmer(): FilmNavn[] {
   const navn: FilmNavn[] = []
@@ -73,6 +80,19 @@ async function last(navn: FilmNavn) {
     })
   }
   sendStatus({ film: filmTilstand() })
+}
+
+let lastetLett = erLett()
+/** Kvaliteten er byttet: pek på de andre filene og last dem. Kalles mellom scenene, så en film som går, ikke starter på nytt. */
+export function byttFilmKvalitet() {
+  if (erLett() === lastetLett) return
+  lastetLett = erLett()
+  for (const n of NAVN) {
+    if (url[n]?.startsWith('blob:')) URL.revokeObjectURL(url[n])
+    url[n] = filSti(n)
+    klar[n] = 'laster'
+  }
+  NAVN.reduce((forrige, n) => forrige.then(() => last(n)), Promise.resolve())
 }
 
 export function forhandslastFilm() {

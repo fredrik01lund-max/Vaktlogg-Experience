@@ -48,7 +48,9 @@ export function Foto({ id, className = '', kamera = 'inn', tid = 18, tekst = fal
   const visTekst = useVisTekst()
   const ok = f.status === 'ok' && !feil
   const pos = `${f.fokus[0] * 100}% ${f.fokus[1] * 100}%`
-  const filter = fargefilter(f.plass.justering)
+  // Ferdigbehandlede bilder (foto.js: ferdig) har fargene i filen. Et CSS-filter på et bilde som beveger seg,
+  // ga blanke (hvite) bilder i Safari og på svake skjermkort.
+  const filter = f.ferdig ? undefined : fargefilter(f.plass.justering)
   const vars = { '--kamera-tid': `${tid}s`, ...style } as CSSProperties
 
   return (

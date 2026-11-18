@@ -46,7 +46,7 @@ const STIKKORD: { strale: number; tekst: string }[] = [
   { strale: 4, tekst: 'Underbemanning' },
   { strale: 8, tekst: 'Dårligere service' },
   { strale: 16, tekst: 'Ekstra kostnader' },
-  { strale: 20, tekst: 'Overarbeid med mer sykefravær' },
+  { strale: 20, tekst: 'Overarbeid' },
   { strale: 6, tekst: 'Oppsigelser' },
 ]
 export function Problem(_: SceneProps) {
@@ -354,8 +354,10 @@ function useFilm(aktiv: boolean) {
     v.currentTime = 0
     v.play().catch(() => {})
     let id = 0
+    let sist = -1
     const tikk = () => {
-      setT(v.currentTime)
+      // Filmen har 30 bilder i sekundet: oppdater ikke oftere enn det
+      if (Math.abs(v.currentTime - sist) >= 0.03) setT((sist = v.currentTime))
       id = requestAnimationFrame(tikk)
     }
     id = requestAnimationFrame(tikk)
@@ -579,7 +581,7 @@ function ReiseFilm() {
   const r = useRef<HTMLVideoElement>(null)
   const k = useRef<HTMLVideoElement>(null)
   const [del, setDel] = useState<0 | 1 | 2>(0)
-  const [t, setT] = useState(0)
+  const [t, settT] = useState(0)
 
   useEffect(() => {
     const v = r.current
@@ -600,6 +602,13 @@ function ReiseFilm() {
   useEffect(() => {
     let id = 0
     let slutt0 = 0
+    let sist = -1
+    // Filmene har 30 bilder i sekundet: tegn ikke kurven og lappene på nytt oftere enn det
+    const setT = (v: number) => {
+      if (Math.abs(v - sist) < 0.03 && v < TOTAL) return
+      sist = v
+      settT(v)
+    }
     const tikk = () => {
       if (del === 0 && r.current) {
         setT(Math.min(REISE, r.current.currentTime))
@@ -1117,7 +1126,11 @@ function Spill() {
     settIkonSkjult(true)
     const til = taImotSpilltaster((m) => ramme.current?.contentWindow?.postMessage(m, '*'))
     const fra = (e: MessageEvent) => {
-      if (e.source === ramme.current?.contentWindow && e.data?.spill === 'videre') spillFerdig()
+      if (e.source !== ramme.current?.contentWindow) return
+      if (e.data?.spill === 'videre') spillFerdig()
+      // Har man klikket i spillet, står tastaturfokus der. Tastene spillet ikke bruker selv (talltastene, O, B, R …)
+      // sendes hit og behandles som om de var trykket i presentasjonen.
+      else if (e.data?.spill === 'tast-ut' && typeof e.data.key === 'string') window.dispatchEvent(new KeyboardEvent('keydown', { key: e.data.key, bubbles: true }))
     }
     window.addEventListener('message', fra)
     return () => {

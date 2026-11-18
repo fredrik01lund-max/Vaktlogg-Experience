@@ -174,6 +174,8 @@ export function DemoTelefon({ visning, demoNr, last, sensor, overlevering }: { v
       w.addEventListener(
         'keydown',
         (e: KeyboardEvent) => {
+          // Bare mens demoen vises. Etterpå hører tastene til presentasjonen (Salen flytter fokus tilbake).
+          if (manus[hent().scene]?.id !== 'demo') return
           if (e.key === 'PageDown' || e.key === 'ArrowRight') {
             e.preventDefault()
             neste()

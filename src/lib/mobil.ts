@@ -8,7 +8,11 @@ import { useSyncExternalStore } from 'react'
 import { kobleRele, lagKode, vaskKode } from './rele.ts'
 import { sendStatus } from './sync.ts'
 
-export type Speilmodus = 'lokal' | 'rele'
+export type Speilmodus = 'lokal' | 'rele' | 'ingen'
+
+/** Offline-filen (én html uten nett, scripts/pakk-offline.mjs): sensors mobil kan ikke kobles til. Prototypen styres da
+ *  direkte på skjermen. */
+export const OFFLINE = typeof window !== 'undefined' && !!(window as Window & { __OFFLINE?: boolean }).__OFFLINE
 
 /** Den publiserte presentasjonen: mobilen kan alltid åpne /s/ herfra, også når PC-en kjører fra fil. */
 const OFFENTLIG = 'https://fredrik01lund-max.github.io/Vaktlogg-Experience/'
@@ -16,8 +20,9 @@ const NOKKEL = 'vaktlogg-experience:rom'
 
 let modus: Promise<Speilmodus> | null = null
 export function speilmodus(): Promise<Speilmodus> {
-  modus ??=
-    window.location.protocol.startsWith('http') && !window.location.hostname.endsWith('github.io')
+  modus ??= OFFLINE
+    ? Promise.resolve('ingen')
+    : window.location.protocol.startsWith('http') && !window.location.hostname.endsWith('github.io')
       ? fetch('speil-status', { cache: 'no-store' })
           .then((r) => (r.ok ? r.json() : null))
           .then((j): Speilmodus => (j?.speil === true ? 'lokal' : 'rele'))
@@ -67,6 +72,7 @@ export function startMobilvakt() {
   if (startet) return
   startet = true
   speilmodus().then((m) => {
+    if (m === 'ingen') return
     if (m === 'lokal') {
       settInfo({ modus: 'lokal' })
       const sjekk = () =>
